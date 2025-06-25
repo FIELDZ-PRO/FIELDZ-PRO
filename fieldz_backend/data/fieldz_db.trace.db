@@ -1337,3 +1337,15 @@ select r1_0.id,r1_0.creneau_id,r1_0.date_reservation,r1_0.joueur_id,r1_0.statut 
 	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:658)
 	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
 	at java.base/java.lang.Thread.run(Thread.java:1447)
+2025-06-25 18:55:13.672284+02:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Erreur de syntaxe dans l'instruction SQL "SELECT * FROM RESERVATION TERRAIN [*]UTILISATEUR"
+Syntax error in SQL statement "SELECT * FROM RESERVATION TERRAIN [*]UTILISATEUR"; SQL statement:
+SELECT * FROM RESERVATION TERRAIN UTILISATEUR [42000-232]
+2025-06-25 19:17:55.812167+02:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Erreur de syntaxe dans l'instruction SQL "SELECT * [*]FROMRESERVATION  TERRAIN"
+Syntax error in SQL statement "SELECT * [*]FROMRESERVATION  TERRAIN"; SQL statement:
+SELECT * FROMRESERVATION  TERRAIN [42000-232]
+2025-06-25 20:06:27.170442+02:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Erreur de syntaxe dans l'instruction SQL "SELECT * [*]FROMUTILISATEUR  RESERVATION"
+Syntax error in SQL statement "SELECT * [*]FROMUTILISATEUR  RESERVATION"; SQL statement:
+SELECT * FROMUTILISATEUR  RESERVATION [42000-232]

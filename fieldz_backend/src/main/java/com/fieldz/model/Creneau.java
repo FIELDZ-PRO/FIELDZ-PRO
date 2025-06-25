@@ -29,11 +29,12 @@ public class Creneau {
     private boolean disponible = true;
 
     @ManyToOne
-    @JsonBackReference
+    @JsonBackReference("terrain-creneau")
     private Terrain terrain;
 
     @OneToOne(mappedBy = "creneau")
-    @JsonBackReference
+    @JsonBackReference("creneau-reservation")
     private Reservation reservation;
+
 
 }

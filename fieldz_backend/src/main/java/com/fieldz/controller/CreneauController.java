@@ -9,6 +9,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.time.LocalDate;
+import org.springframework.format.annotation.DateTimeFormat;
+import jakarta.persistence.EntityNotFoundException;
+
+
 
 @RestController
 @RequestMapping("/api/creneaux")
@@ -53,4 +58,22 @@ public class CreneauController {
         List<Creneau> disponibles = creneauRepository.findByStatut(Statut.LIBRE);
         return ResponseEntity.ok(disponibles);
     }
+    @GetMapping("/creneaux")
+    @PreAuthorize("hasRole('JOUEUR')")
+    public ResponseEntity<?> getCreneauxDisponibles(
+            @RequestParam(required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            @RequestParam(required = true) Long terrainId
+    ) {
+        Terrain terrain = terrainRepository.findById(terrainId)
+                .orElseThrow(() -> new EntityNotFoundException("Terrain introuvable avec l'id : " + terrainId));
+
+        List<Creneau> creneaux = creneauRepository.findCreneauxDisponiblesByDateAndTerrain(date, terrainId);
+
+        if (creneaux.isEmpty()) {
+            return ResponseEntity.status(404).body("Aucun créneau disponible pour cette date et ce terrain.");
+        }
+
+        return ResponseEntity.ok(creneaux);
+    }
+
 }

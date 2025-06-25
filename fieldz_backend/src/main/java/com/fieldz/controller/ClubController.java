@@ -1,31 +1,19 @@
 package com.fieldz.controller;
 
-import com.fieldz.model.Club;
-import com.fieldz.model.Terrain;
-import com.fieldz.model.Utilisateur;
-import com.fieldz.repository.TerrainRepository;
-import com.fieldz.repository.UtilisateurRepository;
+import com.fieldz.model.*;
+import com.fieldz.repository.*;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import com.fieldz.model.Reservation;
-import com.fieldz.repository.ReservationRepository;
-import com.fieldz.model.Creneau;
-import com.fieldz.model.Statut;
-import com.fieldz.repository.CreneauRepository;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDate;
-import java.util.List;
-import org.springframework.format.annotation.DateTimeFormat; // ajoute cet import en haut
 import java.time.LocalDateTime;
 import java.util.List;
-
-import com.fieldz.model.Reservation;
-import com.fieldz.model.Terrain;
-
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 @RestController
 @RequestMapping("/api/club")
@@ -37,162 +25,110 @@ public class ClubController {
     private final ReservationRepository reservationRepository;
     private final CreneauRepository creneauRepository;
 
-    @PostMapping("/terrain")
-    @PreAuthorize("hasRole('CLUB')")
-    public ResponseEntity<?> ajouterTerrain(
-            @RequestBody Terrain terrain,
-            Authentication authentication) {
+    private Club getClub(Authentication authentication) throws AccessDeniedException {
         String email = authentication.getName();
         Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
-
+                .orElseThrow(() -> new EntityNotFoundException("Utilisateur introuvable"));
         if (!(utilisateur instanceof Club club)) {
-            return ResponseEntity.status(403).body("L'utilisateur n'est pas un club.");
+            throw new AccessDeniedException("Vous devez être un CLUB pour effectuer cette action.");
         }
+        return club;
+    }
 
+    @PostMapping("/terrain")
+    @PreAuthorize("hasRole('CLUB')")
+    public ResponseEntity<?> ajouterTerrain(@RequestBody Terrain terrain, Authentication authentication) throws AccessDeniedException {
+        Club club = getClub(authentication);
         terrain.setClub(club);
         return ResponseEntity.ok(terrainRepository.save(terrain));
     }
 
     @GetMapping("/terrains")
     @PreAuthorize("hasRole('CLUB')")
-    public ResponseEntity<?> getTerrains(Authentication authentication) {
-        String email = authentication.getName();
-        Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
-
-        if (!(utilisateur instanceof Club club)) {
-            return ResponseEntity.status(403).body("L'utilisateur n'est pas un club.");
-        }
-
+    public ResponseEntity<?> getTerrains(Authentication authentication) throws AccessDeniedException {
+        Club club = getClub(authentication);
         return ResponseEntity.ok(terrainRepository.findByClub(club));
     }
-    @GetMapping("/reservations")
-    @PreAuthorize("hasRole('CLUB')")
-    public ResponseEntity<?> getReservationsDuClub(Authentication authentication) {
-        String email = authentication.getName();
-        Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
 
-        if (!(utilisateur instanceof Club club)) {
-            return ResponseEntity.status(403).body("L'utilisateur n'est pas un club.");
-        }
-
-        // On récupère tous les terrains du club
-        List<Terrain> terrains = terrainRepository.findByClub(club);
-
-        // On récupère toutes les réservations liées à ces terrains via leurs créneaux
-        List<Reservation> reservations = reservationRepository.findByCreneau_TerrainIn(terrains);
-
-        return ResponseEntity.ok(reservations);
-    }
     @GetMapping("/me")
     @PreAuthorize("hasRole('CLUB')")
-    public ResponseEntity<?> getClubConnecte(Authentication authentication) {
-        String email = authentication.getName();
-        Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
-
-        if (!(utilisateur instanceof Club club)) {
-            return ResponseEntity.status(403).body("L'utilisateur n'est pas un club.");
-        }
-
+    public ResponseEntity<?> getClubConnecte(Authentication authentication) throws AccessDeniedException {
+        Club club = getClub(authentication);
         return ResponseEntity.ok(club);
     }
+
     @PostMapping("/terrains/{terrainId}/creneaux")
     @PreAuthorize("hasRole('CLUB')")
-    public ResponseEntity<?> ajouterCreneauSansDto(@PathVariable Long terrainId,
-                                                   @RequestBody Creneau creneau,
-                                                   Authentication authentication) {
+    public ResponseEntity<?> ajouterCreneauSansDto(
+            @PathVariable Long terrainId,
+            @RequestBody Creneau creneau,
+            Authentication authentication) throws AccessDeniedException {
 
-        String email = authentication.getName();
-        Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
-
-        if (!(utilisateur instanceof Club club)) {
-            return ResponseEntity.status(403).body("L'utilisateur n'est pas un club.");
-        }
-
-        // Vérifie que le terrain appartient bien au club
+        Club club = getClub(authentication);
         Terrain terrain = terrainRepository.findById(terrainId)
-                .orElseThrow(() -> new RuntimeException("Terrain introuvable"));
+                .orElseThrow(() -> new EntityNotFoundException("Terrain introuvable avec l'id " + terrainId));
 
         if (!terrain.getClub().getId().equals(club.getId())) {
-            return ResponseEntity.status(403).body("Ce terrain ne vous appartient pas.");
+            throw new AccessDeniedException("Ce terrain ne vous appartient pas.");
         }
 
-        creneau.setTerrain(terrain);  // Association au terrain
-        creneau.setStatut(Statut.LIBRE);  // Valeur par défaut si non envoyée
-        creneau.setDisponible(true);      // Valeur par défaut aussi
+        creneau.setTerrain(terrain);
+        creneau.setStatut(Statut.LIBRE);
+        creneau.setDisponible(true);
 
         return ResponseEntity.ok(creneauRepository.save(creneau));
     }
+
     @GetMapping("/terrains/{terrainId}/creneaux")
     @PreAuthorize("hasRole('CLUB')")
-    public ResponseEntity<?> getCreneauxDuTerrain(@PathVariable Long terrainId,
-                                                  Authentication authentication) {
-
-        String email = authentication.getName();
-        Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
-
-        if (!(utilisateur instanceof Club club)) {
-            return ResponseEntity.status(403).body("L'utilisateur n'est pas un club.");
-        }
-
-        // Vérifie que le terrain appartient bien au club
+    public ResponseEntity<?> getCreneauxDuTerrain(@PathVariable Long terrainId, Authentication authentication) throws AccessDeniedException {
+        Club club = getClub(authentication);
         Terrain terrain = terrainRepository.findById(terrainId)
-                .orElseThrow(() -> new RuntimeException("Terrain introuvable"));
+                .orElseThrow(() -> new EntityNotFoundException("Terrain introuvable avec l'id " + terrainId));
+
         if (!terrain.getClub().getId().equals(club.getId())) {
-            return ResponseEntity.status(403).body("Ce terrain ne vous appartient pas.");
+            throw new AccessDeniedException("Ce terrain ne vous appartient pas.");
         }
 
         return ResponseEntity.ok(terrain.getCreneaux());
     }
 
+    @GetMapping("/reservations")
+    @PreAuthorize("hasRole('CLUB')")
+    public ResponseEntity<?> getReservationsDuClub(Authentication authentication) throws AccessDeniedException {
+        Club club = getClub(authentication);
+        List<Terrain> terrains = terrainRepository.findByClub(club);
+        List<Reservation> reservations = reservationRepository.findByCreneau_TerrainIn(terrains);
+        return ResponseEntity.ok(reservations);
+    }
+
     @PutMapping("/reservations/{id}/annuler")
     @PreAuthorize("hasRole('CLUB')")
-    public ResponseEntity<?> annulerReservationParClub(@PathVariable Long id, Authentication authentication) {
-        String email = authentication.getName();
-        Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
-
-        if (!(utilisateur instanceof Club club)) {
-            return ResponseEntity.status(403).body("L'utilisateur n'est pas un club.");
-        }
-
+    public ResponseEntity<?> annulerReservationParClub(@PathVariable Long id, Authentication authentication) throws AccessDeniedException {
+        Club club = getClub(authentication);
         Reservation reservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Réservation introuvable"));
+                .orElseThrow(() -> new EntityNotFoundException("Réservation introuvable avec l'id : " + id));
 
-        // Vérifie si la réservation concerne bien un terrain du club
         List<Terrain> terrainsDuClub = terrainRepository.findByClub(club);
         if (!terrainsDuClub.contains(reservation.getCreneau().getTerrain())) {
-            return ResponseEntity.status(403).body("Cette réservation ne concerne pas un terrain de votre club.");
+            throw new AccessDeniedException("Cette réservation ne concerne pas un terrain de votre club.");
         }
 
-        // Mise à jour du statut
         reservation.setStatut(Statut.ANNULE);
         reservation.getCreneau().setStatut(Statut.LIBRE);
         reservation.getCreneau().setDisponible(true);
 
-        reservationRepository.save(reservation); // ⚠ pas besoin de save le creneau à part
-        return ResponseEntity.ok("Réservation annulée avec succès");
+        reservationRepository.save(reservation);
+        return ResponseEntity.ok("Réservation annulée avec succès.");
     }
 
     @GetMapping("/reservations/date")
     @PreAuthorize("hasRole('CLUB')")
     public ResponseEntity<?> getReservationsParDate(
             @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate parsedDate,
-            Authentication authentication) {
+            Authentication authentication) throws AccessDeniedException {
 
-        String email = authentication.getName();
-        Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
-
-        if (!(utilisateur instanceof Club club)) {
-            return ResponseEntity.status(403).body("L'utilisateur n'est pas un club.");
-        }
-
+        Club club = getClub(authentication);
         List<Terrain> terrains = terrainRepository.findByClub(club);
 
         LocalDateTime startOfDay = parsedDate.atStartOfDay();
@@ -201,12 +137,6 @@ public class ClubController {
         List<Reservation> reservations = reservationRepository
                 .findReservationsByTerrainsAndDateRange(terrains, startOfDay, endOfDay);
 
-        System.out.println("📌 Terrains du club : " + terrains.size());
-        System.out.println("📌 Date filtrée : " + parsedDate);
-        System.out.println("📌 Réservations trouvées : " + reservations.size());
-
         return ResponseEntity.ok(reservations);
     }
-
-
 }

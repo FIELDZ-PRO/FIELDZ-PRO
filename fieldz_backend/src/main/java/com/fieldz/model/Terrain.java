@@ -23,10 +23,12 @@ public class Terrain {
 
     @ManyToOne
     @JoinColumn(name = "club_id")
-    @JsonBackReference
+    @JsonBackReference("club-terrain")
     private Club club;
 
+
     @OneToMany(mappedBy = "terrain")
-    @JsonManagedReference
+    @JsonManagedReference("terrain-creneau")
     private List<Creneau> creneaux;
+
 }

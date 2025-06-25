@@ -27,8 +27,10 @@ public class Reservation {
 
 
     @OneToOne
-    @JsonManagedReference
+    @JoinColumn(name = "creneau_id")
+    @JsonManagedReference("creneau-reservation")
     private Creneau creneau;
+
 
     @Column(name = "date_reservation")
     private LocalDateTime dateReservation;
