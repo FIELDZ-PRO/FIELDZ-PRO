@@ -109,6 +109,7 @@ public class ReservationController {
         // Libération du créneau
         creneau.setStatut(Statut.LIBRE);
         creneau.setDisponible(true);
+        creneau.setReservation(null); // pour libérer l'association s’il y en a une
 
         // Suppression de la réservation
         reservationRepository.delete(reservation);

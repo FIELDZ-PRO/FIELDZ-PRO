@@ -6,6 +6,7 @@ import lombok.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
 @Entity
@@ -29,7 +30,7 @@ public class Creneau {
     private boolean disponible = true;
 
     @ManyToOne
-    @JsonBackReference("terrain-creneau")
+    @JsonIgnoreProperties({"club", "creneaux"})
     private Terrain terrain;
 
     @OneToOne(mappedBy = "creneau")

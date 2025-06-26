@@ -12,6 +12,9 @@ const ClubDashboard = () => {
   const [terrains, setTerrains] = useState([]);
   const [reservations, setReservations] = useState([]);
   const [date, setDate] = useState('');
+  const [creneauxTerrain, setCreneauxTerrain] = useState([]);
+const [selectedTerrainCreneaux, setSelectedTerrainCreneaux] = useState('');
+
 
   const headers = {
     'Content-Type': 'application/json',
@@ -93,6 +96,20 @@ const handleAjouterTerrain = async () => {
     logout();
     navigate('/');
   };
+  const handleVoirCreneaux = async () => {
+  if (!selectedTerrainCreneaux) return alert("Sélectionnez un terrain.");
+
+  try {
+    const res = await fetch(`http://localhost:8080/api/club/terrains/${selectedTerrainCreneaux}/creneaux`, {
+      headers,
+    });
+    const data = await res.json();
+    setCreneauxTerrain(data);
+  } catch (err) {
+    console.error("Erreur lors du chargement des créneaux :", err);
+  }
+};
+
 
   return (
     <div className="p-8 max-w-3xl mx-auto space-y-12">
@@ -122,6 +139,7 @@ const handleAjouterTerrain = async () => {
           </button>
         </div>
       </section>
+      
 
       {/* Proposer un créneau */}
       <section>
@@ -165,6 +183,37 @@ const handleAjouterTerrain = async () => {
           </button>
         </div>
       </section>
+<section>
+  <h2 className="text-xl font-semibold mb-4">Voir les créneaux d’un terrain</h2>
+  <div className="flex gap-3 mb-4">
+    <select
+      className="border p-2"
+      value={selectedTerrainCreneaux}
+      onChange={(e) => setSelectedTerrainCreneaux(e.target.value)}
+    >
+      <option value="">-- Sélectionner un terrain --</option>
+      {terrains.map((t) => (
+        <option key={t.id} value={t.id}>
+          {t.nomTerrain} ({t.typeSurface})
+        </option>
+      ))}
+    </select>
+    <button
+      onClick={handleVoirCreneaux}
+      className="bg-indigo-600 text-white px-4 py-2 rounded"
+    >
+      🔍 Voir les créneaux
+    </button>
+  </div>
+
+  <ul className="space-y-2">
+    {creneauxTerrain.map((c) => (
+      <li key={c.id} className="border p-3 rounded">
+        📅 {c.date} – ⏰ {c.heureDebut} à {c.heureFin} – Statut : <strong>{c.statut}</strong>
+      </li>
+    ))}
+  </ul>
+</section>
 
       {/* Voir les réservations */}
       <section>

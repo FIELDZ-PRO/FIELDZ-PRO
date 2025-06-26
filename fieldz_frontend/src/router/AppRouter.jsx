@@ -3,6 +3,7 @@ import Login from '../pages/Login';
 import ClubDashboard from '../pages/ClubDashboard';
 import JoueurDashboard from '../pages/JoueurDashboard';
 import ProtectedRoute from '../components/ProtectedRoute';
+import Register from '../pages/Register';
 
 const AppRouter = () => (
   <BrowserRouter>
@@ -13,6 +14,7 @@ const AppRouter = () => (
           <ClubDashboard />
         </ProtectedRoute>
       } />
+      <Route path="/register" element={<Register />} />
       <Route path="/joueur" element={
   <ProtectedRoute>
     <JoueurDashboard />

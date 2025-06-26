@@ -2,7 +2,6 @@ import { useState } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-
 import { jwtDecode } from 'jwt-decode';
 
 const Login = () => {
@@ -47,7 +46,9 @@ const Login = () => {
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <form onSubmit={handleLogin} className="bg-white p-6 rounded shadow-md w-80">
-        <h2 className="text-lg font-bold mb-4 text-center">Connexion</h2>
+        
+        {/* Header du formulaire */}
+
         <input
           type="email"
           placeholder="Email"
@@ -62,10 +63,30 @@ const Login = () => {
           onChange={e => setMotDePasse(e.target.value)}
           className="w-full border p-2 mb-2 rounded"
         />
-        <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600">
-          Se connecter
-        </button>
-        {message && <p className="mt-3 text-center text-sm text-red-500">{message}</p>}
+        <button
+  type="submit"
+  className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+>
+  Se connecter
+</button>
+
+{message && (
+  <p className="mt-3 text-center text-sm text-red-500">{message}</p>
+)}
+
+{/* Texte et bouton d'inscription */}
+<div className="mt-6 text-center">
+  <p className="text-sm text-gray-600">
+    Pas de compte ?&nbsp;
+    <button
+      type="button"
+      onClick={() => navigate('/register')}
+      className="text-blue-500 underline hover:text-blue-700"
+    >
+      S'inscrire
+    </button>
+  </p>
+</div>
       </form>
     </div>
   );

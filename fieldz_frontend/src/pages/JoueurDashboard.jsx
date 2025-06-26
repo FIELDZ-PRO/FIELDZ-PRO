@@ -108,7 +108,7 @@ const JoueurDashboard = () => {
           {creneauxLibres.map((c) => (
             <li key={c.id} className="border p-3 rounded flex justify-between items-center">
               <span>
-                Terrain #{c.terrain?.id} – {c.date} de {c.heureDebut} à {c.heureFin}
+{c.terrain?.nomTerrain || 'Terrain inconnu'} – {c.date} de {c.heureDebut} à {c.heureFin}
               </span>
               <button
                 onClick={() => handleReserver(c.id)}
