@@ -25,17 +25,16 @@ public class Creneau {
     private LocalTime heureFin;
 
     @Enumerated(EnumType.STRING)
-    private Statut statut = Statut.LIBRE;  // par défaut
+    private Statut statut = Statut.LIBRE;
 
     private boolean disponible = true;
 
-    @ManyToOne
-    @JsonIgnoreProperties({"club", "creneaux"})
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JsonIgnoreProperties({"creneaux"})
     private Terrain terrain;
+
 
     @OneToOne(mappedBy = "creneau")
     @JsonBackReference("creneau-reservation")
     private Reservation reservation;
-
-
 }

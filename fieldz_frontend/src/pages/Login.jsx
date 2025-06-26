@@ -8,11 +8,14 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [motDePasse, setMotDePasse] = useState('');
   const [message, setMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
+    setMessage('');
     try {
       const res = await axios.post('http://localhost:8080/api/auth/login', {
         email,
@@ -20,73 +23,84 @@ const Login = () => {
       });
 
       const token = res.data.token;
-      console.log("✅ Token reçu :", token);
-
-      login(token); // stocke le token dans le contexte
+      login(token);
 
       const decoded = jwtDecode(token);
       const role = decoded.role;
-      console.log("👤 Rôle décodé :", role);
 
       if (role === 'CLUB') {
         navigate('/club');
       } else if (role === 'JOUEUR') {
         navigate('/joueur');
       } else {
-        console.warn("Rôle inconnu :", role);
+        setMessage("Rôle utilisateur inconnu.");
         navigate('/');
       }
-
     } catch (err) {
-      console.error("❌ Erreur de login :", err.response?.data || err.message);
-      setMessage("Erreur de connexion");
+      setMessage(
+        err.response?.data?.message ||
+        err.response?.data ||
+        "Erreur de connexion"
+      );
     }
+    setIsLoading(false);
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <form onSubmit={handleLogin} className="bg-white p-6 rounded shadow-md w-80">
-        
-        {/* Header du formulaire */}
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-blue-200">
+      <form
+        onSubmit={handleLogin}
+        className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-sm flex flex-col gap-4 border border-blue-100"
+        style={{ minWidth: 340 }}
+      >
+        <div className="text-center mb-2">
+          <div className="text-3xl mb-2 font-bold tracking-tight text-blue-600">🎾 FIELDZ</div>
+          <div className="text-xl font-semibold mb-2 text-gray-800">Connexion à votre espace</div>
+        </div>
 
         <input
           type="email"
           placeholder="Email"
           value={email}
+          autoComplete="username"
           onChange={e => setEmail(e.target.value)}
-          className="w-full border p-2 mb-2 rounded"
+          className="input-field border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+          required
         />
         <input
           type="password"
           placeholder="Mot de passe"
           value={motDePasse}
+          autoComplete="current-password"
           onChange={e => setMotDePasse(e.target.value)}
-          className="w-full border p-2 mb-2 rounded"
+          className="input-field border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+          required
         />
+
         <button
-  type="submit"
-  className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
->
-  Se connecter
-</button>
+          type="submit"
+          className="w-full bg-blue-500 text-white p-2 mt-2 rounded-lg font-semibold hover:bg-blue-600 transition disabled:bg-blue-300"
+          disabled={isLoading}
+        >
+          {isLoading ? "Connexion..." : "Se connecter"}
+        </button>
 
-{message && (
-  <p className="mt-3 text-center text-sm text-red-500">{message}</p>
-)}
+        {message && (
+          <p className="mt-2 text-center text-sm text-red-500">{message}</p>
+        )}
 
-{/* Texte et bouton d'inscription */}
-<div className="mt-6 text-center">
-  <p className="text-sm text-gray-600">
-    Pas de compte ?&nbsp;
-    <button
-      type="button"
-      onClick={() => navigate('/register')}
-      className="text-blue-500 underline hover:text-blue-700"
-    >
-      S'inscrire
-    </button>
-  </p>
-</div>
+        <div className="mt-4 text-center">
+          <p className="text-sm text-gray-600">
+            Pas de compte ?&nbsp;
+            <button
+              type="button"
+              onClick={() => navigate('/register')}
+              className="text-blue-500 underline hover:text-blue-700 font-medium"
+            >
+              S'inscrire
+            </button>
+          </p>
+        </div>
       </form>
     </div>
   );

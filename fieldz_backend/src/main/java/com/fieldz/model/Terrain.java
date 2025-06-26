@@ -26,9 +26,7 @@ public class Terrain {
     @JsonBackReference("club-terrain")
     private Club club;
 
-
     @OneToMany(mappedBy = "terrain")
     @JsonManagedReference("terrain-creneau")
     private List<Creneau> creneaux;
-
 }

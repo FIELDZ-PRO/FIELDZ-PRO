@@ -1389,3 +1389,7 @@ The connection was not closed by the application and is garbage collected [90018
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "CRENEAUCRENEAU" non trouvée
 Table "CRENEAUCRENEAU" not found; SQL statement:
 DELETE FROM CRENEAUCRENEAU  WHERE id IN (1, 4) [42102-232]
+2025-06-26 20:01:35.616716+02:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Erreur de syntaxe dans l'instruction SQL "SELECT * [*]FROMUTILISATEUR  RESERVATION"
+Syntax error in SQL statement "SELECT * [*]FROMUTILISATEUR  RESERVATION"; SQL statement:
+SELECT * FROMUTILISATEUR  RESERVATION [42000-232]
