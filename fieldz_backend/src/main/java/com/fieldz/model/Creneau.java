@@ -29,9 +29,10 @@ public class Creneau {
 
     private boolean disponible = true;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JsonIgnoreProperties({"creneaux"})
     private Terrain terrain;
+
 
 
     @OneToOne(mappedBy = "creneau")

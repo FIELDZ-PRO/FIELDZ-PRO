@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.List;
 
@@ -27,6 +28,7 @@ public class Terrain {
     private Club club;
 
     @OneToMany(mappedBy = "terrain")
-    @JsonManagedReference("terrain-creneau")
+    @JsonIgnore // <-- Ajoute ça, retire le ManagedReference
     private List<Creneau> creneaux;
+
 }

@@ -14,10 +14,12 @@ const ClubDashboard = () => {
   const [selectedTerrainCreneaux, setSelectedTerrainCreneaux] = useState('');
 
   // Date du jour par défaut
-  const today = new Date().toISOString().slice(0, 10); // 'YYYY-MM-DD'
+  const today = new Date().toISOString().slice(0, 10);
   const [date, setDate] = useState(today);
 
-  const [reservations, setReservations] = useState([]);
+  // Séparation des états
+  const [reservationsToday, setReservationsToday] = useState([]);
+  const [reservationsDate, setReservationsDate] = useState([]);
   const [showTerrains, setShowTerrains] = useState(false);
   const [showReservations, setShowReservations] = useState(false);
 
@@ -38,25 +40,30 @@ const ClubDashboard = () => {
       }
     };
     fetchTerrains();
-    // Charger les réservations du jour automatiquement au démarrage
-    fetchReservations(today);
+    fetchReservationsToday();
     // eslint-disable-next-line
   }, []);
 
-  // Fonction pour charger les réservations à une date donnée
-  const fetchReservations = async (selectedDate) => {
+  // Fonction pour charger les réservations du jour
+  const fetchReservationsToday = async () => {
     try {
-      const res = await fetch(`http://localhost:8080/api/reservations/club?date=${selectedDate}`, { headers });
+      const res = await fetch(`http://localhost:8080/api/club/reservations/date?date=${today}`, { headers });
       const data = await res.json();
-      setReservations(data);
+      setReservationsToday(data);
     } catch (err) {
-      console.error('Erreur lors du chargement des réservations', err);
+      console.error('Erreur lors du chargement des réservations du jour', err);
     }
   };
 
-  // Handler pour bouton "voir réservations" (date choisie)
-  const handleVoirReservations = async () => {
-    fetchReservations(date);
+  // Fonction pour charger les réservations à une date choisie
+  const fetchReservationsDate = async () => {
+    try {
+      const res = await fetch(`http://localhost:8080/api/club/reservations/date?date=${date}`, { headers });
+      const data = await res.json();
+      setReservationsDate(data);
+    } catch (err) {
+      console.error('Erreur lors du chargement des réservations à la date', err);
+    }
   };
 
   const handleAjouterTerrain = async () => {
@@ -113,15 +120,27 @@ const ClubDashboard = () => {
     }
   };
 
+  const handleVoirReservationsDate = () => {
+    fetchReservationsDate();
+  };
+
   const handleLogout = () => {
     logout();
     navigate('/');
   };
 
   return (
-    <div className="club-container">
-      <h1>🎾 Espace Club</h1>
-
+    <div className="dashboard-container">
+      {/* Header */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+        <h1>
+          <span role="img" aria-label="Padel">🎾</span>
+          FIELDZ Club
+        </h1>
+        <button className="logout-btn" onClick={handleLogout}>
+          Déconnexion
+        </button>
+      </div>
       {/* Ajouter un terrain */}
       <section>
         <div className="section-title">🏟️ Ajouter un terrain</div>
@@ -257,77 +276,69 @@ const ClubDashboard = () => {
       </section>
 
       {/* Réservations du jour déroulantes */}
-<section>
-  <div className="section-title" style={{ display: 'flex', alignItems: 'center', gap: '0.5em' }}>
-    <button
-      onClick={() => setShowReservations((v) => !v)}
-      style={{
-        border: 'none',
-        background: 'none',
-        fontSize: '1.2em',
-        cursor: 'pointer',
-        color: '#3B82F6',
-        outline: 'none'
-      }}
-      aria-label={showReservations ? "Cacher les réservations" : "Afficher les réservations"}
-    >
-      {showReservations ? '▼' : '►'}
-    </button>
-    <span>📋 Réservations du jour</span>
-  </div>
-  {showReservations && (
-    <div>
-      {/* Réservations du jour = date aujourd'hui */}
-      {reservations.length === 0 ? (
-        <div>Aucune réservation pour aujourd'hui.</div>
-      ) : (
-        reservations.map((r) => (
-          <div key={r.id} className="list-card">
-            <strong>Créneau #{r.creneau?.id}</strong> – Joueur : {r.joueur?.nom} – {r.dateReservation}
-          </div>
-        ))
-      )}
-    </div>
-  )}
-</section>
-
-{/* Voir les réservations pour une date donnée */}
-<section>
-  <div className="section-title">📅 Voir les réservations pour une date donnée</div>
-  <div className="form-group">
-    <input
-      type="date"
-      className="input-field"
-      value={date}
-      onChange={(e) => setDate(e.target.value)}
-    />
-    <button
-      onClick={handleVoirReservations}
-      className="btn btn-view"
-    >
-      🔍 Voir les réservations
-    </button>
-  </div>
-  <div>
-    {/* Affiche la liste des réservations pour la date sélectionnée */}
-    {reservations.length === 0 ? (
-      <div>Aucune réservation pour cette date.</div>
-    ) : (
-      reservations.map((r) => (
-        <div key={r.id} className="list-card">
-          <strong>Créneau #{r.creneau?.id}</strong> – Joueur : {r.joueur?.nom} – {r.dateReservation}
+      <section>
+        <div className="section-title" style={{ display: 'flex', alignItems: 'center', gap: '0.5em' }}>
+          <button
+            onClick={() => setShowReservations((v) => !v)}
+            style={{
+              border: 'none',
+              background: 'none',
+              fontSize: '1.2em',
+              cursor: 'pointer',
+              color: '#3B82F6',
+              outline: 'none'
+            }}
+            aria-label={showReservations ? "Cacher les réservations" : "Afficher les réservations"}
+          >
+            {showReservations ? '▼' : '►'}
+          </button>
+          <span>📋 Réservations du jour</span>
         </div>
-      ))
-    )}
-  </div>
-</section>
+        {showReservations && (
+          <div>
+            {reservationsToday.length === 0 ? (
+              <div>Aucune réservation pour aujourd'hui.</div>
+            ) : (
+              reservationsToday.map((r) => (
+                <div key={r.id} className="list-card">
+                  <strong>Créneau #{r.creneau?.id}</strong> – Joueur : {r.joueur?.nom} – {r.dateReservation}
+                </div>
+              ))
+            )}
+          </div>
+        )}
+      </section>
 
+      {/* Voir les réservations pour une date donnée */}
+      <section>
+        <div className="section-title">📅 Voir les réservations pour une date donnée</div>
+        <div className="form-group">
+          <input
+            type="date"
+            className="input-field"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+          />
+          <button
+            onClick={handleVoirReservationsDate}
+            className="btn btn-view"
+          >
+            🔍 Voir les réservations
+          </button>
+        </div>
+        <div>
+          {reservationsDate.length === 0 ? (
+            <div>Aucune réservation pour cette date.</div>
+          ) : (
+            reservationsDate.map((r) => (
+              <div key={r.id} className="list-card">
+                <strong>Créneau #{r.creneau?.id}</strong> – Joueur : {r.joueur?.nom} – {r.dateReservation}
+              </div>
+            ))
+          )}
+        </div>
+      </section>
 
-      <div className="text-center mt-8">
-        <button onClick={handleLogout} className="btn btn-logout">
-          🚪 Se déconnecter
-        </button>
-      </div>
     </div>
   );
 };

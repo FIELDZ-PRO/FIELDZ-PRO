@@ -207,6 +207,12 @@ public class ClubController {
 
         return ResponseEntity.ok(reservations);
     }
+    @GetMapping("/hello")
+    @PreAuthorize("hasRole('CLUB')")
+    public String helloClub(Authentication auth) {
+        System.out.println("Authorities: " + auth.getAuthorities());
+        return "Hello club : " + auth.getName();
+    }
 
 
 }
