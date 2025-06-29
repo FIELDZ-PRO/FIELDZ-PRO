@@ -53,13 +53,18 @@ cd frontend
 npm install
 npm run dev
 ➡ Accès à : http://localhost:5173
+➡ API à : http://localhost:8080
 
 ## ▶ Backend
 commandes bash : 
-cd backend
+cd C:\Users\HP\FIELDZ\fieldz_backend  
 ./mvnw spring-boot:run
-➡ API à : http://localhost:8080
 
+## ▶ Frontend
+commandes bash :
+cd C:\Users\HP\FIELDZ\fieldz_frontend
+npm run dev
+  
 ⚠ Assure-toi que la config CORS est bien active (CorsConfig.java)
 
 🔜 Fonctionnalités prévues
@@ -73,9 +78,14 @@ cd backend
 📱 Version responsive ou mobile
 
 🧑‍💻 Auteur
-Projet développé par Arslan Dif et Nazim Lamèche 
+Projet développé par :
+_ DIF Arslan
+_
+_
+
 👋 Contact : 
 LinkedIn - https://www.linkedin.com/in/arslan-dif-740077287/ -
+LinkedIn - -
 LinkedIn - -
 
 📝 Licence
