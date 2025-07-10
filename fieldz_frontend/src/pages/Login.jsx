@@ -47,14 +47,14 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-blue-200">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-100 to-white">
       <form
         onSubmit={handleLogin}
-        className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-sm flex flex-col gap-4 border border-blue-100"
+        className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-sm flex flex-col gap-4 border border-green-100"
         style={{ minWidth: 340 }}
       >
         <div className="text-center mb-2">
-          <div className="text-3xl mb-2 font-bold tracking-tight text-blue-600">🎾 FIELDZ</div>
+          <div className="text-3xl mb-2 font-bold tracking-tight text-green-600">🎾 FIELDZ</div>
           <div className="text-xl font-semibold mb-2 text-gray-800">Connexion à votre espace</div>
         </div>
 
@@ -64,7 +64,7 @@ const Login = () => {
           value={email}
           autoComplete="username"
           onChange={e => setEmail(e.target.value)}
-          className="input-field border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+          className="input-field border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400 transition"
           required
         />
         <input
@@ -73,13 +73,13 @@ const Login = () => {
           value={motDePasse}
           autoComplete="current-password"
           onChange={e => setMotDePasse(e.target.value)}
-          className="input-field border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+          className="input-field border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400 transition"
           required
         />
 
         <button
           type="submit"
-          className="w-full bg-blue-500 text-white p-2 mt-2 rounded-lg font-semibold hover:bg-blue-600 transition disabled:bg-blue-300"
+          className="w-full bg-green-500 text-white p-2 mt-2 rounded-lg font-semibold hover:bg-green-600 transition disabled:bg-green-300"
           disabled={isLoading}
         >
           {isLoading ? "Connexion..." : "Se connecter"}
@@ -95,7 +95,7 @@ const Login = () => {
             <button
               type="button"
               onClick={() => navigate('/register')}
-              className="text-blue-500 underline hover:text-blue-700 font-medium"
+              className="text-green-600 underline hover:text-green-800 font-medium"
             >
               S'inscrire
             </button>

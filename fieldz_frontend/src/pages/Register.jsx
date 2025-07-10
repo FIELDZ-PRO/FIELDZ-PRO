@@ -39,14 +39,14 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-blue-200">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-100 to-white">
       <form
         onSubmit={handleRegister}
-        className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-sm flex flex-col gap-4 border border-blue-100"
+        className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-sm flex flex-col gap-4 border border-green-100"
         style={{ minWidth: 340 }}
       >
         <div className="text-center mb-2">
-          <div className="text-3xl mb-2 font-bold tracking-tight text-blue-600">🎾 FIELDZ</div>
+          <div className="text-3xl mb-2 font-bold tracking-tight text-green-600">🎾 FIELDZ</div>
           <div className="text-xl font-semibold mb-2 text-gray-800">Créer un compte</div>
         </div>
         <input
@@ -55,7 +55,7 @@ const Register = () => {
           placeholder="Nom"
           value={formData.nom}
           onChange={handleChange}
-          className="input-field border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+          className="input-field border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400 transition"
           required
         />
         <input
@@ -64,7 +64,7 @@ const Register = () => {
           placeholder="Email"
           value={formData.email}
           onChange={handleChange}
-          className="input-field border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+          className="input-field border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400 transition"
           required
         />
         <input
@@ -73,14 +73,14 @@ const Register = () => {
           placeholder="Mot de passe"
           value={formData.motDePasse}
           onChange={handleChange}
-          className="input-field border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+          className="input-field border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400 transition"
           required
         />
         <select
           name="role"
           value={formData.role}
           onChange={handleChange}
-          className="input-field border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+          className="input-field border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400 transition"
         >
           <option value="JOUEUR">Joueur</option>
           <option value="CLUB">Club</option>
@@ -104,7 +104,7 @@ const Register = () => {
             <button
               type="button"
               onClick={() => navigate('/')}
-              className="text-blue-500 underline hover:text-blue-700 font-medium"
+              className="text-green-600 underline hover:text-green-800 font-medium"
             >
               Se connecter
             </button>

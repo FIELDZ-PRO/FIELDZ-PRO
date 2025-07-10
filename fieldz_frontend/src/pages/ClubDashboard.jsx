@@ -13,11 +13,9 @@ const ClubDashboard = () => {
   const [creneauxTerrain, setCreneauxTerrain] = useState([]);
   const [selectedTerrainCreneaux, setSelectedTerrainCreneaux] = useState('');
 
-  // Date du jour par défaut
   const today = new Date().toISOString().slice(0, 10);
   const [date, setDate] = useState(today);
 
-  // Séparation des états
   const [reservationsToday, setReservationsToday] = useState([]);
   const [reservationsDate, setReservationsDate] = useState([]);
   const [showTerrains, setShowTerrains] = useState(false);
@@ -28,26 +26,32 @@ const ClubDashboard = () => {
     Authorization: `Bearer ${token}`,
   };
 
-  // Charger la liste des terrains du club au démarrage
   useEffect(() => {
-    const fetchTerrains = async () => {
-      try {
-        const res = await fetch('http://localhost:8080/api/club/terrains', { headers });
-        const data = await res.json();
-        setTerrains(data);
-      } catch (err) {
-        console.error('Erreur lors du chargement des terrains', err);
-      }
-    };
     fetchTerrains();
     fetchReservationsToday();
     // eslint-disable-next-line
   }, []);
 
-  // Fonction pour charger les réservations du jour
+  // Terrains du club
+  const fetchTerrains = async () => {
+    try {
+      const res = await fetch('http://localhost:8080/api/terrains', { headers });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      setTerrains(data);
+    } catch (err) {
+      console.error('Erreur lors du chargement des terrains', err);
+    }
+  };
+
+  // Réservations du jour
   const fetchReservationsToday = async () => {
     try {
-      const res = await fetch(`http://localhost:8080/api/club/reservations/date?date=${today}`, { headers });
+      const res = await fetch(
+        `http://localhost:8080/api/reservations/reservations/date?date=${today}`,
+        { headers }
+      );
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       setReservationsToday(data);
     } catch (err) {
@@ -55,10 +59,14 @@ const ClubDashboard = () => {
     }
   };
 
-  // Fonction pour charger les réservations à une date choisie
+  // Réservations à une date
   const fetchReservationsDate = async () => {
     try {
-      const res = await fetch(`http://localhost:8080/api/club/reservations/date?date=${date}`, { headers });
+      const res = await fetch(
+        `http://localhost:8080/api/reservations/reservations/date?date=${date}`,
+        { headers }
+      );
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       setReservationsDate(data);
     } catch (err) {
@@ -66,9 +74,10 @@ const ClubDashboard = () => {
     }
   };
 
+  // Ajout d'un terrain
   const handleAjouterTerrain = async () => {
     try {
-      const res = await fetch('http://localhost:8080/api/club/terrain', {
+      const res = await fetch('http://localhost:8080/api/terrains', {
         method: 'POST',
         headers,
         body: JSON.stringify(terrain),
@@ -89,14 +98,18 @@ const ClubDashboard = () => {
     }
   };
 
+  // Proposer un créneau
   const handleProposerCreneau = async () => {
     if (!terrainId) return alert('Veuillez sélectionner un terrain.');
 
-    const res = await fetch(`http://localhost:8080/api/creneaux/terrain/${terrainId}`, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(creneau),
-    });
+    const res = await fetch(
+      `http://localhost:8080/api/creneaux/terrains/${terrainId}/creneaux`,
+      {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(creneau),
+      }
+    );
 
     if (res.ok) {
       alert('✅ Créneau proposé avec succès');
@@ -108,11 +121,16 @@ const ClubDashboard = () => {
     }
   };
 
+  // Voir les créneaux d’un terrain
   const handleVoirCreneaux = async () => {
     if (!selectedTerrainCreneaux) return alert("Sélectionnez un terrain.");
 
     try {
-      const res = await fetch(`http://localhost:8080/api/club/terrains/${selectedTerrainCreneaux}/creneaux`, { headers });
+      const res = await fetch(
+        `http://localhost:8080/api/creneaux/terrains/${selectedTerrainCreneaux}/creneaux`,
+        { headers }
+      );
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       setCreneauxTerrain(data);
     } catch (err) {
@@ -176,7 +194,7 @@ const ClubDashboard = () => {
               background: 'none',
               fontSize: '1.2em',
               cursor: 'pointer',
-              color: '#3B82F6',
+              color: '#22c55e',
               outline: 'none'
             }}
             aria-label={showTerrains ? "Cacher les terrains" : "Afficher les terrains"}
@@ -285,7 +303,7 @@ const ClubDashboard = () => {
               background: 'none',
               fontSize: '1.2em',
               cursor: 'pointer',
-              color: '#3B82F6',
+              color: '#22c55e',
               outline: 'none'
             }}
             aria-label={showReservations ? "Cacher les réservations" : "Afficher les réservations"}
