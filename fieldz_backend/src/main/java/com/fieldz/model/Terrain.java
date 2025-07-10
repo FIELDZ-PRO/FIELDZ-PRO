@@ -22,6 +22,10 @@ public class Terrain {
     private String nomTerrain;
     private String typeSurface;
 
+    // ✅ Champs ajoutés
+    private String ville;
+    private String sport;
+
     @ManyToOne
     @JoinColumn(name = "club_id")
     @JsonBackReference("club-terrain")

@@ -24,6 +24,10 @@ public class Creneau {
     private LocalTime heureDebut;
     private LocalTime heureFin;
 
+
+    // ✅ Champ ajouté
+    private Double prix;
+
     @Enumerated(EnumType.STRING)
     private Statut statut = Statut.LIBRE;
 

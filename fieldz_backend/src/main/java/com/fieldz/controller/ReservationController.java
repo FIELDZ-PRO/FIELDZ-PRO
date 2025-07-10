@@ -3,6 +3,7 @@ package com.fieldz.controller;
 import com.fieldz.model.*;
 import com.fieldz.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -57,6 +58,28 @@ public class ReservationController {
 
         reservationRepository.save(reservation);
         return ResponseEntity.ok(reservation);
+    }
+/**
+* Afficher les réservations d'un club
+ */
+    @GetMapping("/reservations")
+    @PreAuthorize("hasRole('CLUB')")
+    public ResponseEntity<?> getReservationsDuClub(Authentication authentication) {
+        String email = authentication.getName();
+        Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
+
+        if (!(utilisateur instanceof Club club)) {
+            return ResponseEntity.status(403).body("L'utilisateur n'est pas un club.");
+        }
+
+        // On récupère tous les terrains du club
+        List<Terrain> terrains = terrainRepository.findByClub(club);
+
+        // On récupère toutes les réservations liées à ces terrains via leurs créneaux
+        List<Reservation> reservations = reservationRepository.findByCreneau_TerrainIn(terrains);
+
+        return ResponseEntity.ok(reservations);
     }
 
     /**
@@ -115,5 +138,63 @@ public class ReservationController {
         reservationRepository.delete(reservation);
 
         return ResponseEntity.ok("Réservation annulée avec succès.");
+    }
+
+    @PutMapping("/reservations/{id}/annuler")
+    @PreAuthorize("hasRole('CLUB')")
+    public ResponseEntity<?> annulerReservationParClub(@PathVariable Long id, Authentication authentication) {
+        String email = authentication.getName();
+        Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
+
+        if (!(utilisateur instanceof Club club)) {
+            return ResponseEntity.status(403).body("L'utilisateur n'est pas un club.");
+        }
+
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Réservation introuvable"));
+
+        // Vérifie si la réservation concerne bien un terrain du club
+        List<Terrain> terrainsDuClub = terrainRepository.findByClub(club);
+        if (!terrainsDuClub.contains(reservation.getCreneau().getTerrain())) {
+            return ResponseEntity.status(403).body("Cette réservation ne concerne pas un terrain de votre club.");
+        }
+
+        // Mise à jour du statut
+        reservation.setStatut(Statut.ANNULE);
+        reservation.getCreneau().setStatut(Statut.LIBRE);
+        reservation.getCreneau().setDisponible(true);
+
+        reservationRepository.save(reservation); // ⚠ pas besoin de save le creneau à part
+        return ResponseEntity.ok("Réservation annulée avec succès");
+    }
+
+    @GetMapping("/reservations/date")
+    @PreAuthorize("hasRole('CLUB')")
+    public ResponseEntity<?> getReservationsParDate(
+            @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate parsedDate,
+            Authentication authentication) {
+
+        String email = authentication.getName();
+        Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
+
+        if (!(utilisateur instanceof Club club)) {
+            return ResponseEntity.status(403).body("L'utilisateur n'est pas un club.");
+        }
+
+        List<Terrain> terrains = terrainRepository.findByClub(club);
+
+        LocalDateTime startOfDay = parsedDate.atStartOfDay();
+        LocalDateTime endOfDay = parsedDate.plusDays(1).atStartOfDay().minusNanos(1);
+
+        List<Reservation> reservations = reservationRepository
+                .findReservationsByTerrainsAndDateRange(terrains, startOfDay, endOfDay);
+
+        System.out.println("📌 Terrains du club : " + terrains.size());
+        System.out.println("📌 Date filtrée : " + parsedDate);
+        System.out.println("📌 Réservations trouvées : " + reservations.size());
+
+        return ResponseEntity.ok(reservations);
     }
 }
