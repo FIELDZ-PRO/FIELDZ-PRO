@@ -3,18 +3,17 @@ echo ============================
 echo 🚀 Lancement FIELDZ
 echo ============================
 
-REM Lancer backend
+REM Backend
 echo.
 echo 🔥 Démarrage du backend (Spring Boot)...
-start "BACKEND" cmd /k "cd /d C:\Users\HP\FIELDZ\fieldz_backend && mvnw spring-boot:run"
+start cmd /k "cd fieldz_backend && mvnw spring-boot:run"
 
-timeout /t 5
+timeout /t 5 > nul
 
-REM Lancer frontend
+REM Frontend
 echo.
 echo 💻 Démarrage du frontend (React)...
-start "FRONTEND" cmd /k "cd /d C:\Users\HP\FIELDZ\fieldz_frontend && npm run dev"
+start cmd /k "cd fieldz_frontend && npm run dev"
 
 echo.
-echo ✅ Les deux serveurs sont lancés dans deux fenêtres.
-pause
+echo ✅ Les deux serveurs sont lancés dans des fenêtres distinctes.

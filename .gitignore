@@ -3,3 +3,4 @@ frontend/dist/
 backend/target/
 *.log
 .env
+fieldz_backend/data/fieldz_db.mv.db
