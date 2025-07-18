@@ -19,6 +19,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
+
     private final JwtService jwtService;
     private final CustomUserDetailsService userDetailsService;
 
@@ -27,8 +28,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain)
             throws ServletException, IOException {
-        String path = request.getServletPath();
-        //System.out.println("👉 PATH: " + request.getServletPath());
+
+        String path = request.getRequestURI();
+        if (path.startsWith("/swagger-ui") ||
+                path.equals("/swagger-ui.html") ||
+                path.startsWith("/openapi") ||
+                path.startsWith("/webjars")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+
+
 
         if (path.startsWith("/api/auth") || path.startsWith("/h2-console")) {
            // System.out.println("✅ Bypass JWT for auth path");

@@ -77,11 +77,44 @@ npm run dev
 
 📱 Version responsive ou mobile
 
+📖 Accès à la documentation de l’API (Swagger UI)
+▶ Lancer Swagger UI en local
+Swagger UI te permet de visualiser et tester tous les endpoints du backend facilement depuis une interface web.
+
+Lancer le backend Spring Boot :
+
+bash
+Copier
+Modifier
+cd fieldz_backend
+./mvnw spring-boot:run
+# ou
+mvn spring-boot:run
+Ouvrir Swagger UI dans ton navigateur à l’adresse :
+
+bash
+Copier
+Modifier
+http://localhost:8080/swagger-ui.html
+(selon la version, essaie aussi http://localhost:8080/swagger-ui/index.html)
+▶ Astuces & bonnes pratiques
+Si Swagger n’est pas accessible :
+
+Vérifie que le backend tourne bien (pas d’erreur au démarrage)
+
+Assure-toi que le port 8080 n’est pas bloqué par un firewall
+
+Vérifie qu’aucun autre serveur n’utilise déjà le port 8080
+
+Désactive Swagger en production pour plus de sécurité (voir doc springdoc).
+
+Swagger n’est pas accessible sur Internet sauf si le projet est déployé publiquement (VPS, cloud, ngrok…).
+
 🧑‍💻 Auteur
 Projet développé par :
 _ DIF Arslan
-_
-_
+_ Allam Yacine
+_ Lamèche Nazim
 
 👋 Contact : 
 LinkedIn - https://www.linkedin.com/in/arslan-dif-740077287/ -

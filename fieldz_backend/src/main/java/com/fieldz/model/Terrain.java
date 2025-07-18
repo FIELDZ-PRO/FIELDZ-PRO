@@ -5,6 +5,8 @@ import lombok.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 
 import java.util.List;
 
@@ -28,8 +30,9 @@ public class Terrain {
 
     @ManyToOne
     @JoinColumn(name = "club_id")
-    @JsonBackReference("club-terrain")
+    @JsonIgnoreProperties({"terrains", "hibernateLazyInitializer", "handler"})
     private Club club;
+
 
     @OneToMany(mappedBy = "terrain")
     @JsonIgnore // <-- Ajoute ça, retire le ManagedReference

@@ -2,12 +2,32 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
+// ====== AJOUT UTILITAIRES DATES ET HEURES ======
+function formatDateFr(isoString) {       // AJOUTÉ
+  if (!isoString) return "";
+  const date = new Date(isoString);
+  return date.toLocaleDateString('fr-FR');
+}
+function formatDateTimeFr(isoString) {   // AJOUTÉ
+  if (!isoString) return "";
+  const d = new Date(isoString);
+  return d.toLocaleString('fr-FR', {
+    day: '2-digit', month: '2-digit', year: 'numeric',
+    hour: '2-digit', minute: '2-digit'
+  });
+}
+function formatHour(timeString) {        // AJOUTÉ
+  if (!timeString) return "";
+  const [h, m] = timeString.split(":");
+  return `${h}h${m}`;
+}
+
 const ClubDashboard = () => {
   const { logout, token } = useAuth();
   const navigate = useNavigate();
 
-  const [terrain, setTerrain] = useState({ nomTerrain: '', typeSurface: '' });
-  const [creneau, setCreneau] = useState({ date: '', heureDebut: '', heureFin: '' });
+const [terrain, setTerrain] = useState({ nomTerrain: '', typeSurface: '', ville: '' });
+const [creneau, setCreneau] = useState({ date: '', heureDebut: '', heureFin: '', prix: '' }); // <-- prix ajouté
   const [terrainId, setTerrainId] = useState('');
   const [terrains, setTerrains] = useState([]);
   const [creneauxTerrain, setCreneauxTerrain] = useState([]);
@@ -175,6 +195,13 @@ const ClubDashboard = () => {
             value={terrain.typeSurface}
             onChange={(e) => setTerrain({ ...terrain, typeSurface: e.target.value })}
           />
+          <input
+  className="input-field"
+  placeholder="Ville"
+  value={terrain.ville}
+  onChange={(e) => setTerrain({ ...terrain, ville: e.target.value })}
+/>
+
           <button
             onClick={handleAjouterTerrain}
             className="btn btn-add"
@@ -252,6 +279,16 @@ const ClubDashboard = () => {
             value={creneau.heureFin}
             onChange={(e) => setCreneau({ ...creneau, heureFin: e.target.value })}
           />
+          <input
+  type="number"
+  className="input-field"
+  placeholder="Prix (Da)"
+  value={creneau.prix}
+  min="0"
+  step="0.01"
+  onChange={(e) => setCreneau({ ...creneau, prix: e.target.value })}
+/>
+
           <button
             onClick={handleProposerCreneau}
             className="btn btn-creneau"
@@ -287,8 +324,11 @@ const ClubDashboard = () => {
         <div>
           {creneauxTerrain.map((c) => (
             <div key={c.id} className="list-card">
-              📅 {c.date} – ⏰ {c.heureDebut} à {c.heureFin} – Statut : <strong>{c.statut}</strong>
-            </div>
+  📅 {c.date} – ⏰ {c.heureDebut} à {c.heureFin}
+  {" | "}Prix : {c.prix} €
+  {" | "}Ville : {c.terrain?.ville}
+  {" | "}Statut : <strong>{c.statut}</strong>
+</div>
           ))}
         </div>
       </section>
@@ -319,8 +359,25 @@ const ClubDashboard = () => {
             ) : (
               reservationsToday.map((r) => (
                 <div key={r.id} className="list-card">
-                  <strong>Créneau #{r.creneau?.id}</strong> – Joueur : {r.joueur?.nom} – {r.dateReservation}
-                </div>
+  <strong>Créneau #{r.creneau?.id}</strong>
+  {/* Ajoute infos du créneau */}
+  {r.creneau && (
+    <>
+      {" – "}
+      <span>
+        {formatDateFr(r.creneau.date)}
+        {" | "}
+        {formatHour(r.creneau.heureDebut)}–{formatHour(r.creneau.heureFin)}
+        {" | "}
+        {r.creneau.terrain?.nomTerrain && <>Terrain : {r.creneau.terrain.nomTerrain}</>}
+      </span>
+    </>
+  )}
+  {" – Joueur : "}{r.joueur?.nom || "-"}
+  {/* Optionnel : date de réservation */}
+  {/* <span style={{ color: "#aaa", fontSize: ".92em" }}> | Réservé le {formatDateTimeFr(r.dateReservation)}</span> */}
+</div>
+
               ))
             )}
           </div>
@@ -350,8 +407,24 @@ const ClubDashboard = () => {
           ) : (
             reservationsDate.map((r) => (
               <div key={r.id} className="list-card">
-                <strong>Créneau #{r.creneau?.id}</strong> – Joueur : {r.joueur?.nom} – {r.dateReservation}
-              </div>
+  <strong>Créneau #{r.creneau?.id}</strong>
+  {/* Ajoute infos du créneau */}
+  {r.creneau && (
+    <>
+      {" – "}
+      <span>
+        {formatDateFr(r.creneau.date)}
+        {" | "}
+        {formatHour(r.creneau.heureDebut)}–{formatHour(r.creneau.heureFin)}
+        {" | "}
+        {r.creneau.terrain?.nomTerrain && <>Terrain : {r.creneau.terrain.nomTerrain}</>}
+      </span>
+    </>
+  )}
+  {" – Joueur : "}{r.joueur?.nom || "-"}
+  {/* Optionnel : date de réservation */}
+  {/* <span style={{ color: "#aaa", fontSize: ".92em" }}> | Réservé le {formatDateTimeFr(r.dateReservation)}</span> */}
+</div>
             ))
           )}
         </div>

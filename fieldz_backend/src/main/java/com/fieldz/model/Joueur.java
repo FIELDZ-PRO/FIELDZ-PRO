@@ -7,6 +7,9 @@ import java.util.List;
 import lombok.experimental.SuperBuilder;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 
 
 @Entity
@@ -19,8 +22,9 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 public class Joueur extends Utilisateur {
 
     @OneToMany(mappedBy = "joueur")
-    @JsonManagedReference
+    @JsonIgnore   // <-- Ajoute cette ligne pour ne JAMAIS envoyer la liste des réservations d'un joueur dans le JSON
     private List<Reservation> reservations;
+
 
 
 }

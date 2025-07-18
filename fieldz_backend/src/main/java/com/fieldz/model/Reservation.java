@@ -6,6 +6,10 @@ import lombok.*;
 import java.time.LocalDateTime;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+
 
 
 @Entity
@@ -21,15 +25,14 @@ public class Reservation {
 
     @ManyToOne
     @JoinColumn(name = "joueur_id")
-    @JsonBackReference
+    @JsonIgnoreProperties({"reservations", "hibernateLazyInitializer", "handler"})
     private Joueur joueur;
-
-
 
     @OneToOne
     @JoinColumn(name = "creneau_id")
-    @JsonManagedReference("creneau-reservation")
+    @JsonIgnoreProperties({"reservation", "hibernateLazyInitializer", "handler"})
     private Creneau creneau;
+
 
 
     @Column(name = "date_reservation")

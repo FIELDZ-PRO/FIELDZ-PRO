@@ -7,6 +7,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 
 
 @Entity
@@ -40,6 +42,7 @@ public class Creneau {
 
 
     @OneToOne(mappedBy = "creneau")
-    @JsonBackReference("creneau-reservation")
+    @JsonIgnore   // <-- Ajoute pour éviter d’inclure Reservation dans le JSON d’un créneau (sinon boucle)
     private Reservation reservation;
+
 }
