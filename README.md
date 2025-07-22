@@ -97,7 +97,91 @@ Copier
 Modifier
 http://localhost:8080/swagger-ui.html
 (selon la version, essaie aussi http://localhost:8080/swagger-ui/index.html)
-▶ Astuces & bonnes pratiques
+
+############## BDD PGSQL et H2 #########################
+
+#Pour la version PoGSQL, il faut taper ça dans le terminal (en remplaçant ton_mot_de_passe par votre mot de passe PGSQL)
+#Attention, il faut un encodage en UTF8, si vous codez sur IntelliJ, essayez d'ouvrir applicationproperties sur VSCode (en UTF8 par défaut) puis faire CTRL+S
+
+set DB_PASSWORD=ton_mot_de_passe
+mvnw spring-boot:run
+
+##################code à copier pour SQL : 
+spring.application.name=fieldz
+
+# ---------------------------
+# POSTGRESQL CONFIGURATION
+# ---------------------------
+
+spring.datasource.url=jdbc:postgresql://localhost:5432/fieldz
+spring.datasource.driver-class-name=org.postgresql.Driver
+spring.datasource.username=postgres
+spring.datasource.password=${DB_PASSWORD}
+spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+
+# -------------------------
+# H2 DATABASE CONFIGURATION (TOUT commenté)
+# -------------------------
+# spring.datasource.url=jdbc:h2:file:./data/fieldz_db
+# spring.datasource.driverClassName=org.h2.Driver
+# spring.datasource.username=sa
+# spring.datasource.password=
+# spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+# spring.jpa.hibernate.ddl-auto=update
+# spring.jpa.show-sql=true
+
+# # H2 Web Console
+# spring.h2.console.enabled=true
+# spring.h2.console.path=/h2-console
+
+springdoc.swagger-ui.path=/swagger-ui.html
+jwt.secret=rC6VGsN9YzKqv2AYP8r8CW6sQsAD+BF4W1s4+LE2YFY=
+
+
+ 
+################ code à copier pour H2 : 
+spring.application.name=fieldz
+
+# ---------------------------
+# POSTGRESQL CONFIGURATION
+# ---------------------------
+
+#spring.datasource.url=jdbc:postgresql://localhost:5432/fieldz
+#spring.datasource.driver-class-name=org.postgresql.Driver
+#spring.datasource.username=postgres
+#spring.datasource.password=TON_MOT_DE_PASSE
+
+#spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
+#spring.jpa.hibernate.ddl-auto=update
+#spring.jpa.show-sql=true
+
+# -------------------------
+# H2 DATABASE CONFIGURATION
+# -------------------------
+spring.datasource.url=jdbc:h2:file:./data/fieldz_db
+spring.datasource.driverClassName=org.h2.Driver
+spring.datasource.username=sa
+spring.datasource.password=
+
+# JPA settings
+spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+
+# H2 Web Console
+spring.h2.console.enabled=true
+spring.h2.console.path=/h2-console
+
+# Pour que tout soit lisible et joli
+springdoc.swagger-ui.path=/swagger-ui.html
+
+
+jwt.secret=rC6VGsN9YzKqv2AYP8r8CW6sQsAD+BF4W1s4+LE2YFY=
+
+
+#########   ▶ Astuces & bonnes pratiques #########
 Si Swagger n’est pas accessible :
 
 Vérifie que le backend tourne bien (pas d’erreur au démarrage)
