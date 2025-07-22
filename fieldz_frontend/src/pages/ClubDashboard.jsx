@@ -47,10 +47,27 @@ const [creneau, setCreneau] = useState({ date: '', heureDebut: '', heureFin: '',
   };
 
   useEffect(() => {
-    fetchTerrains();
-    fetchReservationsToday();
-    // eslint-disable-next-line
-  }, []);
+  fetchTerrains();
+  fetchReservationsToday();
+  fetchClubConnecte(); // <--- ajoute ceci
+  // eslint-disable-next-line
+}, []);
+
+
+const [club, setClub] = useState(null);
+
+const fetchClubConnecte = async () => {
+  try {
+    const res = await fetch('http://localhost:8080/api/club/me', { headers });
+    if (res.ok) {
+      const data = await res.json();
+      setClub(data);
+    }
+  } catch (err) {
+    console.error("Erreur fetch club :", err);
+  }
+};
+
 
   // Terrains du club
   const fetchTerrains = async () => {
@@ -171,14 +188,19 @@ const [creneau, setCreneau] = useState({ date: '', heureDebut: '', heureFin: '',
     <div className="dashboard-container">
       {/* Header */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-        <h1>
-          <span role="img" aria-label="Padel">🎾</span>
-          FIELDZ Club
-        </h1>
-        <button className="logout-btn" onClick={handleLogout}>
-          Déconnexion
-        </button>
-      </div>
+  <h1>
+    <span role="img" aria-label="Padel">🎾</span>
+    FIELDZ Club
+    {/* Affichage du nom du club connecté */}
+    <span style={{ fontSize: "1.1em", color: "#1e88e5", marginLeft: 18 }}>
+      {club && club.nom ? `| ${club.nom}` : ""}
+    </span>
+  </h1>
+  <button className="logout-btn" onClick={handleLogout}>
+    Déconnexion
+  </button>
+</div>
+
       {/* Ajouter un terrain */}
       <section>
         <div className="section-title">🏟️ Ajouter un terrain</div>

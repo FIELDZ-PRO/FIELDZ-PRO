@@ -1,4 +1,5 @@
 package com.fieldz.controller;
+import com.fieldz.service.ClubService;
 
 import com.fieldz.model.Club;
 import com.fieldz.model.Terrain;
@@ -27,36 +28,27 @@ import com.fieldz.model.Terrain;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.fieldz.dto.ClubDto;
+
 @RestController
 @RequestMapping("/api/club")
 @RequiredArgsConstructor
 public class ClubController {
 
-    private final UtilisateurRepository utilisateurRepository;
-    private final TerrainRepository terrainRepository;
-    private final ReservationRepository reservationRepository;
-    private final CreneauRepository creneauRepository;
+    private final ClubService clubService;
+    // Garde les autres repositories s'ils servent à d'autres endpoints
 
     @GetMapping("/me")
     @PreAuthorize("hasRole('CLUB')")
-    public ResponseEntity<?> getClubConnecte(Authentication authentication) {
-        String email = authentication.getName();
-        Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
-
-        if (!(utilisateur instanceof Club club)) {
-            return ResponseEntity.status(403).body("L'utilisateur n'est pas un club.");
-        }
-
-        return ResponseEntity.ok(club);
+    public ResponseEntity<ClubDto> getClubConnecte(Authentication authentication) {
+        ClubDto clubDto = clubService.getClubConnecte(authentication);
+        return ResponseEntity.ok(clubDto);
     }
 
     @GetMapping("/hello")
     @PreAuthorize("hasRole('CLUB')")
     public String helloClub(Authentication auth) {
-        System.out.println("Authorities: " + auth.getAuthorities());
+        // Ici tu peux soit déléguer à un service, soit laisser tel quel (c'est juste un test)
         return "Hello club : " + auth.getName();
     }
-
-
 }

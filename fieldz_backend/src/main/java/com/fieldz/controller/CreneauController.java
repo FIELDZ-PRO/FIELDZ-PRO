@@ -1,7 +1,9 @@
 package com.fieldz.controller;
 
-import com.fieldz.model.*;
-import com.fieldz.repository.*;
+import com.fieldz.dto.CreneauDto;
+import com.fieldz.model.Creneau;
+import com.fieldz.service.CreneauService;
+import com.fieldz.mapper.CreneauMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,63 +17,35 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CreneauController {
 
-    private final CreneauRepository creneauRepository;
-    private final TerrainRepository terrainRepository;
-    private final UtilisateurRepository utilisateurRepository;
+    private final CreneauService creneauService;
+
     @PostMapping("/terrains/{terrainId}/creneaux")
     @PreAuthorize("hasRole('CLUB')")
-    public ResponseEntity<?> ajouterCreneau(@PathVariable Long terrainId,
-                                                   @RequestBody Creneau creneau,
-                                                   Authentication authentication) {
-
-        String email = authentication.getName();
-        Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
-
-        if (!(utilisateur instanceof Club club)) {
-            return ResponseEntity.status(403).body("L'utilisateur n'est pas un club.");
-        }
-
-        // Vérifie que le terrain appartient bien au club
-        Terrain terrain = terrainRepository.findById(terrainId)
-                .orElseThrow(() -> new RuntimeException("Terrain introuvable"));
-
-        if (!terrain.getClub().getId().equals(club.getId())) {
-            return ResponseEntity.status(403).body("Ce terrain ne vous appartient pas.");
-        }
-
-        creneau.setTerrain(terrain);  // Association au terrain
-        creneau.setStatut(Statut.LIBRE);  // Valeur par défaut si non envoyée
-        creneau.setDisponible(true);      // Valeur par défaut aussi
-
-        return ResponseEntity.ok(creneauRepository.save(creneau));
+    public ResponseEntity<CreneauDto> ajouterCreneau(@PathVariable Long terrainId,
+                                                     @RequestBody Creneau creneau,
+                                                     Authentication authentication) {
+        Creneau created = creneauService.ajouterCreneau(terrainId, creneau, authentication);
+        return ResponseEntity.ok(CreneauMapper.toDto(created));
     }
+
     @GetMapping("/terrains/{terrainId}/creneaux")
     @PreAuthorize("hasRole('CLUB')")
-    public ResponseEntity<?> getCreneauxDuTerrain(@PathVariable Long terrainId,
-                                                  Authentication authentication) {
-
-        String email = authentication.getName();
-        Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
-
-        if (!(utilisateur instanceof Club club)) {
-            return ResponseEntity.status(403).body("L'utilisateur n'est pas un club.");
-        }
-
-        // Vérifie que le terrain appartient bien au club
-        Terrain terrain = terrainRepository.findById(terrainId)
-                .orElseThrow(() -> new RuntimeException("Terrain introuvable"));
-        if (!terrain.getClub().getId().equals(club.getId())) {
-            return ResponseEntity.status(403).body("Ce terrain ne vous appartient pas.");
-        }
-
-        return ResponseEntity.ok(terrain.getCreneaux());
+    public ResponseEntity<List<CreneauDto>> getCreneauxDuTerrain(@PathVariable Long terrainId,
+                                                                 Authentication authentication) {
+        List<Creneau> creneaux = creneauService.getCreneauxDuTerrain(terrainId, authentication);
+        List<CreneauDto> dtos = creneaux.stream()
+                .map(CreneauMapper::toDto)
+                .toList();
+        return ResponseEntity.ok(dtos);
     }
+
     @GetMapping("/disponibles")
     @PreAuthorize("hasRole('JOUEUR')")
-    public ResponseEntity<List<Creneau>> getCreneauxDisponibles() {
-        List<Creneau> disponibles = creneauRepository.findByStatut(Statut.LIBRE);
-        return ResponseEntity.ok(disponibles);
+    public ResponseEntity<List<CreneauDto>> getCreneauxDisponibles() {
+        List<Creneau> dispo = creneauService.getCreneauxDisponibles();
+        List<CreneauDto> dtos = dispo.stream()
+                .map(CreneauMapper::toDto)
+                .toList();
+        return ResponseEntity.ok(dtos);
     }
 }
