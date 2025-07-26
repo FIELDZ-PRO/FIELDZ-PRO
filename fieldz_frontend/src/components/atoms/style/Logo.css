@@ -1,11 +1,5 @@
-.atom-logo {
-  font-family: 'Lato', sans-serif;
-  font-size: 1.75rem;
-  font-weight: bold;
-  color: #0D4E1D;
-  text-decoration: none;
-}
-
-.atom-logo:hover {
-  color: #1A5F2A;
+.logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f5a2f;
 }

@@ -9,7 +9,7 @@ html.dark {
 
 /* Fond général : blanc et vert très clair */
 body {
-  background: linear-gradient(120deg, #bbf7d0 0%, #fff 100%);
+  background: #e3e3e3 100%;
   min-height: 100vh;
   font-family: 'Montserrat', Arial, sans-serif;
 }

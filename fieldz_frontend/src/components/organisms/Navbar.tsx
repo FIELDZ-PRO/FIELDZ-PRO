@@ -1,28 +1,47 @@
-import React, { FC } from 'react';
+import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import Logo from '../atoms/Logo';
-import Link from '../atoms/Link';
-import Button from '../atoms/Button';
-import './style/navbar.css';
+import Button from '../atoms/button';
+import './style/Navbar.css';
 
-const Navbar: FC = () => (
-  <nav className="navbar">
-    <div className="navbar__logo">
-      <Logo />
-    </div>
-    <ul className="navbar__links">
-      <li><Link href="#about">À propos</Link></li>
-      <li><Link href="#tutorial">Tutoriel</Link></li>
-      <li><Link href="#contact">Nous contacter</Link></li>
-    </ul>
-    <div className="navbar__auth">
-      <Button variant="text" onClick={() => {/* navigate('/login') */}}>
-        Connexion
-      </Button>
-      <Button variant="primary" onClick={() => {/* navigate('/register') */}}>
-        Inscription
-      </Button>
-    </div>
-  </nav>
-);
+const Navbar: React.FC = () => {
+  const navigate = useNavigate();
+
+  return (
+    <nav className="navbar">
+      <div className="navbar__container">
+        {/* Logo à gauche */}
+        <Link to="/home" className="navbar__logo">
+          <Logo />
+        </Link>
+
+        {/* Liens centraux */}
+        <ul className="navbar__menu">
+          <li><a href="#about">À propos</a></li>
+          <li><a href="#tutorial">Tutoriel</a></li>
+          <li><a href="#contact">Nous contacter</a></li>
+        </ul>
+
+        {/* Actions à droite */}
+        <div className="navbar__actions">
+          <Button
+            variant="text"
+            className="navbar__btn-text"
+            onClick={() => navigate('/login')}
+          >
+            Connexion
+          </Button>
+          <Button
+            variant="primary"
+            className="navbar__btn-primary"
+            onClick={() => navigate('/register')}
+          >
+            Inscription
+          </Button>
+        </div>
+      </div>
+    </nav>
+  );
+};
 
 export default Navbar;

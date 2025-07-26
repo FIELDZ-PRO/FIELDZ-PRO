@@ -1,10 +1,8 @@
-import React, { FC } from 'react';
-import './style/logo.css';
+import React from 'react';
+import './style/Logo.css';
 
-const Logo: FC = () => (
-  <a href="/" className="atom-logo">
-    FIELDz
-  </a>
+const Logo: React.FC = () => (
+  <span className="logo">FIE​LDZ</span>
 );
 
 export default Logo;

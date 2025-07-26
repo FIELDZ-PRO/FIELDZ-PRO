@@ -1,28 +1,43 @@
+/* button.css */
+
 .btn {
-   font-family: 'Lato', sans-serif;
-   font-size: 1rem;
-   padding: 0.5rem 1.5rem;
-   border: none;
+   display: inline-flex;
+   align-items: center;
+   font-family: inherit;
+   font-weight: 600;
    cursor: pointer;
-   transition: background-color 0.2s, color 0.2s;
+   border: none;
+   transition: background-color 0.2s ease, color 0.2s ease;
  }
  
- .btn--primary {
-   background-color: #0D4E1D;
-   color: #fff;
-   border-radius: 0.5rem;
- }
- 
- .btn--primary:hover {
-   background-color: #1A5F2A;
- }
- 
+ /* 1) Variante textuelle (Connexion) */
  .btn--text {
-   background: none;
-   color: #0D4E1D;
+   background-color: transparent;
+   color: #2d3748;       /* gris foncé */
+   padding: 0.5rem 1rem;
  }
  
  .btn--text:hover {
-   color: #1A5F2A;
+   color: #1f5a2f;       /* accent vert */
+ }
+ 
+ .btn--text svg {
+   margin-right: 0.5rem; /* si tu places une icône */
+   width: 1rem;
+   height: 1rem;
+   stroke: currentColor;
+ }
+ 
+ 
+ /* 2) Variante “primary” (Inscription) */
+ .btn--primary {
+   background-color: #1f5a2f;  /* vert FIELDz */
+   color: #fff;
+   border-radius: 9999px;      /* pill */
+   padding: 0.5rem 1.5rem;
+ }
+ 
+ .btn--primary:hover {
+   background-color: #164923;  /* vert plus foncé au survol */
  }
  

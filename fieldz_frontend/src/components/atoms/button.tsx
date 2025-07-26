@@ -1,20 +1,26 @@
-import React, { FC, MouseEventHandler } from 'react';
+// src/components/atoms/button.tsx
+import React from 'react';
 import './style/button.css';
 
 type ButtonProps = {
-  variant?: 'primary' | 'text';
-  onClick?: MouseEventHandler<HTMLButtonElement>;
+  variant?: 'text' | 'primary';
+  onClick?: () => void;
   children: React.ReactNode;
 };
 
-const Button: FC<ButtonProps> = ({
+const Button: React.FC<ButtonProps> = ({
   variant = 'primary',
   onClick,
   children,
-}) => (
-  <button className={`btn btn--${variant}`} onClick={onClick}>
-    {children}
-  </button>
-);
+}) => {
+  return (
+    <button
+      className={`btn btn--${variant}`}
+      onClick={onClick}
+    >
+      {children}
+    </button>
+  );
+};
 
 export default Button;
