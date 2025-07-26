@@ -1,0 +1,10 @@
+.atom-link {
+  font-family: 'Lato', sans-serif;
+  text-decoration: none;
+  color: #000;
+  transition: color 0.2s;
+}
+
+.atom-link:hover {
+  color: #0D4E1D;
+}

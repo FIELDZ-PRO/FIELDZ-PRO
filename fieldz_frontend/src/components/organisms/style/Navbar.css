@@ -1,0 +1,25 @@
+.navbar {
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+   padding: 1rem 2rem;
+   background-color: #fff;
+   border-bottom: 1px solid #e5e5e5;
+   position: sticky;
+   top: 0;
+   z-index: 100;
+ }
+ 
+ .navbar__links {
+   display: flex;
+   gap: 2rem;
+   list-style: none;
+   margin: 0;
+   padding: 0;
+ }
+ 
+ .navbar__auth {
+   display: flex;
+   gap: 1rem;
+ }
+ 
