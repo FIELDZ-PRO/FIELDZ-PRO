@@ -1,0 +1,160 @@
+/* src/components/organisms/style/HeroSection.css */
+
+/* 1. Conteneur global en flex côte-à-côte */
+.hero {
+   display: flex;
+   align-items: flex-start;
+   justify-content: space-between;
+   padding: 6rem 4rem;
+   box-sizing: border-box;
+
+ }
+ 
+ /* 2. Colonne de gauche */
+ .hero__left {
+   flex: 0 0 50%;
+   max-width: 50%;
+   padding-right: 2rem;
+   text-align: left;
+ }
+ 
+ /* 3. Colonne de droite */
+ .hero__right {
+   flex: 0 0 50%;
+   max-width: 50%;
+   display: flex;
+   justify-content: flex-end;
+ }
+ 
+ /* Pastille */
+ .hero__pill {
+   display: inline-flex;
+   align-items: center;
+   background-color: #b9c7bd;
+   color: #1a3a1c;
+   border-radius: 9999px;
+   padding: 0.5rem 0.75rem;
+   font-size: 0.875rem;
+   font-weight: 600;
+   margin-bottom: 1rem;
+ }
+ 
+ /* Point rond avant le texte */
+ .hero__pill-icon {
+   width: 0.5rem;
+   height: 0.5rem;
+   background-color: #1a3a1c;
+   border-radius: 50%;
+   margin-right: 0.5rem;
+ }
+ 
+ /* Titre principal */
+ .hero__title {
+   margin: 0 0 1rem;
+   font-size: 5rem;
+   font-weight: 800;
+   line-height: 1.1;
+ }
+ .hero__title2 {
+   margin: 0 0 1rem;
+   font-size: 5rem;
+   font-weight: 800;
+   line-height: 1.1;
+ }
+ /* Forcer chaque ligne sur son propre bloc */
+ .hero__title-line1,
+ .hero2__title-line {
+   display: block;
+ }
+ 
+ .hero__title-line1 {
+   color: #111;
+ }
+ 
+ .hero2__title-line2 {
+   color: #1f5a2f;
+ }
+ 
+ /* Sous-titre explicatif */
+ .hero__subtitle {
+   margin: 0 0 2rem;
+   font-size: 1.125rem;
+   color: #4a5568;
+   max-width: 32rem;
+   line-height: 1.5;
+ }
+ 
+ /* Stats (valeur + label) */
+ .hero__stats {
+   display: flex;
+   align-items: center;
+   gap: 2rem;
+   margin-bottom: 2rem;
+ }
+ 
+ .hero__stat {
+   text-align: center;
+ }
+ 
+ .hero__stat-value {
+   font-size: 2rem;
+   font-weight: 700;
+   color: #111;
+ }
+ 
+ .hero__stat-label {
+   font-size: 0.875rem;
+   color: #718096;
+ }
+ 
+ /* Séparateur vertical */
+ .hero__stats-separator {
+   width: 1px;
+   height: 2rem;
+   background-color: #e2e8f0;
+ }
+ 
+ /* Boutons d’appel à l’action */
+ .hero__cta {
+   display: flex;
+   flex-wrap: wrap;
+   gap: 1rem;
+ }
+ 
+ .hero__btn-primary {
+   background-color: #1f5a2f;
+   color: #fff;
+   padding: 1rem 2rem;
+   border-radius: 0.75rem;
+   font-size: 1rem;
+   font-weight: 600;
+   display: inline-flex;
+   align-items: center;
+   gap: 0.5rem;
+   transition: transform 0.2s, background-color 0.2s;
+ }
+ 
+ .hero__btn-primary:hover {
+   background-color: #285c34;
+   transform: scale(1.05);
+ }
+ 
+ .hero__btn-secondary {
+   border: 2px solid #e2e8f0;
+   background: transparent;
+   color: #111;
+   padding: 1rem 2rem;
+   border-radius: 0.75rem;
+   font-size: 1rem;
+   font-weight: 600;
+   display: inline-flex;
+   align-items: center;
+   gap: 0.5rem;
+   transition: border-color 0.2s, color 0.2s;
+ }
+ 
+ .hero__btn-secondary:hover {
+   border-color: #1f5a2f;
+   color: #1f5a2f;
+ }
+ 
