@@ -7,6 +7,9 @@ import JoueurDashboard from '../pages/JoueurDashboard';
 import ProtectedRoute from '../components/ProtectedRoute';
 import LandingPage from '../pages/LandingPage';
 import NotFound from '../pages/NotFound';
+import ResetPassword from "../pages/ResetPassword";
+import ForgotPassword from '../pages/ForgotPassword';
+
 
 export default function AppRouter() {
   return (
@@ -21,6 +24,9 @@ export default function AppRouter() {
         {/* Authentification */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+
 
         {/* Dashboards protégés */}
         <Route

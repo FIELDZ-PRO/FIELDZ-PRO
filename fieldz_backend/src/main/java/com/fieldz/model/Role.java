@@ -2,5 +2,6 @@ package com.fieldz.model;
 
 public enum Role {
     JOUEUR,
-    CLUB
+    CLUB,
+    ADMIN
 }
