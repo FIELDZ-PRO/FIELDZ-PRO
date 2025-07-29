@@ -21,8 +21,10 @@ const HeroSection: React.FC = () => {
         </div>
 
         <h1 className="hero__title">
-          <span className="hero__title-line1">Joue quand tu veux.</span>
-        </h1>
+  <span className="hero__title-line1" style={{ whiteSpace: 'nowrap' }}>
+    Joue quand tu veux.
+  </span>
+</h1>
         <h2 className="hero2__title">
           <span className="hero__title-line2">Où tu veux.</span>
         </h2>

@@ -6,13 +6,17 @@ import ClubDashboard from '../pages/ClubDashboard';
 import JoueurDashboard from '../pages/JoueurDashboard';
 import ProtectedRoute from '../components/ProtectedRoute';
 import LandingPage from '../pages/LandingPage';
+import NotFound from '../pages/NotFound';
 
 export default function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
+ 
         {/* Landing page publique */}
         <Route path="/home" element={<LandingPage />} />
+        <Route path="/" element={<LandingPage />} />
+        <Route path="*" element={<NotFound />} />
 
         {/* Authentification */}
         <Route path="/login" element={<Login />} />
@@ -36,6 +40,9 @@ export default function AppRouter() {
           }
         />
       </Routes>
+
+
+
     </BrowserRouter>
   );
 }
