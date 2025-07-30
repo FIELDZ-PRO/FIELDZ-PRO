@@ -77,7 +77,8 @@ npm run dev
 
 📱 Version responsive ou mobile
 
-📖 Accès à la documentation de l’API (Swagger UI)
+##> 📖 Accès à la documentation de l’API (Swagger UI)
+
 ▶ Lancer Swagger UI en local
 Swagger UI te permet de visualiser et tester tous les endpoints du backend facilement depuis une interface web.
 
@@ -97,6 +98,78 @@ Copier
 Modifier
 http://localhost:8080/swagger-ui.html
 (selon la version, essaie aussi http://localhost:8080/swagger-ui/index.html)
+
+### authentification google ##
+
+🔐 Authentification via Google (OAuth2)
+L’application FIELDZ permet aux utilisateurs de se connecter via leur compte Google, en plus de l’authentification par email/mot de passe classique.
+
+📌 Fonctionnement actuel
+Lorsqu’un utilisateur clique sur "Connexion via Google", il est redirigé vers la page d’authentification officielle Google.
+
+S’il s’agit de sa première connexion, un compte est automatiquement créé dans la base de données avec :
+
+l’email Google,
+
+un rôle par défaut (JOUEUR),
+
+un mot de passe vide (non nécessaire pour l’auth Google),
+
+et un token JWT est généré automatiquement.
+
+L’utilisateur est redirigé vers /oauth-success, où son token est décodé, et il est ensuite redirigé vers la page correspondant à son rôle (/joueur, /club, etc.).
+
+🔧 Prérequis pour tester en local
+Dans le Google Cloud Console, assure-toi que :
+
+Le Client ID utilisé côté frontend correspond à l’origine http://localhost:5173.
+
+Le Client ID côté backend est bien celui configuré dans application.properties.
+
+Dans frontend/.env ou directement dans GoogleOAuthProvider, le clientId doit être :
+
+Copier
+Modifier
+655220357439-xxxxx.apps.googleusercontent.com
+Le backend doit être lancé sur http://localhost:8080 et le frontend sur http://localhost:5173.
+
+🧪 Comment tester la connexion Google
+Démarre le backend Spring Boot :
+
+bash
+Copier
+Modifier
+./mvnw spring-boot:run
+Démarre le frontend React :
+
+bash
+Copier
+Modifier
+npm run dev
+Va sur http://localhost:5173/login
+
+Clique sur le bouton "Connexion via Google"
+
+✅ Cas 1 : Utilisateur existant
+
+L’utilisateur est reconnu par son email.
+
+Il est automatiquement connecté, le token JWT est stocké, et il est redirigé selon son rôle.
+
+🆕 Cas 2 : Utilisateur inconnu (première connexion)
+
+Le backend crée automatiquement un nouveau compte JOUEUR.
+
+Il reçoit un token JWT valide et est redirigé vers /joueur.
+
+✅ Comportements gérés
+🔒 Connexion via Google sécurisée (OAuth2)
+
+✅ Création automatique d’un compte pour les nouveaux utilisateurs
+
+🧭 Redirection dynamique selon le rôle (CLUB ou JOUEUR)
+
+🧠 Persistant via localStorage (token stocké et lu automatiquement)
 
 ############## BDD PGSQL et H2 #########################
 
