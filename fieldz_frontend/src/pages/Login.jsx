@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 
+
 const Login = () => {
   const [email, setEmail] = useState('');
   const [motDePasse, setMotDePasse] = useState('');
@@ -11,6 +12,32 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+const handleSuccess = (credentialResponse) => {
+  const tokenId = credentialResponse.credential;
+
+  fetch('http://localhost:8080/oauth2/google', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ token: tokenId })
+  })
+    .then(res => res.json())
+    .then(data => {
+      const token = data.token;
+      login(token);
+      const decoded = jwtDecode(token);
+      const role = decoded.role;
+
+      if (role === 'CLUB') navigate('/club');
+      else if (role === 'JOUEUR') navigate('/joueur');
+      else navigate('/');
+    })
+    .catch(err => {
+      console.error("Erreur Google Login :", err);
+      setMessage("Erreur lors de la connexion via Google.");
+    });
+};
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -37,12 +64,20 @@ const Login = () => {
         navigate('/');
       }
     } catch (err) {
-      setMessage(
-        err.response?.data?.message ||
-        err.response?.data ||
-        "Erreur de connexion"
-      );
-    }
+  const status = err.response?.status;
+  const data = err.response?.data;
+
+  if (status === 401) {
+    setMessage("❌ Mot de passe incorrect.");
+  } else if (status === 423) {
+    setMessage("🚫 Compte bloqué temporairement : " + data);
+  } else if (status === 404) {
+    setMessage("Utilisateur non trouvé.");
+  } else {
+    setMessage("⚠️ Erreur inattendue : " + (typeof data === 'string' ? data : "Veuillez réessayer plus tard."));
+  }
+}
+
     setIsLoading(false);
   };
 
@@ -97,6 +132,21 @@ const Login = () => {
         {message && (
           <p className="mt-2 text-center text-sm text-red-500">{message}</p>
         )}
+
+<div className="flex flex-col items-center mt-2">
+  <p className="text-sm text-gray-500 mb-2">Ou</p>
+  <button
+    onClick={() => {
+      window.location.href = "http://localhost:8080/oauth2/authorization/google";
+    }}
+    className="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded"
+    disabled={isLoading}
+  >
+    Se connecter avec Google
+  </button>
+</div>
+
+
 
         <div className="mt-4 text-center">
           <p className="text-sm text-gray-600">

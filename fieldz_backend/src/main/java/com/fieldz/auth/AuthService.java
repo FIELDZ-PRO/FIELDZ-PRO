@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import java.util.Map;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -62,19 +63,36 @@ public class AuthService {
 
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        try {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getMotDePasse())
-            );
-        } catch (Exception e) {
-            throw new AuthentificationException("Mot de passe incorrect ou utilisateur non trouvé");
+        Utilisateur user = utilisateurRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new AuthentificationException("Utilisateur non trouvé"));
+
+        // Vérifie s'il est temporairement bloqué
+        if (user.getAccountBlockedUntil() != null &&
+                user.getAccountBlockedUntil().isAfter(LocalDateTime.now())) {
+            throw new AuthentificationException("Compte bloqué jusqu’à " + user.getAccountBlockedUntil());
         }
 
+        // Vérifie le mot de passe manuellement
+        if (!passwordEncoder.matches(request.getMotDePasse(), user.getMotDePasse())) {
+            int attempts = user.getFailedLoginAttempts() + 1;
+            user.setFailedLoginAttempts(attempts);
 
-        Utilisateur user = utilisateurRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+            if (attempts >= 3) {
+                user.setAccountBlockedUntil(LocalDateTime.now().plusMinutes(10));
+                user.setFailedLoginAttempts(0); // reset après blocage
+            }
+
+            utilisateurRepository.save(user);
+            throw new AuthentificationException("Mot de passe incorrect");
+        }
+
+        // Authentification réussie
+        user.setFailedLoginAttempts(0);
+        user.setAccountBlockedUntil(null);
+        utilisateurRepository.save(user);
 
         String jwt = jwtService.generateToken(user);
         return AuthenticationResponse.builder().token(jwt).build();
     }
+
 }

@@ -9,11 +9,12 @@ import LandingPage from '../pages/LandingPage';
 import NotFound from '../pages/NotFound';
 import ResetPassword from "../pages/ResetPassword";
 import ForgotPassword from '../pages/ForgotPassword';
+import OAuthSuccess from '../pages/oauth-success';
+
 
 
 export default function AppRouter() {
   return (
-    <BrowserRouter>
       <Routes>
  
         {/* Landing page publique */}
@@ -26,6 +27,8 @@ export default function AppRouter() {
         <Route path="/register" element={<Register />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/oauth-success" element={<OAuthSuccess />} />
+
 
 
         {/* Dashboards protégés */}
@@ -49,6 +52,5 @@ export default function AppRouter() {
 
 
 
-    </BrowserRouter>
   );
 }

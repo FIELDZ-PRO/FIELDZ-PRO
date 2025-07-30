@@ -20,11 +20,16 @@ public class GlobalExceptionHandler {
             .body(ex.getMessage()); // ou un DTO d'erreur si tu veux aller plus loin
   }
   @ExceptionHandler(AuthentificationException.class)
-  public ResponseEntity<?> handleAuthentificationException(AuthentificationException ex) {
-    return ResponseEntity
-            .status(HttpStatus.UNAUTHORIZED)
-            .body(Map.of("erreur", ex.getMessage()));
+  public ResponseEntity<String> handleAuthException(AuthentificationException ex) {
+    String msg = ex.getMessage();
+    if (msg.startsWith("Mot de passe")) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(msg); // 401
+    } else if (msg.startsWith("Compte bloqué")) {
+      return ResponseEntity.status(HttpStatus.LOCKED).body(msg); // 423
+    }
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur inattendue");
   }
+
   @ExceptionHandler(EntityNotFoundException.class)
   public ResponseEntity<?> handleNotFound(EntityNotFoundException ex) {
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());

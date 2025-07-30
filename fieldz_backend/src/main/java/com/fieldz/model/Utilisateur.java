@@ -30,7 +30,7 @@ public abstract class Utilisateur implements UserDetails {
     private String nom;
     private String email;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String motDePasse;
 
     @Enumerated(EnumType.STRING)
@@ -74,6 +74,12 @@ public abstract class Utilisateur implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+    @Column(name = "failed_login_attempts")
+    private Integer failedLoginAttempts = 0;
+
+    @Column(name = "account_blocked_until")
+    private LocalDateTime accountBlockedUntil;
 
 
 }

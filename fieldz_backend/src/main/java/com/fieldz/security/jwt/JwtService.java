@@ -12,6 +12,10 @@ import java.security.Key;
 import java.util.Date;
 import java.util.function.Function;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+
+
 @Service
 public class JwtService {
 
@@ -60,4 +64,15 @@ public class JwtService {
                 .compact();
 
     }
+
+    public String generateTokenWithEmailAndRole(String email, String role) {
+        return Jwts.builder()
+                .setSubject(email)
+                .claim("role", role)
+                .setIssuedAt(new Date())
+                .setExpiration(Date.from(Instant.now().plus(1, ChronoUnit.DAYS)))
+                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .compact();
+    }
+
 }
