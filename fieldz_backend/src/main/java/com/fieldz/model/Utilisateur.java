@@ -81,5 +81,8 @@ public abstract class Utilisateur implements UserDetails {
     @Column(name = "account_blocked_until")
     private LocalDateTime accountBlockedUntil;
 
+    @Column(name = "profil_complet")
+    private boolean profilComplet = false;
+
 
 }

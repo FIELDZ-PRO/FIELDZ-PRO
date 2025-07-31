@@ -17,15 +17,40 @@ const OAuthSuccess = () => {
     }
 
     try {
-      login(token); // stocke dans localStorage + state
+      login(token); // stocke dans localStorage + context
       const decoded = jwtDecode(token);
       console.log("✅ Utilisateur connecté via Google :", decoded);
 
+      // ✅ Petit délai pour éviter d'aller trop vite
       setTimeout(() => {
-        if (decoded.role === "JOUEUR") navigate("/joueur");
-        else if (decoded.role === "CLUB") navigate("/club");
-        else navigate("/");
-      }, 100); // petit délai pour s'assurer que le contexte est prêt
+        fetch("http://localhost:8080/api/utilisateur/me", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Cache-Control": "no-cache", // force un vrai appel backend
+          },
+        })
+          .then(res => {
+            if (!res.ok) throw new Error("Erreur lors de la récupération du profil");
+            return res.json();
+          })
+          .then(user => {
+            console.log("👤 Données utilisateur (rafraîchies) :", user);
+            if (!user.profilComplet) {
+              navigate("/complete-profile");
+            } else if (user.role === "JOUEUR") {
+              navigate("/joueur");
+            } else if (user.role === "CLUB") {
+              navigate("/club");
+            } else {
+              navigate("/");
+            }
+          })
+          .catch(error => {
+            console.error("❌ Erreur de récupération utilisateur :", error);
+            navigate("/login");
+          });
+      }, 300); // 🕒 petit délai de 300ms
 
     } catch (error) {
       console.error("❌ Token Google invalide :", error);

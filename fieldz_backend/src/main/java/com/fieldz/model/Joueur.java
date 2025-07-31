@@ -25,7 +25,6 @@ public class Joueur extends Utilisateur {
     private String telephone;
 
 
-
     @OneToMany(mappedBy = "joueur")
     @JsonIgnore   // <-- Ajoute cette ligne pour ne JAMAIS envoyer la liste des réservations d'un joueur dans le JSON
     private List<Reservation> reservations;

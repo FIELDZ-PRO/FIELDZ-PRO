@@ -32,6 +32,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                             .email(email)
                             .nom(nom)
                             .typeRole(Role.JOUEUR)
+                            .profilComplet(false)
                             .motDePasse(UUID.randomUUID().toString()) // ✅ chaîne unique à chaque user Google
                             .build();
                     return utilisateurRepository.save(newJoueur);

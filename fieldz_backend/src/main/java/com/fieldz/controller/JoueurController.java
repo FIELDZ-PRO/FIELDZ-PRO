@@ -27,4 +27,6 @@ public class JoueurController {
         JoueurDto dto = joueurService.getConnectedUserDto(authentication);
         return ResponseEntity.ok(dto);
     }
+
+
 }

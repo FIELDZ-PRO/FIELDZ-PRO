@@ -10,6 +10,9 @@ import NotFound from '../pages/NotFound';
 import ResetPassword from "../pages/ResetPassword";
 import ForgotPassword from '../pages/ForgotPassword';
 import OAuthSuccess from '../pages/oauth-success';
+import CompleteProfile from '../pages/CompleteProfile';
+import ProfilPage from '../pages/ProfilPage';
+
 
 
 
@@ -28,7 +31,8 @@ export default function AppRouter() {
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/oauth-success" element={<OAuthSuccess />} />
-
+        <Route path="/complete-profile" element={<CompleteProfile />} />
+        <Route path="/profil" element={<ProfilPage />} />
 
 
         {/* Dashboards protégés */}
@@ -40,6 +44,7 @@ export default function AppRouter() {
             </ProtectedRoute>
           }
         />
+        
         <Route
           path="/joueur"
           element={

@@ -118,9 +118,18 @@ const JoueurDashboard = () => {
     }
   };
 
+
+  
   return (
     <div className="dashboard-container">
       {/* Header */}
+      <button
+  className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 ml-4"
+  onClick={() => navigate("/profil")}
+>
+  👤 Mon profil
+</button>
+
       <div
         style={{
           display: "flex",

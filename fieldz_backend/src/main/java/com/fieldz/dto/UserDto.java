@@ -9,4 +9,8 @@ public class UserDto {
     private String nom;
     private String role; // ou typeRole
     private LocalDateTime dateInscription;
+    private boolean profilComplet;
+    private String prenom;
+    private String telephone;
+    private String adresse;
 }

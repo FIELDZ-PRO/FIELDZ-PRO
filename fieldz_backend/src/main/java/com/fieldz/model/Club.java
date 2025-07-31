@@ -19,6 +19,8 @@ public class Club extends Utilisateur {
     private String nomClub;
     private String adresse;
 
+    private String telephone;
+
     @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, orphanRemoval = true)
 // @JsonManagedReference("club-terrain") // <--- RETIRE cette ligne
     private List<Terrain> terrains;
