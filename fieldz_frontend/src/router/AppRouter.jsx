@@ -12,48 +12,58 @@ import ForgotPassword from '../pages/ForgotPassword';
 import OAuthSuccess from '../pages/oauth-success';
 import CompleteProfile from '../pages/CompleteProfile';
 import ProfilPage from '../pages/ProfilPage';
+import Club from '../pages/Club';
 
 
 
 
 export default function AppRouter() {
   return (
-      <Routes>
- 
-        {/* Landing page publique */}
-        <Route path="/home" element={<LandingPage />} />
-        <Route path="/" element={<LandingPage />} />
-        <Route path="*" element={<NotFound />} />
+    <Routes>
 
-        {/* Authentification */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/oauth-success" element={<OAuthSuccess />} />
-        <Route path="/complete-profile" element={<CompleteProfile />} />
-        <Route path="/profil" element={<ProfilPage />} />
+      {/* Landing page publique */}
+      <Route path="/home" element={<LandingPage />} />
+      <Route path="/" element={<LandingPage />} />
+      <Route path="*" element={<NotFound />} />
+
+      {/* Authentification */}
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/oauth-success" element={<OAuthSuccess />} />
+      <Route path="/complete-profile" element={<CompleteProfile />} />
+      <Route path="/profil" element={<ProfilPage />} />
 
 
-        {/* Dashboards protégés */}
-        <Route
-          path="/club"
-          element={
-            <ProtectedRoute>
-              <ClubDashboard />
-            </ProtectedRoute>
-          }
-        />
-        
-        <Route
-          path="/joueur"
-          element={
-            <ProtectedRoute>
-              <JoueurDashboard />
-            </ProtectedRoute>
-          }
-        />
-      </Routes>
+      {/* Dashboards protégés */}
+      <Route
+        path="/club"
+        element={
+          <ProtectedRoute>
+            <ClubDashboard />
+          </ProtectedRoute>
+        }
+      />
+      {/* Vue Club */}
+
+      <Route path="/VueClub"
+        element={
+          <ProtectedRoute>
+            <Club />
+          </ProtectedRoute>
+        }>
+
+      </Route>
+      <Route
+        path="/joueur"
+        element={
+          <ProtectedRoute>
+            <JoueurDashboard />
+          </ProtectedRoute>
+        }
+      />
+    </Routes>
 
 
 

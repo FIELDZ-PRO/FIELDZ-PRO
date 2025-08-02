@@ -1,0 +1,45 @@
+.club-info {
+    background-color: #f8fafc;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+}
+
+.club-info h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0 0 20px 0;
+}
+
+.club-field {
+    margin-bottom: 16px;
+}
+
+.club-field:last-child {
+    margin-bottom: 0;
+}
+
+.club-field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: #64748b;
+    margin-bottom: 6px;
+}
+
+.club-field input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    background-color: #ffffff;
+    color: #334155;
+    transition: border-color 0.2s ease;
+}
+
+.club-field input:focus {
+    border-color: #2563eb;
+    outline: none;
+}

@@ -1,0 +1,59 @@
+.notifications-section {
+    background-color: #f8fafc;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+}
+
+.notifications-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.notifications-title,
+.settings-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.notifications-content {
+    margin-bottom: 24px;
+}
+
+.notification-item {
+    padding: 8px 0;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.notification-item:last-child {
+    border-bottom: none;
+}
+
+.notification-text {
+    font-size: 13px;
+    color: #64748b;
+    line-height: 1.4;
+}
+
+.payments-section h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0 0 12px 0;
+}
+
+.payment-item {
+    padding: 8px 0;
+    font-size: 13px;
+    color: #64748b;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.payment-item:last-child {
+    border-bottom: none;
+}
