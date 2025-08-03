@@ -8,9 +8,11 @@ public class CreneauMapper {
         if (creneau == null) return null;
         CreneauDto dto = new CreneauDto();
         dto.setId(creneau.getId());
-        dto.setDate(creneau.getDate());
-        dto.setHeureDebut(creneau.getHeureDebut());
-        dto.setHeureFin(creneau.getHeureFin());
+        //dto.setDate(creneau.getDate());
+        //dto.setHeureDebut(creneau.getHeureDebut());
+        //dto.setHeureFin(creneau.getHeureFin());
+        dto.setDateDebut(creneau.getDateDebut());
+        dto.setDateFin(creneau.getDateFin());
         dto.setPrix(creneau.getPrix());
         dto.setStatut(creneau.getStatut().name());
         dto.setDisponible(creneau.isDisponible());

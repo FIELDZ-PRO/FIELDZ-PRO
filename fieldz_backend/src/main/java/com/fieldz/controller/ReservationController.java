@@ -1,6 +1,8 @@
 package com.fieldz.controller;
 
 import com.fieldz.dto.ReservationDto;
+import com.fieldz.dto.MotifAnnulationRequest;
+
 import com.fieldz.model.Reservation;
 import com.fieldz.service.ReservationService;
 import com.fieldz.mapper.ReservationMapper;
@@ -46,17 +48,21 @@ public class ReservationController {
         return ResponseEntity.ok(dtos);
     }
 
-    @DeleteMapping("/{reservationId}")
+    @PutMapping("/{reservationId}/annuler")
     @PreAuthorize("hasAnyRole('JOUEUR', 'CLUB')")
-    public ResponseEntity<String> annulerReservation(@PathVariable Long reservationId, Authentication authentication) {
-        return ResponseEntity.ok(reservationService.annulerReservation(reservationId, authentication));
+    public ResponseEntity<String> annulerReservation(
+            @PathVariable Long reservationId,
+            @RequestBody(required = false) MotifAnnulationRequest motifRequest,
+            Authentication authentication) {
+
+        String motif = (motifRequest != null) ? motifRequest.getMotif() : null;
+
+        return ResponseEntity.ok(
+                reservationService.annulerReservation(reservationId, authentication, motif)
+        );
     }
 
-    @PutMapping("/reservations/{id}/annuler")
-    @PreAuthorize("hasRole('CLUB')")
-    public ResponseEntity<String> annulerReservationParClub(@PathVariable Long id, Authentication authentication) {
-        return ResponseEntity.ok(reservationService.annulerReservationParClub(id, authentication));
-    }
+
 
     @GetMapping("/reservations/date")
     @PreAuthorize("hasRole('CLUB')")
@@ -67,4 +73,21 @@ public class ReservationController {
         List<ReservationDto> dtos = reservations.stream().map(ReservationMapper::toDto).toList();
         return ResponseEntity.ok(dtos);
     }
+
+    @GetMapping("/annulees")
+    @PreAuthorize("hasRole('JOUEUR')")
+    public ResponseEntity<List<Reservation>> getReservationsAnnuleesPourJoueur(Authentication authentication) {
+        String email = authentication.getName();
+        List<Reservation> annulees = reservationService.getReservationsAnnuleesPourJoueur(email);
+        return ResponseEntity.ok(annulees);
+    }
+
+    @PatchMapping("/{id}/confirmer")
+    @PreAuthorize("hasRole('CLUB')")
+    public ResponseEntity<?> confirmerPresence(@PathVariable Long id) {
+        reservationService.confirmerPresence(id);
+        return ResponseEntity.ok("Présence confirmée avec succès.");
+    }
+
+
 }

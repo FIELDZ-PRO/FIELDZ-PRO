@@ -11,4 +11,8 @@ public class ReservationDto {
     private CreneauDto creneau;
     private LocalDateTime dateReservation;
     private String statut;          // LIBRE, RESERVE, etc.
+
+    private LocalDateTime dateAnnulation;
+    private String motifAnnulation;
+
 }

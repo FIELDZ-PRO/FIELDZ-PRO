@@ -28,7 +28,7 @@ public class Reservation {
     @JsonIgnoreProperties({"reservations", "hibernateLazyInitializer", "handler"})
     private Joueur joueur;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "creneau_id")
     @JsonIgnoreProperties({"reservation", "hibernateLazyInitializer", "handler"})
     private Creneau creneau;
@@ -41,5 +41,10 @@ public class Reservation {
 
     @Enumerated(EnumType.STRING)
     private Statut statut;
+
+    private LocalDateTime dateAnnulation;
+
+    private String motifAnnulation;
+
 
 }

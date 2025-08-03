@@ -5,6 +5,8 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.LocalDateTime;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -22,10 +24,13 @@ public class Creneau {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private LocalDate date;
-    private LocalTime heureDebut;
-    private LocalTime heureFin;
+    // Supprimer plus tard
+    //private LocalDate date;
+    //private LocalTime heureDebut;
+    //private LocalTime heureFin;
 
+    private LocalDateTime dateDebut;
+    private LocalDateTime dateFin;
 
     // ✅ Champ ajouté
     private Double prix;
@@ -40,9 +45,9 @@ public class Creneau {
     private Terrain terrain;
 
 
-
-    @OneToOne(mappedBy = "creneau")
-    @JsonIgnore   // <-- Ajoute pour éviter d’inclure Reservation dans le JSON d’un créneau (sinon boucle)
-    private Reservation reservation;
+//Supprimer à la fin des test
+    //@OneToOne(mappedBy = "creneau")
+    //@JsonIgnore   // <-- Ajoute pour éviter d’inclure Reservation dans le JSON d’un créneau (sinon boucle)
+    //private Reservation reservation;
 
 }
