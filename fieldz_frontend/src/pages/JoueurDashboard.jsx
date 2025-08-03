@@ -20,12 +20,16 @@ const JoueurDashboard = () => {
   const [creneauxLibres, setCreneauxLibres] = useState([]);
   const [mesReservations, setMesReservations] = useState([]);
   const [joueur, setJoueur] = useState(null); // Nouvel état pour le joueur connecté
+  const [creneauSelectionne, setCreneauSelectionne] = useState(null);
+const [politiqueAcceptée, setPolitiqueAcceptée] = useState(false);
+
 
   useEffect(() => {
     fetchCreneauxLibres();
     fetchMesReservations();
     fetchJoueurConnecte();
     // eslint-disable-next-line
+    fetchReservationsAnnulees();
   }, []);
 
   const headers = {
@@ -92,32 +96,70 @@ const JoueurDashboard = () => {
     }
   };
 
-  const handleAnnuler = async (reservationId) => {
-    const confirmed = window.confirm(
-      "Êtes-vous sûr de vouloir annuler cette réservation ?"
-    );
-    if (!confirmed) return;
+  const handleConfirmerReservation = async () => {
+  const creneauId = creneauSelectionne?.id;
+  if (!creneauId) return;
 
-    try {
-      const res = await fetch(
-        `http://localhost:8080/api/reservations/${reservationId}`,
-        {
-          method: "DELETE",
-          headers,
-        }
-      );
-      if (res.ok) {
-        fetchCreneauxLibres();
-        fetchMesReservations();
-      } else {
-        const err = await res.text();
-        alert("Erreur : " + err);
+  try {
+    const res = await fetch(
+      `http://localhost:8080/api/reservations/creneau/${creneauId}`,
+      {
+        method: "POST",
+        headers,
       }
-    } catch (err) {
-      console.error("Erreur annulation :", err);
+    );
+    if (res.ok) {
+      fetchCreneauxLibres();
+      fetchMesReservations();
+      setCreneauSelectionne(null);
+      setPolitiqueAcceptée(false);
+    } else {
+      const err = await res.text();
+      alert("❌ Erreur : " + err);
     }
-  };
+  } catch (err) {
+    console.error("Erreur lors de la réservation :", err);
+  }
+};
 
+
+  const handleAnnuler = async (reservationId) => {
+  const confirmed = window.confirm("Êtes-vous sûr de vouloir annuler cette réservation ?");
+  if (!confirmed) return;
+
+  const motif = prompt("Motif d'annulation (facultatif)") || "";
+
+  try {
+    const res = await fetch(`http://localhost:8080/api/reservations/${reservationId}/annuler`, {
+      method: "PUT",
+      headers,
+      body: JSON.stringify({ motif }),
+    });
+
+    if (res.ok) {
+      alert("✅ Réservation annulée");
+      fetchMesReservations();
+      fetchCreneauxLibres(); // pour remettre le créneau comme dispo
+    } else {
+      const err = await res.text();
+      alert("❌ Erreur : " + err);
+    }
+  } catch (err) {
+    console.error("Erreur annulation :", err);
+  }
+};
+
+const [reservationsAnnulees, setReservationsAnnulees] = useState([]);
+
+const fetchReservationsAnnulees = async () => {
+  try {
+    const res = await fetch("http://localhost:8080/api/reservations/annulees", { headers });
+    const data = await res.json();
+    setReservationsAnnulees(data);
+  } catch (err) {
+    console.error("Erreur fetch annulations :", err);
+  }
+};
 
   
   return (
@@ -226,7 +268,8 @@ const JoueurDashboard = () => {
               {/* Bouton Réserver */}
               <button
                 className="reserver-btn"
-                onClick={() => handleReserver(c.id)}
+                onClick={() => setCreneauSelectionne(c)}
+
               >
                 Réserver
               </button>
@@ -332,6 +375,72 @@ const JoueurDashboard = () => {
           )}
         </div>
       </div>
+      <div>
+  <div className="section-title">
+    <span role="img" aria-label="Cancel">❌</span>{" "}
+    Réservations annulées
+  </div>
+  <div className="card-list">
+    {reservationsAnnulees.length === 0 ? (
+      <div className="card" style={{ textAlign: "center", color: "#aaa" }}>
+        Aucune annulation enregistrée.
+      </div>
+    ) : (
+      reservationsAnnulees.map((r) => (
+        <div className="card" key={r.id}>
+          <div className="card-title">
+            {r.creneau?.terrain?.club?.nom || "Club inconnu"} – {r.creneau?.terrain?.nomTerrain}
+          </div>
+          <div className="info">📆 {r.creneau?.date}</div>
+          <div className="info">⏰ {r.creneau?.heureDebut} – {r.creneau?.heureFin}</div>
+          <div className="info">💶 {r.creneau?.prix} Da</div>
+          <div className="info">🗓️ Annulée le {formatDateHeureFr(r.dateAnnulation)}</div>
+          {r.motifAnnulation && (
+            <div className="info">📝 Motif : {r.motifAnnulation}</div>
+          )}
+        </div>
+      ))
+    )}
+  </div>
+</div>
+{creneauSelectionne && (
+  <div className="modal-overlay">
+    <div className="modal-content">
+      <h2>Politique du club</h2>
+      <p>{creneauSelectionne.terrain?.politiqueClub || "Aucune politique définie."}</p>
+
+      <label style={{ marginTop: "1rem", display: "block" }}>
+        <input
+          type="checkbox"
+          checked={politiqueAcceptée}
+          onChange={(e) => setPolitiqueAcceptée(e.target.checked)}
+        />
+        {" "}J’ai lu et j’accepte la politique du club
+      </label>
+
+      <div style={{ marginTop: "1rem" }}>
+        <button
+          onClick={() => handleConfirmerReservation()}
+          disabled={!politiqueAcceptée}
+          className={politiqueAcceptée ? "reserver-btn" : "btn-disabled"}
+        >
+          Confirmer la réservation
+        </button>
+        <button
+          onClick={() => {
+            setCreneauSelectionne(null);
+            setPolitiqueAcceptée(false);
+          }}
+          className="annuler-btn"
+          style={{ marginLeft: "1rem" }}
+        >
+          Annuler
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   );
 };
