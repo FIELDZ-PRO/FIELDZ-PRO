@@ -16,6 +16,10 @@ public class ReservationMapper {
         dto.setDateReservation(reservation.getDateReservation());
         dto.setStatut(reservation.getStatut().name());
 
+        dto.setDateAnnulation(reservation.getDateAnnulation());
+        dto.setMotifAnnulation(reservation.getMotifAnnulation());
+
+
         return dto;
     }
 }

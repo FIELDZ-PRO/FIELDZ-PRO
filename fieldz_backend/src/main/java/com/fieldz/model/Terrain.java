@@ -38,4 +38,8 @@ public class Terrain {
     @JsonIgnore // <-- Ajoute ça, retire le ManagedReference
     private List<Creneau> creneaux;
 
+    @Column(columnDefinition = "TEXT") // Pour permettre un texte long
+    private String politiqueClub;
+
+
 }

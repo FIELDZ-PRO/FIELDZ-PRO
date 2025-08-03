@@ -1,6 +1,7 @@
 package com.fieldz.controller;
 
 import com.fieldz.dto.CreneauDto;
+import com.fieldz.dto.CreneauRecurrentDto;
 import com.fieldz.model.Creneau;
 import com.fieldz.service.CreneauService;
 import com.fieldz.mapper.CreneauMapper;
@@ -9,6 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import java.util.Map;
+import java.util.HashMap;
+
 
 import java.util.List;
 
@@ -48,4 +52,22 @@ public class CreneauController {
                 .toList();
         return ResponseEntity.ok(dtos);
     }
+
+    @PutMapping("/{id}/annuler")
+    @PreAuthorize("hasRole('CLUB')")
+    public ResponseEntity<?> annulerCreneau(@PathVariable Long id, Authentication authentication) {
+        creneauService.annulerCreneau(id, authentication);
+        return ResponseEntity.ok("Créneau annulé avec succès.");
+    }
+
+
+    @PostMapping("/recurrent")
+    @PreAuthorize("hasRole('CLUB')")
+    public ResponseEntity<?> creerCreneauxRecurrents(@RequestBody CreneauRecurrentDto dto) {
+        Map<String, Object> response = creneauService.creerCreneauxRecurrents(dto);
+        return ResponseEntity.ok(response);
+    }
+
+
+
 }

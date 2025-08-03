@@ -14,6 +14,8 @@ public class TerrainMapper {
         dto.setSport(terrain.getSport());
         //dto.setClubId(terrain.getClub() != null ? terrain.getClub().getId() : null);
         dto.setClub(ClubMapper.toDto(terrain.getClub()));
+        dto.setPolitiqueClub(terrain.getPolitiqueClub());
+
 
         return dto;
     }

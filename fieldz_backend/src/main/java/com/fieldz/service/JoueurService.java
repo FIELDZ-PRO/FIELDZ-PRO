@@ -28,4 +28,14 @@ public class JoueurService {
         log.info("Joueur connecté récupéré : {}", email);
         return JoueurMapper.toDto(joueur);
     }
+
+    public Joueur getByEmail(String email) {
+        Utilisateur user = utilisateurRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
+        if (!(user instanceof Joueur joueur)) {
+            throw new RuntimeException("L'utilisateur n'est pas un joueur.");
+        }
+        return joueur;
+    }
+
 }
