@@ -2,7 +2,10 @@ import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Login from '../pages/Login';
 import Register from '../pages/Register';
+
 import ClubDashboard from '../pages/ClubDashboard';
+import ClubDashboard2 from '../pages/ClubDashboard2';
+
 import JoueurDashboard from '../pages/JoueurDashboard';
 import ProtectedRoute from '../components/ProtectedRoute';
 import LandingPage from '../pages/LandingPage';
@@ -34,6 +37,7 @@ export default function AppRouter() {
         <Route path="/complete-profile" element={<CompleteProfile />} />
         <Route path="/profil" element={<ProfilPage />} />
 
+      
 
         {/* Dashboards protégés */}
         <Route
@@ -44,6 +48,15 @@ export default function AppRouter() {
             </ProtectedRoute>
           }
         />
+
+        <Route
+  path="/club2"
+  element={
+    <ProtectedRoute>
+      <ClubDashboard2 />
+    </ProtectedRoute>
+  }
+/>
         
         <Route
           path="/joueur"
@@ -54,6 +67,7 @@ export default function AppRouter() {
           }
         />
       </Routes>
+      
 
 
 

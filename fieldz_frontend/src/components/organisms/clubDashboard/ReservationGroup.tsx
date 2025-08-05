@@ -1,5 +1,5 @@
 
-import ReservationCard from './ReservationCard';
+import ReservationCard from '../../molecules/ReservationCard';
 import { Reservation } from '../../../types';
 
 type Props = {
