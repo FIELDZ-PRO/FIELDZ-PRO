@@ -56,9 +56,9 @@ const handleSuccess = (credentialResponse) => {
       const role = decoded.role;
 
       if (role === 'CLUB') {
-        navigate('/club');
+        navigate('/club2');
       } else if (role === 'JOUEUR') {
-        navigate('/joueur');
+        navigate('/joueur2');
       } else {
         setMessage("Rôle utilisateur inconnu.");
         navigate('/');

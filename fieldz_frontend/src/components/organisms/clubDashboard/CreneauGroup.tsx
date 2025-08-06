@@ -1,6 +1,8 @@
 // src/components/organisms/clubDashboard/CreneauGroup.tsx
 import React, { useState } from 'react';
 import { Creneau } from '../../../types';
+import CreneauCard from '../../molecules/CreneauCard'; // adapte le chemin si besoin
+
 
 interface Props {
   titre: string;
@@ -22,13 +24,14 @@ const CreneauGroup: React.FC<Props> = ({ titre, creneaux }) => {
       {visible && (
         <div className="p-4 space-y-2">
           {creneaux.map((c) => (
-            <div key={c.id} className="border p-2 rounded-md">
-              <div><strong>Terrain :</strong> {c.terrain.nomTerrain}</div>
-              <div>🕒 {new Date(c.dateDebut).toLocaleString('fr-FR')} → {new Date(c.dateFin).toLocaleTimeString('fr-FR')}</div>
-              <div>💰 {c.prix} DA</div>
-              <div>📌 Statut : {c.statut}</div>
-            </div>
-          ))}
+  <CreneauCard
+    key={c.id}
+    creneau={c}
+    role="club"       // 👈 active le bouton Annuler
+    onUpdate={() => window.location.reload()} // ou un refetch propre
+  />
+))}
+
         </div>
       )}
     </div>

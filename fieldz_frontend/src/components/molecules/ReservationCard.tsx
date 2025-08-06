@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Reservation } from '../../types';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { toast } from 'react-toastify';
 import { useAuth } from '../../context/AuthContext';
+import MotifAnnulationModal from "./MotifAnnulationModal";
 
 type Props = {
   reservation: Reservation;
@@ -13,6 +14,7 @@ type Props = {
 
 const ReservationCard: React.FC<Props> = ({ reservation, role, onUpdate }) => {
   const { token } = useAuth();
+  const [showMotifModal, setShowMotifModal] = useState(false);
 
   const {
     id,
@@ -52,7 +54,29 @@ const ReservationCard: React.FC<Props> = ({ reservation, role, onUpdate }) => {
     }
   };
 
-  const handleAnnuler = async () => {
+  const handleAnnulerAvecMotif = async (motif: string) => {
+    try {
+      const res = await fetch(`http://localhost:8080/api/reservations/${id}/annuler`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ motif }),
+      });
+
+      if (!res.ok) throw new Error("Erreur lors de l'annulation");
+
+      toast.success("✅ Réservation annulée !");
+      setShowMotifModal(false);
+      onUpdate ? onUpdate() : window.location.reload();
+    } catch (err) {
+      toast.error("❌ Erreur : impossible d’annuler");
+      console.error(err);
+    }
+  };
+
+  const handleAnnulerSansMotif = async () => {
     if (!window.confirm("Annuler cette réservation ?")) return;
 
     try {
@@ -104,16 +128,24 @@ const ReservationCard: React.FC<Props> = ({ reservation, role, onUpdate }) => {
         {statut === 'RESERVE' && (
           <div className="flex gap-2 mt-3">
             {role === 'club' && (
-              <button
-                onClick={handleConfirmer}
-                className="bg-green-600 hover:bg-green-700 text-white font-bold py-1 px-3 rounded"
-              >
-                ✅ Confirmer
-              </button>
+              <>
+                <button
+                  onClick={handleConfirmer}
+                  className="bg-green-600 hover:bg-green-700 text-white font-bold py-1 px-3 rounded"
+                >
+                  ✅ Confirmer
+                </button>
+                <button
+                  onClick={handleAnnulerSansMotif}
+                  className="bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-3 rounded"
+                >
+                  ❌ Annuler
+                </button>
+              </>
             )}
             {role === 'joueur' && (
               <button
-                onClick={handleAnnuler}
+                onClick={() => setShowMotifModal(true)}
                 className="bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-3 rounded"
               >
                 ❌ Annuler
@@ -122,6 +154,14 @@ const ReservationCard: React.FC<Props> = ({ reservation, role, onUpdate }) => {
           </div>
         )}
       </div>
+
+      {/* Modale pour saisir le motif (joueur uniquement) */}
+      {showMotifModal && (
+        <MotifAnnulationModal
+          onClose={() => setShowMotifModal(false)}
+          onSubmit={handleAnnulerAvecMotif}
+        />
+      )}
     </div>
   );
 };

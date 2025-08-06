@@ -1,12 +1,40 @@
 import React from "react";
 import { Creneau } from "../../types";
+import { toast } from "react-toastify";
+import { useAuth } from "../../context/AuthContext";
 
 type Props = {
   creneau: Creneau;
-  onReserver: () => void;
+  onReserver?: () => void;
+  onUpdate?: () => void;
+  role?: 'joueur' | 'club';
 };
 
-const CreneauCard: React.FC<Props> = ({ creneau, onReserver }) => {
+const CreneauCard: React.FC<Props> = ({ creneau, onReserver, onUpdate, role }) => {
+  const { token } = useAuth();
+
+  const handleAnnulerCreneau = async () => {
+    if (!window.confirm("Voulez-vous vraiment annuler ce créneau ?")) return;
+
+    try {
+      const res = await fetch(`http://localhost:8080/api/creneaux/${creneau.id}/annuler`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) throw new Error("Erreur lors de l'annulation");
+
+      toast.success("✅ Créneau annulé !");
+      onUpdate ? onUpdate() : window.location.reload();
+    } catch (err) {
+      toast.error("❌ Impossible d’annuler ce créneau");
+      console.error(err);
+    }
+  };
+
   return (
     <div className="border p-4 rounded-lg shadow-md bg-white space-y-2">
       {/* Club + Ville */}
@@ -48,18 +76,26 @@ const CreneauCard: React.FC<Props> = ({ creneau, onReserver }) => {
         💶 {creneau.prix != null ? `${creneau.prix} Da` : "Prix non défini"}
       </div>
 
-      {/* Bouton réserver */}
-      <div className="pt-2">
-        <button
-          onClick={() => {
-  console.log("✅ Bouton Réserver cliqué pour :", creneau.id);
-  onReserver();
-}}
+      {/* Boutons */}
+      <div className="pt-2 flex gap-2 flex-wrap">
+        {role === "joueur" && onReserver && (
+          <button
+            onClick={onReserver}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
+          >
+            Réserver
+          </button>
+        )}
 
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
-        >
-          Réserver
-        </button>
+        {role === "club" && (creneau.statut === "LIBRE" || creneau.statut === "RESERVE") && (
+
+          <button
+            onClick={handleAnnulerCreneau}
+            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md"
+          >
+            ❌ Annuler ce créneau
+          </button>
+        )}
       </div>
     </div>
   );
