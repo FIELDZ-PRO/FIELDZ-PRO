@@ -15,7 +15,7 @@ const ReservationGroup: React.FC<Props> = ({ titre, reservations }) => {
       <h2 className="text-xl font-semibold mb-2">{titre}</h2>
       <div className="space-y-2">
         {reservations.map(res => (
-          <ReservationCard key={res.id} reservation={res} />
+          <ReservationCard key={res.id} reservation={res} role="club" />
         ))}
       </div>
     </section>

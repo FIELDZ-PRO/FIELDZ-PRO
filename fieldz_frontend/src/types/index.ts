@@ -1,14 +1,41 @@
-export interface Creneau {
+export type Club = {
   id: number;
-  dateDebut: string;   // format ISO ex: "2025-08-04T18:00:00"
+  nomClub: string;
+  adresse?: string;
+  telephone?: string;
+};
+
+
+export type Joueur = {
+  id: number;
+  nom?: string;
+  prenom?: string;
+  email: string;
+  telephone?: string;
+  // Autres champs hérités du backend
+  typeRole?: "JOUEUR" | "CLUB" | "ADMIN";
+};
+
+
+export type Creneau = {
+  id: number;
+  dateDebut: string;   // Format ISO, ex: "2025-08-06T18:00:00"
   dateFin: string;
   prix: number;
-  disponible: boolean;
   statut: Statut;
+  disponible: boolean;
   terrain: {
     nomTerrain: string;
+    typeSurface?: string;
+    taille?: string;
+    ville?: string;
+    politiqueClub?: string;
+    club?: {
+      nom: string;
+    };
   };
-}
+};
+
 
 
 export interface Terrain {
@@ -21,7 +48,6 @@ export interface Terrain {
   club?: {
     id: number;
     nomClub: string;
-    // Ajoute d’autres champs utiles ici si tu les utilises côté front
   };
 }
 

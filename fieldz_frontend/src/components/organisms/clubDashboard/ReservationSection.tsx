@@ -66,7 +66,7 @@ const ReservationDuJourSection: React.FC<Props> = ({ reservations }) => {
 
           {expanded[statut as keyof typeof expanded] &&
             groupByStatut(statut).map((r) => (
-              <ReservationCard key={r.id} reservation={r} />
+              <ReservationCard key={r.id} reservation={r} role="club" />
             ))}
         </div>
       ))}

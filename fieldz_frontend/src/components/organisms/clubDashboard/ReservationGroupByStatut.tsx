@@ -28,7 +28,7 @@ const ReservationGroupByStatut: React.FC<Props> = ({ titre, statut, reservations
       {expanded && (
         <div className="mt-2 space-y-2">
           {filtered.map((r) => (
-            <ReservationCard key={r.id} reservation={r} />
+            <ReservationCard key={r.id} reservation={r} role="club" />
           ))}
         </div>
       )}

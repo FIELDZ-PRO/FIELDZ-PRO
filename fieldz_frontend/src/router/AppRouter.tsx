@@ -15,6 +15,7 @@ import ForgotPassword from '../pages/ForgotPassword';
 import OAuthSuccess from '../pages/oauth-success';
 import CompleteProfile from '../pages/CompleteProfile';
 import ProfilPage from '../pages/ProfilPage';
+import JoueurDashboard2 from '../pages/JoueurDashboard2';
 
 
 
@@ -57,7 +58,16 @@ export default function AppRouter() {
     </ProtectedRoute>
   }
 />
-        
+        <Route
+          path="/joueur2"
+          element={
+            <ProtectedRoute>
+              <JoueurDashboard2 />
+            </ProtectedRoute>
+          }
+        />
+
+
         <Route
           path="/joueur"
           element={
@@ -66,6 +76,7 @@ export default function AppRouter() {
             </ProtectedRoute>
           }
         />
+        
       </Routes>
       
 

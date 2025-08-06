@@ -7,10 +7,11 @@ import { useAuth } from '../../context/AuthContext';
 
 type Props = {
   reservation: Reservation;
-  onUpdate?: () => void; // facultatif, pour éviter le reload
+  role: 'club' | 'joueur';
+  onUpdate?: () => void;
 };
 
-const ReservationCard: React.FC<Props> = ({ reservation, onUpdate }) => {
+const ReservationCard: React.FC<Props> = ({ reservation, role, onUpdate }) => {
   const { token } = useAuth();
 
   const {
@@ -51,6 +52,28 @@ const ReservationCard: React.FC<Props> = ({ reservation, onUpdate }) => {
     }
   };
 
+  const handleAnnuler = async () => {
+    if (!window.confirm("Annuler cette réservation ?")) return;
+
+    try {
+      const res = await fetch(`http://localhost:8080/api/reservations/${id}/annuler`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) throw new Error("Erreur lors de l'annulation");
+
+      toast.success("✅ Réservation annulée !");
+      onUpdate ? onUpdate() : window.location.reload();
+    } catch (err) {
+      toast.error("❌ Erreur : impossible d’annuler");
+      console.error(err);
+    }
+  };
+
   const getStatutStyle = () => {
     switch (statut) {
       case 'CONFIRMEE': return 'bg-green-100 border-green-400 text-green-800';
@@ -79,12 +102,24 @@ const ReservationCard: React.FC<Props> = ({ reservation, onUpdate }) => {
         </div>
 
         {statut === 'RESERVE' && (
-          <button
-            onClick={handleConfirmer}
-            className="bg-green-600 hover:bg-green-700 text-white font-bold py-1 px-3 rounded"
-          >
-            ✅ Confirmer
-          </button>
+          <div className="flex gap-2 mt-3">
+            {role === 'club' && (
+              <button
+                onClick={handleConfirmer}
+                className="bg-green-600 hover:bg-green-700 text-white font-bold py-1 px-3 rounded"
+              >
+                ✅ Confirmer
+              </button>
+            )}
+            {role === 'joueur' && (
+              <button
+                onClick={handleAnnuler}
+                className="bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-3 rounded"
+              >
+                ❌ Annuler
+              </button>
+            )}
+          </div>
         )}
       </div>
     </div>
