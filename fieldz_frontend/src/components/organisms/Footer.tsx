@@ -56,7 +56,7 @@ const Footer: React.FC = () => (
     </div>
 
     <div className="footer__bottom">
-      © 2024 FIELdZ. Tous droits réservés. Réalisé avec ❤️ en Algérie.
+      © 2024 FIELdZ. Tous droits réservés.
     </div>
   </footer>
 )
