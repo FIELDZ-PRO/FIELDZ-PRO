@@ -1,0 +1,193 @@
+:root {
+   --fieldz-green: #0D4E1D;
+   --gray-light: #f9fafb;
+   --gray-100: #e5e7eb;
+   --gray-600: #4a5568;
+ }
+ 
+ /* Section globale */
+ .pwa-install {
+   padding: 6rem 4rem;
+   background: var(--gray-light);
+   box-sizing: border-box;
+ }
+ 
+ /* Header */
+ .pwa-install__header {
+   text-align: center;
+   margin-bottom: 4rem;
+ }
+ .pwa-install__title {
+   font-size: 2.5rem;
+   font-weight: 800;
+   margin: 0;
+ }
+ .pwa-install__subtitle {
+   font-size: 1.5rem;
+   color: var(--fieldz-green);
+   font-weight: 600;
+   margin: 0.5rem 0;
+ }
+ .pwa-install__description {
+   font-size: 1rem;
+   color: var(--gray-600);
+   margin: 0;
+ }
+ 
+ /* Contenu principal : instructions + mockup */
+ .pwa-install__content {
+   display: flex;
+   flex-wrap: wrap;
+   gap: 2rem;
+   justify-content: space-between;
+ }
+ 
+ /* Cartes d’instructions */
+ .pwa-install__instructions {
+   flex: 1 1 40%;
+   display: flex;
+   flex-direction: column;
+   gap: 2rem;
+ }
+ .pwa-install__card {
+   background: #fff;
+   border: 2px solid var(--gray-100);
+   border-radius: 1.5rem;
+   padding: 2rem;
+   box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+ }
+ .pwa-install__platform {
+   display: flex;
+   align-items: center;
+   font-size: 1.5rem;
+   font-weight: 700;
+   margin-bottom: 1rem;
+ }
+ .pwa-install__icon {
+   margin-right: 0.75rem;
+   color: var(--fieldz-green);
+ }
+ .pwa-install__steps-list {
+   list-style: none;
+   padding: 0;
+   margin: 0;
+ }
+ .pwa-install__step-item {
+   display: flex;
+   align-items: flex-start;
+   gap: 1rem;
+   margin-bottom: 0.75rem;
+ }
+ .pwa-install__step-number {
+   background: var(--fieldz-green);
+   color: #fff;
+   width: 2rem;
+   height: 2rem;
+   border-radius: 50%;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   font-weight: 600;
+ }
+ 
+ /* Mockup téléphone */
+ .pwa-install__mockup {
+   flex: 1 1 40%;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   position: relative;
+ }
+ .pwa-install__phone-frame {
+   width: 18rem;
+   background: #000;
+   border-radius: 2rem;
+   padding: 1rem;
+   box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+ }
+ .pwa-install__phone-screen {
+   background: #fff;
+   border-radius: 1.5rem;
+   overflow: hidden;
+ }
+ .pwa-install__phone-header {
+   background: var(--fieldz-green);
+   color: #fff;
+   text-align: center;
+   padding: 1rem;
+   font-weight: 700;
+ }
+ .pwa-install__phone-body {
+   padding: 2rem;
+   text-align: center;
+ }
+ .pwa-install__phone-icon {
+   width: 5rem;
+   height: 5rem;
+   background: #f0f0f0;
+   border-radius: 1rem;
+   margin: 0 auto 1rem;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+ }
+ .pwa-install__app-icon {
+   position: absolute;
+   bottom: -1.5rem;
+   right: -1.5rem;
+   background: var(--fieldz-green);
+   color: #fff;
+   width: 4rem;
+   height: 4rem;
+   border-radius: 1rem;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   font-weight: 700;
+   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+ }
+ 
+ /* Bénéfices */
+ .pwa-install__benefits {
+   display: flex;
+   flex-wrap: wrap;
+   gap: 2rem;
+   justify-content: center;
+   margin-top: 4rem;
+ }
+ .pwa-install__benefit {
+   flex: 1 1 calc(33% - 2rem);
+   text-align: center;
+   background: #fff;
+   border-radius: 1rem;
+   padding: 2rem;
+   box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+ }
+ .pwa-install__benefit-icon {
+   background: var(--fieldz-green);
+   color: #fff;
+   border-radius: 1rem;
+   padding: 0.75rem;
+   margin-bottom: 1rem;
+ }
+ .pwa-install__benefit h4 {
+   margin: 0 0 0.5rem;
+   font-size: 1.125rem;
+   font-weight: 700;
+ }
+ .pwa-install__benefit p {
+   margin: 0;
+   color: var(--gray-600);
+   font-size: 0.875rem;
+ }
+ 
+ /* Responsive */
+ @media (max-width: 768px) {
+   .pwa-install__content {
+     flex-direction: column;
+   }
+   .pwa-install__benefit {
+     flex: 1 1 100%;
+   }
+ }
+ 

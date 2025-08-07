@@ -1,0 +1,83 @@
+/* src/components/organisms/WhyFIELdZ.css */
+
+/* Section globale */
+.why {
+   padding: 6rem 4rem;
+   background: #fff;
+   text-align: center;
+   box-sizing: border-box;
+ }
+ 
+ /* Header */
+ .why__header h2 {
+   margin: 0;
+   font-size: 2rem;
+   font-weight: 800;
+ }
+ .why__header p {
+   margin: 0.5rem 0 3rem;
+   color: #4a5568;
+   font-size: 1rem;
+ }
+ 
+ /* Grille des items */
+ .why__grid {
+   display: flex;
+   flex-wrap: wrap;
+   justify-content: space-between;
+   gap: 2rem;
+ }
+ 
+ /* Chaque item */
+ .why__item {
+   flex: 1 1 calc(25% - 2rem);
+   background: #f9fafb;
+   padding: 2rem;
+   border-radius: 1rem;
+   border: 2px solid #e5e7eb;
+   transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+ }
+ .why__item:hover {
+   border-color: var(--fieldz-green);
+   box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+   transform: translateY(-4px);
+ }
+ 
+ /* Icône */
+ .why__icon-wrapper {
+   display: inline-flex;
+   align-items: center;
+   justify-content: center;
+   background: var(--fieldz-green);
+   color: #fff;
+   width: 4rem;
+   height: 4rem;
+   border-radius: 1rem;
+   margin-bottom: 1rem;
+ }
+ 
+ /* Titre & desc */
+ .why__item-title {
+   margin: 0 0 0.75rem;
+   font-size: 1.125rem;
+   font-weight: 700;
+ }
+ .why__item-desc {
+   margin: 0;
+   color: #4a5568;
+   font-size: 0.875rem;
+   line-height: 1.4;
+ }
+ 
+ /* Responsive 2 colonnes sous 1024px, 1 colonne sous 640px */
+ @media (max-width: 1024px) {
+   .why__item {
+     flex: 1 1 calc(50% - 2rem);
+   }
+ }
+ @media (max-width: 640px) {
+   .why__item {
+     flex: 1 1 100%;
+   }
+ }
+ 

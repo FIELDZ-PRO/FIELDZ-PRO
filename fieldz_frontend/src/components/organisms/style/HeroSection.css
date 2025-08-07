@@ -1,160 +1,133 @@
-/* src/components/organisms/style/HeroSection.css */
-
-/* 1. Conteneur global en flex côte-à-côte */
+/* Layout global */
+:root {
+   --fieldz-green: #0D4E1D;
+   --fieldz-green-light: #1A5F2A;
+ }
 .hero {
+   position: relative;
+   background: #fff;
+   overflow: hidden;
+ }
+ 
+ .hero__shapes .shape {
+   position: absolute;
+   background: var(--fieldz-green);
+   opacity: .1;
+   border-radius: 50%;
+ }
+ .shape--1 { top: 5rem; left: 2rem; width: 8rem; height: 8rem; }
+ .shape--2 { top: 10rem; right: 4rem; width: 12rem; height: 12rem; }
+ .shape--3 { bottom: 5rem; left: 25%; width: 16rem; height: 16rem; }
+ .shape--grid {
+   inset: 0; position: absolute;
+   background-image: url("data:image/svg+xml,...");
+   opacity: .02;
+ }
+ 
+ /* Contenu en deux colonnes */
+ .hero__content {
    display: flex;
-   align-items: flex-start;
-   justify-content: space-between;
-   padding: 6rem 4rem;
+   max-width: 1200px;
+   margin: 0 auto;
+   padding: 8rem 5rem;
    box-sizing: border-box;
-
  }
  
- /* 2. Colonne de gauche */
  .hero__left {
-   flex: 0 0 50%;
-   max-width: 50%;
+   flex: 1;
    padding-right: 2rem;
-   text-align: left;
  }
  
- /* 3. Colonne de droite */
  .hero__right {
-   flex: 0 0 50%;
-   max-width: 50%;
+   flex: 1;
    display: flex;
-   justify-content: flex-end;
+   justify-content: center;
+   align-items: flex-start;
  }
  
  /* Pastille */
  .hero__pill {
    display: inline-flex;
    align-items: center;
-   background-color: #b9c7bd;
-   color: #1a3a1c;
+   background: rgba(13,78,29,.1);
+   color: var(--fieldz-green);
+   padding: .5rem .75rem;
    border-radius: 9999px;
-   padding: 0.5rem 0.75rem;
-   font-size: 0.875rem;
    font-weight: 600;
    margin-bottom: 1rem;
  }
- 
- /* Point rond avant le texte */
  .hero__pill-icon {
-   width: 0.5rem;
-   height: 0.5rem;
-   background-color: #1a3a1c;
+   width: .5rem;
+   height: .5rem;
+   background: var(--fieldz-green);
    border-radius: 50%;
-   margin-right: 0.5rem;
+   margin-right: .5rem;
  }
  
- /* Titre principal */
+ /* Titre */
  .hero__title {
-   margin: 0 0 1rem;
-   font-size: 5rem;
+   font-size: 4rem;
    font-weight: 800;
    line-height: 1.1;
+   margin-bottom: 1rem;
  }
- .hero__title2 {
-   margin: 0 0 1rem;
-   font-size: 5rem;
-   font-weight: 800;
-   line-height: 1.1;
- }
- /* Forcer chaque ligne sur son propre bloc */
- .hero__title-line1,
- .hero2__title-line {
-   display: block;
- }
+ .hero__title-line2 { color: var(--fieldz-green); }
  
- .hero__title-line1 {
-   color: #111;
- }
- 
- .hero2__title-line2 {
-   color: #1f5a2f;
- }
- 
- /* Sous-titre explicatif */
+ /* Sous-titre */
  .hero__subtitle {
-   margin: 0 0 2rem;
    font-size: 1.125rem;
    color: #4a5568;
    max-width: 32rem;
-   line-height: 1.5;
- }
- 
- /* Stats (valeur + label) */
- .hero__stats {
-   display: flex;
-   align-items: center;
-   gap: 2rem;
    margin-bottom: 2rem;
  }
  
- .hero__stat {
-   text-align: center;
- }
- 
- .hero__stat-value {
-   font-size: 2rem;
-   font-weight: 700;
-   color: #111;
- }
- 
- .hero__stat-label {
-   font-size: 0.875rem;
-   color: #718096;
- }
- 
- /* Séparateur vertical */
- .hero__stats-separator {
-   width: 1px;
-   height: 2rem;
-   background-color: #e2e8f0;
- }
- 
- /* Boutons d’appel à l’action */
- .hero__cta {
+ /* Stats */
+ .hero__stats {
    display: flex;
+   gap: 2rem;
+   margin-bottom: 2rem;
+ }
+ .hero__stat { text-align: center; }
+ .hero__stat-value { font-size: 2rem; font-weight: 700; }
+ .hero__stat-label { font-size: .875rem; color: #718096; }
+ .hero__stats-separator {
+   width: 1px; height: 2rem; background: #e2e8f0;
+ }
+ 
+ /* CTA Buttons */
+ .hero__cta {
+   display: flex; gap: 1rem;
    flex-wrap: wrap;
-   gap: 1rem;
  }
- 
- .hero__btn-primary {
-   background-color: #1f5a2f;
-   color: #fff;
-   padding: 1rem 2rem;
-   border-radius: 0.75rem;
-   font-size: 1rem;
-   font-weight: 600;
-   display: inline-flex;
-   align-items: center;
-   gap: 0.5rem;
-   transition: transform 0.2s, background-color 0.2s;
- }
- 
- .hero__btn-primary:hover {
-   background-color: #285c34;
-   transform: scale(1.05);
- }
- 
+ .hero__btn-primary,
  .hero__btn-secondary {
-   border: 2px solid #e2e8f0;
-   background: transparent;
-   color: #111;
-   padding: 1rem 2rem;
-   border-radius: 0.75rem;
-   font-size: 1rem;
-   font-weight: 600;
-   display: inline-flex;
-   align-items: center;
-   gap: 0.5rem;
-   transition: border-color 0.2s, color 0.2s;
+   display: inline-flex; align-items: center; gap: .5rem;
+   padding: 1rem 2rem; font-size: 1rem; font-weight: 600;
+   border-radius: .75rem; transition: .2s;
+ }
+ .hero__btn-primary {
+   background: var(--fieldz-green); color: #fff; border: none;
+ }
+ .hero__btn-primary:hover {
+   background: #1a5f2a; transform: scale(1.05);
+ }
+ .hero__btn-secondary {
+   background: transparent; border: 2px solid #e2e8f0; color: #111;
+ }
+ .hero__btn-secondary:hover {
+   border-color: var(--fieldz-green); color: var(--fieldz-green);
  }
  
- .hero__btn-secondary:hover {
-   border-color: #1f5a2f;
-   color: #1f5a2f;
+ /* Search Card */
+ .hero__search-card {
+   background: #fff;
+   border-radius: 2rem;
+   padding: 2rem;
+   box-shadow: 0 10px 30px rgba(0,0,0,.05);
+   position: relative;
+   width: 100%;
+   max-width: 30rem;
  }
+ 
+ /* … puis tout le reste des .search-card__* que tu avais déjà … */
  
