@@ -3,4 +3,4 @@ frontend/dist/
 backend/target/
 *.log
 .env
-fieldz_backend/data/fieldz_db.mv.db
+fieldz_backend/data/fieldz_db.mv.dbfieldz_backend/data/*.trace.db
