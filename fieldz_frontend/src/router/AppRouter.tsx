@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Login from '../pages/Login';
-import Register from '../pages/Register';
+import Login from '../pages/Log-auth/Login';
+import Register from '../pages/Log-auth/Register';
 
 import ClubDashboard from '../pages/ClubDashboard';
 import ClubDashboard2 from '../pages/ClubDashboard2';
@@ -10,9 +10,9 @@ import JoueurDashboard from '../pages/JoueurDashboard';
 import ProtectedRoute from '../components/ProtectedRoute';
 import LandingPage from '../pages/LandingPage';
 import NotFound from '../pages/NotFound';
-import ResetPassword from "../pages/ResetPassword";
+import ResetPassword from "../pages/Log-auth/ResetPassword";
 import ForgotPassword from '../pages/ForgotPassword';
-import OAuthSuccess from '../pages/oauth-success';
+import OAuthSuccess from '../pages/Log-auth/oauth-success';
 import CompleteProfile from '../pages/CompleteProfile';
 import ProfilPage from '../pages/ProfilPage';
 import JoueurDashboard2 from '../pages/JoueurDashboard2';
@@ -25,8 +25,8 @@ export default function AppRouter() {
       <Routes>
  
         {/* Landing page publique */}
-        <Route path="/home" element={<LandingPage />} />
-        <Route path="/" element={<LandingPage />} />
+        <Route path="/home" element={<LandingPage onNavigate={undefined} />} />
+        <Route path="/" element={<LandingPage onNavigate={undefined} />} />
         <Route path="*" element={<NotFound />} />
 
         {/* Authentification */}

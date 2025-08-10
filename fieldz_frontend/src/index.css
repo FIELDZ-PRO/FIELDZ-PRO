@@ -9,10 +9,11 @@ html.dark {
 
 /* Fond général : blanc et vert très clair */
 body {
-  background: #e3e3e3 100%;
+  background: #fff;         
   min-height: 100vh;
   font-family: 'Montserrat', Arial, sans-serif;
 }
+
 
 /* Container général */
 .dashboard-container {
