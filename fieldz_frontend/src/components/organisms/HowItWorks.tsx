@@ -5,19 +5,19 @@ import './style/HowItWorks.css'
 
 const steps = [
   {
-    icon: <Search size={24} />,
+    icon: <Search size={32} />,
     number: '01',
     title: 'Choisis ton sport',
     description: 'Sélectionne le sport que tu veux pratiquer parmi notre large sélection.',
   },
   {
-    icon: <MapPin size={24} />,
+    icon: <MapPin size={32} />,
     number: '02',
     title: 'Indique ta ville',
     description: 'Trouve les terrains disponibles dans ta ville ou aux alentours.',
   },
   {
-    icon: <Calendar size={24} />,
+    icon: <Calendar size={32} />,
     number: '03',
     title: 'Réserve ton terrain',
     description: 'Choisis ton créneau et confirme ta réservation en un clic.',

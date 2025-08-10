@@ -7,7 +7,7 @@ const Footer: React.FC = () => (
   <footer className="footer">
     <div className="footer__container">
       <div className="footer__brand">
-        <h3>FIELdZ</h3>
+        <h3>FIELDZ</h3>
         <p>
           La plateforme de référence pour réserver tes terrains de sport en Algérie.
         </p>
@@ -56,7 +56,7 @@ const Footer: React.FC = () => (
     </div>
 
     <div className="footer__bottom">
-      © 2024 FIELdZ. Tous droits réservés.
+      © 2024 FIELDZ. Tous droits réservés.
     </div>
   </footer>
 )

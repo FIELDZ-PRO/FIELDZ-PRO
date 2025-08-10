@@ -22,7 +22,7 @@ export default function AppRouter() {
     <Routes>
 
       {/* Landing page publique */}
-      <Route path="/" element={<LandingPage />} />
+      <Route path="/home" element={<LandingPage />} />
       <Route path="*" element={<NotFound />} />
 
       {/* Authentification */}
