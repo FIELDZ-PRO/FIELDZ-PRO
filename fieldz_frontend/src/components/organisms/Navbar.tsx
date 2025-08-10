@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Logo from '../atoms/Logo';
-import Button from '../atoms/button';
+import Button from '../atoms/Button'; // ✅
 import './style/Navbar.css';
 
 const Navbar: React.FC = () => {
