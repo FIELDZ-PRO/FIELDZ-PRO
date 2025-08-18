@@ -28,7 +28,7 @@ const advantages = [
 const WhyFIELdZ: React.FC = () => (
   <section className="why">
     <div className="why__header">
-      <h2>Pourquoi FIELdZ ?</h2>
+      <h2>Pourquoi FIELDZ ?</h2>
       <p>Découvre tous les avantages de notre plateforme de réservation</p>
     </div>
     <div className="why__grid">

@@ -4,6 +4,7 @@ import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import { useAuth } from "../../context/AuthContext";
 import "./style/Login.css";
+import React from "react";
 
 type JwtPayload = { role?: "CLUB" | "JOUEUR" | string };
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, MapPin, Calendar, Play, ArrowRight } from 'lucide-react';
+import { Search, MapPin, Calendar, Play, ArrowRight, CheckCircle2, Shield, Clock } from 'lucide-react';
 import './style/HeroSection.css';
 
 interface HeroProps {
@@ -48,6 +48,11 @@ const Hero = ({ onNavigate }: HeroProps) => {
                 Réserve ton terrain de padel, foot ou tennis en quelques clics.
               </p>
             </div>
+            <ul className="hero-benefits">
+            <li><CheckCircle2 size={18}/> Clubs vérifiés</li>
+             <li><Shield size={18}/> Paiement sécurisé</li>
+            <li><Clock size={18}/> Annulation flexible</li>
+            </ul>
 
             {/* Stats */}
             <div className="hero-stats">
