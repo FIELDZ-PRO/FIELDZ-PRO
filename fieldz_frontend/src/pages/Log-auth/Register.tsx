@@ -6,8 +6,23 @@ import React from "react";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
 
+type Role = "JOUEUR" | "CLUB";
+
 export default function Register() {
-  const [form, setForm] = useState({ nom: "", email: "", motDePasse: "", confirm: "", role: "JOUEUR" as "JOUEUR" | "CLUB" });
+  const [form, setForm] = useState<{
+    nom: string;
+    email: string;
+    motDePasse: string;
+    confirm: string;
+    role: Role | null;
+  }>({
+    nom: "",
+    email: "",
+    motDePasse: "",
+    confirm: "",
+    role: null,
+  });
+
   const [showPwd, setShowPwd] = useState(false);
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -17,6 +32,7 @@ export default function Register() {
     setForm({ ...form, [e.target.name]: e.target.value });
 
   const validate = () => {
+    if (!form.role) return "Choisissez un rôle : Joueur ou Club.";
     if (!form.nom.trim()) return "Nom requis";
     if (!/^\S+@\S+\.\S+$/.test(form.email)) return "Email invalide";
     if (form.motDePasse.length < 6) return "Mot de passe trop court (≥6)";
@@ -29,6 +45,7 @@ export default function Register() {
     setMessage("");
     const v = validate();
     if (v) return setMessage(v);
+
     setIsLoading(true);
     try {
       await axios.post(`${API_BASE}/api/auth/register`, {
@@ -62,6 +79,27 @@ export default function Register() {
 
         <form className="form" onSubmit={handleSubmit} noValidate>
           {message && <div className="api-error">{message}</div>}
+
+          {/* Toggle rôle */}
+          <div className="field">
+            <label className="label">Rôle</label>
+            <div className="role-toggle" role="group" aria-label="Choisir un rôle">
+              <button
+                type="button"
+                className={`role-btn ${form.role === "JOUEUR" ? "active" : ""}`}
+                onClick={() => setForm({ ...form, role: "JOUEUR" })}
+              >
+                Joueur
+              </button>
+              <button
+                type="button"
+                className={`role-btn ${form.role === "CLUB" ? "active" : ""}`}
+                onClick={() => setForm({ ...form, role: "CLUB" })}
+              >
+                Club
+              </button>
+            </div>
+          </div>
 
           <div className="field">
             <label className="label">Votre nom</label>
@@ -140,7 +178,7 @@ export default function Register() {
             </div>
           </div>
 
-          <button className="primary" disabled={isLoading}>
+          <button className="primary" disabled={isLoading || !form.role}>
             {isLoading ? "Création..." : "S’inscrire"}
           </button>
 

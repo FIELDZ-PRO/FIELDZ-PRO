@@ -15,26 +15,32 @@ export default function Login() {
   const [showPwd, setShowPwd] = useState(false);
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [roleChoisi, setRoleChoisi] = useState<"CLUB" | "JOUEUR" | null>(null);
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage("");
+
+    if (!roleChoisi) {
+      setMessage("Veuillez choisir votre rôle (Joueur ou Club).");
+      return;
+    }
+
     setIsLoading(true);
     try {
-      // si ton backend attend "motDePasse", remplace "password" par "motDePasse"
       const res = await axios.post(`${API_BASE}/api/auth/login`, {
         email,
-        password: motDePasse,
+        password: motDePasse, // adapte en "motDePasse" si ton API le demande
       });
       const token: string = res.data.token;
       login(token);
 
       const role = jwtDecode<JwtPayload>(token)?.role;
-      if (role === "CLUB") navigate("/club2");
-      else if (role === "JOUEUR") navigate("/joueur2");
-      else navigate("/");
+      if (role === "CLUB" && roleChoisi === "CLUB") navigate("/club2");
+      else if (role === "JOUEUR" && roleChoisi === "JOUEUR") navigate("/joueur2");
+      else setMessage("Rôle invalide ou non autorisé pour ce compte.");
     } catch (err: any) {
       const s = err?.response?.status;
       const d = err?.response?.data;
@@ -58,7 +64,7 @@ export default function Login() {
         <h1 className="title">Bienvenue</h1>
         <p className="subtitle">Connectez-vous ou créer un compte</p>
 
-        {/* Onglets (ici lien actif à gauche) */}
+        {/* Onglets (actif à gauche) */}
         <div className="tabs login">
           <Link to="/login" className="tab">Connexion</Link>
           <Link to="/register" className="tab">Inscription</Link>
@@ -67,6 +73,27 @@ export default function Login() {
 
         <form className="form" onSubmit={handleSubmit} noValidate>
           {message && <div className="api-error">{message}</div>}
+
+          {/* Toggle rôle (UI) */}
+          <div className="field">
+            <label className="label">Rôle</label>
+            <div className="role-toggle" role="group" aria-label="Choisir un rôle">
+              <button
+                type="button"
+                className={`role-btn ${roleChoisi === "JOUEUR" ? "active" : ""}`}
+                onClick={() => setRoleChoisi("JOUEUR")}
+              >
+                Joueur
+              </button>
+              <button
+                type="button"
+                className={`role-btn ${roleChoisi === "CLUB" ? "active" : ""}`}
+                onClick={() => setRoleChoisi("CLUB")}
+              >
+                Club
+              </button>
+            </div>
+          </div>
 
           <div className="field">
             <label className="label">Email</label>
@@ -106,7 +133,7 @@ export default function Login() {
             </div>
           </div>
 
-          <button className="primary" disabled={isLoading}>
+          <button className="primary" disabled={isLoading || !roleChoisi}>
             {isLoading ? "Connexion..." : "Se connecter"}
           </button>
 

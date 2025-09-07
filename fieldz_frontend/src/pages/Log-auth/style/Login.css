@@ -30,7 +30,8 @@
   min-height:100dvh;
   display:flex;
   align-items:flex-start;
-  justify-content:center;              /* fond blanc */
+  justify-content:center;
+  background:#fff;                 /* fond blanc */
   padding:32px 12px;
 }
 
@@ -150,3 +151,32 @@
   background:#5b1212; border:1px solid #f4bcbc; color:#fff;
   padding:8px 10px; border-radius:8px; margin-bottom:8px;
 }
+
+
+/* ===== Toggle de rôle (Joueur / Club) ===== */
+.role-toggle {
+  display: flex;
+  gap: 6px;
+  background: #eef5ef;
+  border: 1.5px solid #184f25;
+  border-radius: 9999px;
+  padding: 4px;
+  width: 100%;
+  max-width: 320px;
+  margin-bottom: 0.5rem;
+}
+
+.role-btn {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: #184f25;
+  font-weight: 700;
+  padding: 0.55rem 0.9rem;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, transform 0.08s;
+}
+
+.role-btn:hover { background: #e4efe6; }
+.role-btn.active { background: #184f25; color: #fff; }
