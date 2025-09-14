@@ -1,6 +1,20 @@
+# Frontend
 frontend/node_modules/
 frontend/dist/
+frontend/.env
+
+# Backend
 backend/target/
+backend/.env
+backend/data/*.mv.db
+backend/data/*.trace.db
+
+# Logs
 *.log
-.env
-fieldz_backend/data/fieldz_db.mv.dbfieldz_backend/data/*.trace.db
+
+# IDEs & system files
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
