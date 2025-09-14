@@ -49,10 +49,10 @@
 @keyframes pulse{ 0%,100%{opacity:1} 50%{opacity:.5} }
 
 /* ===== Titre & sous-titre ===== */
-.hero-heading{ display:flex; flex-direction:column; gap:.25rem; } /* resserré */
+.hero-heading{ display:flex; flex-direction:column; align-items: flex-start;gap:.25rem; } /* resserré */
 .hero-title{
   margin:0 0 .15rem 0;
-  font-size:clamp(2.8rem,8vw,5rem);
+  font-size:clamp(2.6rem,8vw,5rem);
   line-height:1.05; font-weight:600; letter-spacing:-.01em; color:#0b0b0b;
 }
 .hero-title-accent{ color:var(--fieldz-green); }
@@ -63,23 +63,39 @@
 }
 
 /* (optionnel) Bénéfices pour combler le vide sous le slogan */
-.hero-benefits{
-  display:flex; flex-wrap:wrap; gap:12px; margin-top:.25rem;
-}
-.hero-benefits li{
-  display:flex; align-items:center; gap:6px;
-  font-weight:600; color:#1f2937;
-  background:#f3f4f6; border:1px solid #e5e7eb;
-  border-radius:9999px; padding:.4rem .75rem;
-}
-.hero-benefits svg{ color:#1f5a2f; }
 
-/* ===== Stats ===== */
-.hero-stats{ display:flex; align-items:center; gap:1.25rem; flex-wrap:wrap; padding-top:.35rem; }
-.hero-stat{ text-align:center; }
-.hero-stat-number{ font-size:2rem; font-weight:800; color:#0b0b0b; }
-.hero-stat-label{ font-size:.9rem; color:var(--gray-500); }
-.hero-stat-divider{ width:1px; height:2.5rem; background:var(--gray-200); }
+.hero-benefits {
+  display: flex;
+  gap: 0.5rem;
+  position: relative;
+  top: -20px;
+  left: -40px;
+}
+
+
+
+.hero-benefits li 
+{
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  color: #1f2937;
+  background: #fff;
+  border: 1.5px solid #184f25;
+  border-radius: 9999px;
+  padding: .45rem .9rem;   /* ⚡ réduit */
+  font-size: 0.9rem;       /* ⚡ légèrement plus petit */
+  white-space: nowrap;     /* ⚡ empêche le texte de couper */
+}
+.hero-benefits li:hover {
+  transform: translateY(-2px);
+  background: #eef5ef;
+}
+.hero-benefits svg {
+  color: #184f25;
+}
+
 
 /* ===== CTA ===== */
 .hero-cta{ display:flex; flex-direction:column; gap:.8rem; padding-top:.5rem; }

@@ -49,9 +49,9 @@ export default function Register() {
     setIsLoading(true);
     try {
       await axios.post(`${API_BASE}/api/auth/register`, {
-        name: form.nom,
+        nom: form.nom,
         email: form.email,
-        password: form.motDePasse,
+        motDePasse: form.motDePasse,   
         role: form.role,
       });
       navigate("/login");

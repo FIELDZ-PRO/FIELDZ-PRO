@@ -46,6 +46,7 @@ const Hero = ({ onNavigate }: HeroProps) => {
               
               <p className="hero-subtitle">
                 Réserve ton terrain de padel, foot ou tennis en quelques clics.
+                Plateforme #1 en Algérie pour réserver sa séance de sport.
               </p>
             </div>
             <ul className="hero-benefits">
@@ -53,23 +54,8 @@ const Hero = ({ onNavigate }: HeroProps) => {
              <li><Shield size={18}/> Paiement sécurisé</li>
             <li><Clock size={18}/> Annulation flexible</li>
             </ul>
+            
 
-            {/* Stats */}
-            <div className="hero-stats">
-              <div className="hero-stat">
-                <div className="hero-stat-label">PLATFORME NUMÉRO 1 DE RÉSERVATION EN ALGÉRIE</div>
-              </div>
-              <div className="hero-stat-divider"></div>
-              <div className="hero-stat">
-                <div className="hero-stat-number">130+</div>
-                <div className="hero-stat-label">Terrains</div>
-              </div>
-              <div className="hero-stat-divider"></div>
-              <div className="hero-stat">
-                <div className="hero-stat-number">24/7</div>
-                <div className="hero-stat-label">Disponible</div>
-              </div>
-            </div>
 
             {/* CTA Buttons */}
             <div className="hero-cta">

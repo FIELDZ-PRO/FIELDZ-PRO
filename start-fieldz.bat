@@ -1,19 +1,19 @@
 @echo off
-echo ============================
-echo 🚀 Lancement FIELDZ
-echo ============================
+echo 🚀 Démarrage de FIELDZ...
 
-REM Backend
-echo.
-echo 🔥 Démarrage du backend (Spring Boot)...
-start cmd /k "cd fieldz_backend && mvnw spring-boot:run"
+REM --- Backend ---
+echo ▶️ Démarrage du backend (Spring Boot)...
+cd backend
+start cmd /k mvnw spring-boot:run
+cd ..
 
-timeout /t 5 > nul
+REM --- Frontend ---
+echo ▶️ Démarrage du frontend (React)...
+cd frontend
+npm install --silent
+start cmd /k npm run dev
+cd ..
 
-REM Frontend
-echo.
-echo 💻 Démarrage du frontend (React)...
-start cmd /k "cd fieldz_frontend && npm run dev"
-
-echo.
-echo ✅ Les deux serveurs sont lancés dans des fenêtres distinctes.
+echo ✅ Les deux serveurs tournent !
+echo 🌍 Backend : http://localhost:8080/
+echo 🌍 Frontend : http://localhost:5173/

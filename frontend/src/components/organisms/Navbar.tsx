@@ -24,20 +24,22 @@ const Navbar: React.FC = () => {
 
         {/* Actions à droite */}
         <div className="navbar__actions">
-          <Button
-            variant="text"
-            className="navbar__btn-text"
-            onClick={() => navigate('/login')}
-          >
-            Connexion
-          </Button>
-          <Button
-            variant="primary"
-            className="navbar__btn-primary"
-            onClick={() => navigate('/register')}
-          >
-            Inscription
-          </Button>
+         <Button
+  variant="text"
+  className="navbar-btn login"
+  onClick={() => navigate('/login')}
+>
+  Connexion
+</Button>
+
+<Button
+  variant="primary"
+  className="navbar-btn register"
+  onClick={() => navigate('/register')}
+>
+  Inscription
+</Button>
+
         </div>
       </div>
     </nav>

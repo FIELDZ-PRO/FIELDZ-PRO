@@ -1,31 +1,29 @@
 #!/bin/bash
 
-echo "============================"
-echo "🚀 Lancement FIELDZ"
-echo "============================"
+echo "🚀 Démarrage de FIELDZ..."
 
-# Backend
-echo ""
-echo "🔥 Démarrage du backend (Spring Boot)..."
-cd fieldz_backend || { echo "❌ Dossier backend introuvable"; exit 1; }
+# --- Backend ---
+echo "▶️ Démarrage du backend (Spring Boot)..."
+cd backend || { echo "❌ Dossier backend introuvable"; exit 1; }
 ./mvnw spring-boot:run &
 BACK_PID=$!
+cd ..
 
-sleep 3
+# Attendre un peu pour éviter les conflits
+sleep 5
 
-# Frontend
-echo ""
-echo "💻 Démarrage du frontend (React)..."
-cd ../fieldz_frontend || { echo "❌ Dossier frontend introuvable"; kill $BACK_PID; exit 1; }
+# --- Frontend ---
+echo "▶️ Démarrage du frontend (React)..."
+cd frontend || { echo "❌ Dossier frontend introuvable"; kill $BACK_PID; exit 1; }
+npm install --silent
 npm run dev &
 FRONT_PID=$!
+cd ..
 
-echo ""
 echo "✅ Les deux serveurs tournent !"
-echo "🌐 Backend : probablement sur http://localhost:8080"
-echo "🌐 Frontend : probablement sur http://localhost:5173"
-echo ""
-echo "🛑 Pour arrêter : Ctrl + C ou manuellement avec : kill $BACK_PID $FRONT_PID"
+echo "   🌍 Backend : http://localhost:8080/"
+echo "   🌍 Frontend : http://localhost:5173/"
 
-# Attend que les deux process soient terminés (si tu veux que ça tienne dans le terminal)
+# Attente pour garder les deux process actifs
+trap "kill $BACK_PID $FRONT_PID" EXIT
 wait

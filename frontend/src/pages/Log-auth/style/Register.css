@@ -14,7 +14,7 @@
 /* thème (mêmes valeurs que Login) */
 :root{
   --card:#1f5f2d; --card-2:#184f25; --field:#9caf98; --field-text:#1f2937;
-  --white:#ffffff; --lav:#e7dcfa; --focus:#b9dabc; --divider:rgba(255,255,255,.35);
+  --white:#ffffff; --lav:#ffffff; --focus:#b9dabc; --divider:rgba(255,255,255,.35);
   --btn:#ffffff; --btn-text:#1a4d28;
 }
 

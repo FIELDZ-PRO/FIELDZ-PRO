@@ -82,14 +82,32 @@
    background: rgba(31, 41, 55, 0.05);
  }
  
- /* Bouton « primaire » */
- .btn--primary {
-   background: #065f46;
-   color: #ffffff;
-   border-color: #065f46;
- }
- 
- .btn--primary:hover {
-   background: #0f766e;
- }
- 
+ /* Bouton Connexion */
+.navbar-btn.login {
+  border: 2px solid #004225;   /* ton vert */
+  color: #004225;
+  background: transparent;
+  padding: 6px 16px;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: 0.2s;
+}
+
+.navbar-btn.login:hover {
+  background: #004225;
+  color: #fff;
+}
+
+/* Bouton Inscription */
+.navbar-btn.register {
+  background: #004225;
+  color: #fff;
+  padding: 6px 16px;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: 0.2s;
+}
+
+.navbar-btn.register:hover {
+  background: #006837; /* un vert un peu plus foncé au hover */
+}
