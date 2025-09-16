@@ -6,7 +6,7 @@ import ReservationsPage from './ClubPages/ReservationsPage';
 import FacturationPage from './ClubPages/FacturationPage';
 import ClubManagementPage from './ClubPages/ClubManagement';
 
-const MainContent = () => {
+const AccueilClub = () => {
     const { activeItem } = useNavigation();
 
     const renderContent = () => {
@@ -29,4 +29,4 @@ const MainContent = () => {
     return renderContent();
 };
 
-export default MainContent;
+export default AccueilClub;
