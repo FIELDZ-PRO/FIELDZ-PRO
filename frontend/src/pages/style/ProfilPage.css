@@ -1,0 +1,113 @@
+/* Container global */
+.profil-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: #f8faf8; /* fond clair */
+  position: relative;
+}
+
+/* Bouton retour en haut à gauche */
+.profil-return {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+}
+
+.btn-retour {
+  background: #f0f0f0;
+  color: #333;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.btn-retour:hover {
+  background: #ddd;
+}
+
+/* Carte profil */
+.profil-card {
+  background: white;
+  border-radius: 15px;
+  padding: 20px 30px;
+  width: 380px; /* réduit la taille */
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  text-align: center;
+}
+
+/* Header */
+.profil-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.profil-photo {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 3px solid #006d3b; /* vert fieldz */
+  margin-bottom: 10px;
+}
+
+.profil-title {
+  font-size: 22px;
+  font-weight: bold;
+  color: #006d3b;
+}
+
+/* Infos */
+.profil-info {
+  text-align: left;
+  margin-top: 15px;
+}
+
+.profil-info p {
+  margin: 6px 0;
+  font-size: 15px;
+}
+
+/* Description */
+.profil-description {
+  margin-top: 20px;
+  text-align: left;
+  background: #f9f9f9;
+  padding: 10px;
+  border-left: 4px solid #006d3b;
+  border-radius: 8px;
+}
+
+.profil-description h3 {
+  margin: 0 0 8px;
+  font-size: 16px;
+  color: #006d3b;
+}
+
+/* Actions */
+.profil-actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.btn-modifier {
+  background: #006d3b;
+  color: white;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+}
+
+.btn-modifier:hover {
+  background: #004d28;
+  transform: scale(1.05);
+}
