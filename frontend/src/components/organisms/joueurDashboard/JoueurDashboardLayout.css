@@ -1,0 +1,109 @@
+/* JoueurDashboard v2 - styles simples et responsive */
+
+.jd-container {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Header */
+.jd-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.jd-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1d4ed8; /* bleu lisible */
+}
+
+.jd-profile-link {
+  background: #3b82f6;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  text-decoration: none;
+}
+
+.jd-section-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 8px 0;
+}
+
+/* Grilles de cartes */
+.jd-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 12px;
+}
+
+@media (min-width: 640px) {
+  .jd-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .jd-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.jd-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb; /* gris clair */
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.jd-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.jd-btn-primary {
+  background: #10b981; /* vert */
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.jd-btn-danger {
+  background: #ef4444; /* rouge */
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+/* Modal */
+.jd-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.jd-modal {
+  background: #fff;
+  width: 100%;
+  max-width: 520px;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+

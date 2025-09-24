@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "./JoueurDashboardLayout.css";
 import { Creneau, Reservation, Joueur } from "../../../types";
 import CreneauCard from "../../molecules/CreneauCard";
 import ReservationCard from "../../molecules/ReservationCard";
@@ -28,32 +29,26 @@ const JoueurDashboardLayout: React.FC<Props> = ({
     reservations.filter((r) => r.statut === statut);
 
   return (
-
-
-    <div className="p-4 space-y-6">
-              <h2 className="text-xl font-bold mb-4 text-green-500">[TEST] Fonctionnalités du JoueurDashboard</h2>
+    <div className="jd-container">
+      <h2 className="jd-section-title" style={{color:'#16a34a'}}>[TEST] Fonctionnalités du JoueurDashboard</h2>
 
       {/* Header */}
-      <div className="flex justify-between items-center mb-4">
-        
-        <h1 className="text-2xl font-semibold text-blue-700">
+      <div className="jd-header">
+        <h1 className="jd-title">
           🎾 FIELDZ Joueur
           {joueur && (
-            <span className="ml-4 text-lg text-gray-700">
+            <span style={{marginLeft:16,fontSize:16,color:'#374151'}}>
               | {joueur.nom ?? joueur.email} {joueur.prenom ?? ""}
             </span>
           )}
         </h1>
-        <a
-          href="/profil"
-          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
-        >
+        <a href="/profil" className="jd-profile-link">
           👤 Mon profil
         </a>
       </div>
 
       {/* Créneaux disponibles */}
-      <h2 className="text-xl font-bold mb-4">📅 Créneaux disponibles</h2>
+      <h2 className="jd-section-title">📅 Créneaux disponibles</h2>
       <CreneauxDisponiblesGroup
   creneaux={creneauxLibres}
   
@@ -65,7 +60,7 @@ const JoueurDashboardLayout: React.FC<Props> = ({
 
 
       {/* Mes réservations groupées par statut */}
-      <h2 className="text-lg font-semibold text-gray-800 mt-6 mb-2">📖 Mes réservations</h2>
+      <h2 className="jd-section-title">📖 Mes réservations</h2>
 
       <ReservationGroupByStatut
   titre="✅ Confirmées / à venir"
@@ -84,14 +79,18 @@ const JoueurDashboardLayout: React.FC<Props> = ({
 
       {/* Modal politique */}
       {creneauSelectionne && (
-        <ReservationModal
-          creneau={creneauSelectionne}
-          onClose={() => setCreneauSelectionne(null)}
-          onReservation={async () => {
-            await onRefresh();
-            setCreneauSelectionne(null);
-          }}
-        />
+        <div className="jd-modal-overlay">
+          <div className="jd-modal">
+            <ReservationModal
+              creneau={creneauSelectionne}
+              onClose={() => setCreneauSelectionne(null)}
+              onReservation={async () => {
+                await onRefresh();
+                setCreneauSelectionne(null);
+              }}
+            />
+          </div>
+        </div>
       )}
     </div>
   );

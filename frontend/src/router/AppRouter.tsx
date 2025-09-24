@@ -66,11 +66,7 @@ export default function AppRouter() {
       />
       <Route
         path="/joueur2"
-        element={
-          <ProtectedRoute>
-            <JoueurDashboard2 />
-          </ProtectedRoute>
-        }
+        element={<JoueurDashboard2 />}
       />
 
 
@@ -82,7 +78,6 @@ export default function AppRouter() {
           </ProtectedRoute>
         }
       />
-
     </Routes>
 
 
