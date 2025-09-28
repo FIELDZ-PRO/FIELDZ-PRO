@@ -14,7 +14,6 @@ function Club() {
                 <div className="app-content">
                     <Sidebar />
                     <MainContent />
-                    <ClubPanel />
                 </div>
             </div>
         </NavigationProvider>

@@ -17,15 +17,13 @@ const MainContent = () => {
                 return <TerrainsPage />;
             case 'reservations':
                 return <ReservationsPage />;
-            case 'facturation':
-                return <FacturationPage />;
             case 'club':
                 return <ClubManagementPage />;
             default:
                 return <Dashboard />;
         }
     };
-    
+
     return renderContent();
 };
 

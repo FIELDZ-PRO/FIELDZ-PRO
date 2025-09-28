@@ -16,6 +16,7 @@ import OAuthSuccess from '../pages/Log-auth/oauth-success';
 import CompleteProfile from '../pages/CompleteProfile';
 import ProfilPage from '../pages/ProfilPage';
 import AccueilClub from '../pages/VueClub/AccueilClub';
+import Club from '../pages/Club';
 import { NavigationProvider } from '../pages/VueClub/Context/NavigationContext';
 
 
@@ -41,7 +42,7 @@ export default function AppRouter() {
         path="/AccueilClub"
         element={
           <NavigationProvider>
-            <AccueilClub />
+            <Club />
           </NavigationProvider>
         }
       />
@@ -63,8 +64,8 @@ export default function AppRouter() {
           </ProtectedRoute>
         }
       />
-      
-      
+
+
 
 
       <Route
