@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import FullscreenModal from "../organisms/joueurDashboard/FullscreenModal"; // ou adapte le chemin
+import FullscreenModal from "../organisms/joueurDashboardDoss/FullscreenModal"; // ou adapte le chemin
 
 type Props = {
   onClose: () => void;

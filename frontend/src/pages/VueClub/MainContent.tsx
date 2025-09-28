@@ -25,7 +25,7 @@ const MainContent = () => {
                 return <Dashboard />;
         }
     };
-
+    
     return renderContent();
 };
 

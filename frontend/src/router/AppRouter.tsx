@@ -6,7 +6,7 @@ import Register from '../pages/Log-auth/Register';
 import ClubDashboard from '../pages/ClubDashboard';
 import ClubDashboard2 from '../pages/ClubDashboard2';
 
-import JoueurDashboard from '../pages/JoueurDashboard';
+import JoueurDashboard from "../pages/JoueurDashboard";
 import ProtectedRoute from '../components/ProtectedRoute';
 import LandingPage from '../pages/LandingPage';
 import NotFound from '../pages/NotFound';
@@ -15,7 +15,6 @@ import ForgotPassword from '../pages/ForgotPassword';
 import OAuthSuccess from '../pages/Log-auth/oauth-success';
 import CompleteProfile from '../pages/CompleteProfile';
 import ProfilPage from '../pages/ProfilPage';
-import JoueurDashboard2 from '../pages/JoueurDashboard2';
 import AccueilClub from '../pages/VueClub/AccueilClub';
 import { NavigationProvider } from '../pages/VueClub/Context/NavigationContext';
 
@@ -64,10 +63,8 @@ export default function AppRouter() {
           </ProtectedRoute>
         }
       />
-      <Route
-        path="/joueur2"
-        element={<JoueurDashboard2 />}
-      />
+      
+      
 
 
       <Route

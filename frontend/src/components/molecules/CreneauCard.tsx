@@ -30,35 +30,34 @@ const CreneauCard: React.FC<Props> = ({ creneau, onReserver, onUpdate, role }) =
       toast.success("✅ Créneau annulé !");
       onUpdate ? onUpdate() : window.location.reload();
     } catch (err) {
-      toast.error("❌ Impossible d’annuler ce créneau");
+      toast.error("❌ Impossible d'annuler ce créneau");
       console.error(err);
     }
   };
 
   return (
-    <div className="border p-4 rounded-lg shadow-md bg-white space-y-2">
-      {/* Club + Ville */}
-      <div className="font-semibold text-green-700">
+    <div className="creneau-card">
+      <div className="card-title">
         {creneau.terrain?.club?.nom || "Club inconnu"}
         {creneau.terrain?.ville && (
-          <span className="text-blue-600 ml-2">• {creneau.terrain.ville}</span>
+          <span className="card-subtitle"> • {creneau.terrain.ville}</span>
         )}
       </div>
 
-      {/* Terrain + surface */}
-      <div className="text-sm text-gray-700">
+      <div className="card-info">
         {creneau.terrain?.nomTerrain || "Terrain inconnu"}
-        {creneau.terrain?.typeSurface && <> • {creneau.terrain.typeSurface}</>}
-        {creneau.terrain?.taille && <> • {creneau.terrain.taille}</>}
+        {creneau.terrain?.typeSurface && ` • ${creneau.terrain.typeSurface}`}
+        {creneau.terrain?.taille && ` • ${creneau.terrain.taille}`}
       </div>
 
-      {/* Date + heure */}
-      <div className="text-sm">
+      <div className="card-info">
         📅{" "}
         {creneau.dateDebut
           ? new Date(creneau.dateDebut).toLocaleDateString("fr-FR")
           : "Date inconnue"}
-        <br />
+      </div>
+      
+      <div className="card-info">
         ⏰{" "}
         {creneau.dateDebut && creneau.dateFin
           ? `${new Date(creneau.dateDebut).toLocaleTimeString("fr-FR", {
@@ -71,27 +70,24 @@ const CreneauCard: React.FC<Props> = ({ creneau, onReserver, onUpdate, role }) =
           : "Heure inconnue"}
       </div>
 
-      {/* Prix */}
-      <div className="text-sm text-green-800">
+      <div className="card-prix">
         💶 {creneau.prix != null ? `${creneau.prix} Da` : "Prix non défini"}
       </div>
 
-      {/* Boutons */}
-      <div className="pt-2 flex gap-2 flex-wrap">
+      <div className="card-actions">
         {role === "joueur" && onReserver && (
           <button
             onClick={onReserver}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
+            className="jd-btn-primary"
           >
             Réserver
           </button>
         )}
 
         {role === "club" && (creneau.statut === "LIBRE" || creneau.statut === "RESERVE") && (
-
           <button
             onClick={handleAnnulerCreneau}
-            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md"
+            className="jd-btn-danger"
           >
             ❌ Annuler ce créneau
           </button>
