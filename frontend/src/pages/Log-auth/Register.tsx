@@ -48,11 +48,13 @@ export default function Register() {
 
     setIsLoading(true);
     try {
-      await axios.post(`${API_BASE}/api/auth/register`, {
+     await axios.post(`${API_BASE}/api/auth/register`, {
         nom: form.nom,
         email: form.email,
         motDePasse: form.motDePasse,   
         role: form.role,
+        adresse: "",
+        nomClub: ""
       });
       navigate("/login");
     } catch (err: any) {

@@ -17,8 +17,6 @@ const AccueilClub = () => {
                 return <TerrainsPage />;
             case 'reservations':
                 return <ReservationsPage />;
-            case 'facturation':
-                return <FacturationPage />;
             case 'club':
                 return <ClubManagementPage />;
             default:
