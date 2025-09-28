@@ -49,9 +49,9 @@ export default function AppRouter() {
       <Route
         path="/club"
         element={
-          <ProtectedRoute>
+          
             <ClubDashboard />
-          </ProtectedRoute>
+          
         }
       />
 

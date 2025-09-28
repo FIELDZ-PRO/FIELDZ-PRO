@@ -46,8 +46,6 @@ const JoueurDashboardLayout: React.FC<Props> = ({
                   <label>Sport</label>
                   <select className="form-select">
                     <option>Choisir un sport</option>
-                    <option>Football</option>
-                    <option>Tennis</option>
                     <option>Padel</option>
                   </select>
                 </div>
@@ -57,8 +55,6 @@ const JoueurDashboardLayout: React.FC<Props> = ({
                   <select className="form-select">
                     <option>Choisir une ville</option>
                     <option>Alger</option>
-                    <option>Oran</option>
-                    <option>Constantine</option>
                   </select>
                 </div>
                 
