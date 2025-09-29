@@ -132,6 +132,7 @@
     max-width: 500px;
     max-height: 90vh;
     overflow-y: auto;
+    text-align: left;
 }
 
 .modal-header {
@@ -139,6 +140,7 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 24px;
+    text-align: left;
 }
 
 .modal-header h2 {
@@ -146,6 +148,7 @@
     font-weight: 600;
     color: #1e293b;
     margin: 0;
+    text-align: left;
 }
 
 .close-btn {
@@ -171,18 +174,23 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
+    width: 100%;
+    text-align: left;
 }
 
 .form-group {
     display: flex;
     flex-direction: column;
     gap: 6px;
+    align-items: flex-start;
+    /* ✅ forces children to align left */
 }
 
 .form-group label {
     font-size: 14px;
     font-weight: 500;
     color: #374151;
+    text-align: left !important;
 }
 
 .form-group input,
@@ -192,6 +200,8 @@
     border-radius: 6px;
     font-size: 14px;
     transition: border-color 0.2s ease;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .form-group input:focus,
