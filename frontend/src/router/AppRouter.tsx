@@ -21,7 +21,9 @@ import ProfilPage from '../pages/ProfilPage';
 import AccueilClub from '../pages/VueClub/AccueilClub';
 import Club from '../pages/Club';
 import { NavigationProvider } from '../pages/VueClub/Context/NavigationContext';
-
+import { LoginClub } from '../pages/VueClub/LoginClub';
+import { MailSent } from '../pages/VueClub/MailSent';
+import { ForgotPasswordPageCLub } from '../pages/VueClub/ForgotPasswordClub';
 
 export default function AppRouter() {
   return (
@@ -41,6 +43,29 @@ export default function AppRouter() {
       <Route path="/complete-profile" element={<CompleteProfile />} />
       <Route path="/profil" element={<ProfilPage />} />
 
+
+      {/*Club Pages*/}
+      <Route path="/MailSent"
+        element={
+          <MailSent />
+        }
+      />
+
+      <Route path="/ForgotPasswordClub"
+        element={
+          <ForgotPasswordPageCLub />
+        }
+      />
+
+      <Route
+        path="/LoginClub"
+        element={
+          <NavigationProvider>
+            <LoginClub />
+          </NavigationProvider>
+        }
+      />
+
       <Route
         path="/AccueilClub"
         element={
@@ -53,9 +78,9 @@ export default function AppRouter() {
       <Route
         path="/club"
         element={
-          
-            <ClubDashboard />
-          
+
+          <ClubDashboard />
+
         }
       />
 
