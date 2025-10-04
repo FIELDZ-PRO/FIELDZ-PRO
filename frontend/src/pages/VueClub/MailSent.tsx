@@ -5,7 +5,7 @@ export const MailSent = () => {
     const onNavigate = useNavigate();
 
     return (
-        <body>
+        <div className="auth-container">
             <div id="success-toast" className="success-toast">
                 ✓ Email renvoyé avec succès !
             </div>
@@ -55,6 +55,6 @@ export const MailSent = () => {
                 </div>
             </div>
 
-        </body>
+        </div>
     )
 }
