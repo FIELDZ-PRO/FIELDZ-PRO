@@ -16,7 +16,7 @@ const CreneauxDisponiblesGroup: React.FC<Props> = ({ creneaux, onReserver }) => 
         ) : (
           <div className="jd-grid">
             {creneaux.map((c) => (
-              <CreneauCard key={c.id} creneau={c} onReserver={() => onReserver(c)} />
+              <CreneauCard key={c.id} creneau={c} role="joueur" onReserver={() => onReserver(c)} />
             ))}
           </div>
         )}

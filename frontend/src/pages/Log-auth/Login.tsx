@@ -32,14 +32,14 @@ export default function Login() {
     try {
       const res = await axios.post(`${API_BASE}/api/auth/login`, {
         email,
-        password: motDePasse, // adapte en "motDePasse" si ton API le demande
+        motDePasse, //password: motDePasse, 
       });
       const token: string = res.data.token;
       login(token);
 
       const role = jwtDecode<JwtPayload>(token)?.role;
       if (role === "CLUB" && roleChoisi === "CLUB") navigate("/club2");
-      else if (role === "JOUEUR" && roleChoisi === "JOUEUR") navigate("/joueur2");
+      else if (role === "JOUEUR" && roleChoisi === "JOUEUR") navigate("/joueur");
       else setMessage("Rôle invalide ou non autorisé pour ce compte.");
     } catch (err: any) {
       const s = err?.response?.status;

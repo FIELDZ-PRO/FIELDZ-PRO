@@ -51,4 +51,6 @@ public class ClubController {
         // Ici tu peux soit déléguer à un service, soit laisser tel quel (c'est juste un test)
         return "Hello club : " + auth.getName();
     }
+
+
 }

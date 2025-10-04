@@ -11,6 +11,7 @@ public class JoueurMapper {
         dto.setNom(joueur.getNom());
         dto.setPrenom(joueur.getPrenom());
         dto.setTelephone(joueur.getTelephone());
+
         return dto;
     }
 }

@@ -7,6 +7,9 @@ import ClubDashboard from '../pages/ClubDashboard';
 import ClubDashboard2 from '../pages/ClubDashboard2';
 
 import JoueurDashboard from "../pages/JoueurDashboard";
+
+import JoueurDashboard2 from "../pages/JoueurDashboard2";
+
 import ProtectedRoute from '../components/ProtectedRoute';
 import LandingPage from '../pages/LandingPage';
 import NotFound from '../pages/NotFound';
@@ -73,6 +76,14 @@ export default function AppRouter() {
         element={
           <ProtectedRoute>
             <JoueurDashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/joueur2"
+        element={
+          <ProtectedRoute>
+            <JoueurDashboard2 />
           </ProtectedRoute>
         }
       />

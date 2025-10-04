@@ -4,7 +4,7 @@ public enum Statut {
 
     // Creneaux
     LIBRE, // ajout à documenter
-    RESERVE,
+    RESERVE, // aussi pour réservation, équivalent de 'en cours'
     ANNULE,
     // Réservations
     ANNULE_PAR_JOUEUR,

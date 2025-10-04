@@ -29,4 +29,5 @@ public class ClubService {
         log.info("Club connecté récupéré : {} ({})", club.getNomClub(), email);
         return ClubMapper.toDto(club);
     }
+
 }

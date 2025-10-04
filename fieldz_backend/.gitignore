@@ -1,17 +1,23 @@
 HELP.md
 target/
 .mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
 
-# H2 Database files
-/data/*.mv.db
-/data/*.trace.db
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
 
-### IDEs ###
+### IntelliJ IDEA ###
 .idea
 *.iws
 *.iml
 *.ipr
-.vscode/
 
 ### NetBeans ###
 /nbproject/private/
@@ -22,3 +28,6 @@ target/
 build/
 !**/src/main/**/build/
 !**/src/test/**/build/
+
+### VS Code ###
+.vscode/
