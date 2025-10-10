@@ -1,11 +1,24 @@
 import './LoginClub.css'
 import { useNavigate } from 'react-router-dom';
+import { ClubService } from '../../services/ClubService';
+import { useState } from 'react';
 export const LoginClub = () => {
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        alert('Formulaire soumis ! (Démo uniquement)');
+        console.log(email)
+        console.log(password)
+        await ConnectUser(email, password)
+        onNavigate("/AccueilClub")
+
     };
 
+    async function ConnectUser(email: string, password: string) {
+        const data = await ClubService.Login(email, password);
+        console.log("token is : " + data.token)
+
+    }
     const onNavigate = useNavigate();
 
     return (
@@ -17,16 +30,17 @@ export const LoginClub = () => {
                     <form onSubmit={handleSubmit}>
                         <div className="form-group">
                             <label htmlFor="login-email">Email</label>
-                            <input type="email" id="login-email" placeholder="vous@exemple.com" required />
+                            <input type="email" id="login-email" placeholder="vous@exemple.com" required value={email} onChange={e => setEmail(e.target.value)} />
                         </div>
                         <div className="form-group">
                             <label htmlFor="login-password">Mot de passe</label>
-                            <input type="password" id="login-password" placeholder="••••••••" required />
+                            <input type="password" id="login-password" placeholder="••••••••" value={password}
+                                onChange={e => setPassword(e.target.value)} />
                         </div>
                         <div className="forgot-password" onClick={() => onNavigate("/ForgotPasswordClub")}>
                             <a href="#">Mot de passe oublié ?</a>
                         </div>
-                        <button type="submit" className="btn" onClick={() => onNavigate("/AccueilClub")}>Se connecter</button>
+                        <button type="submit" className="btn" >Se connecter</button>
                     </form>
 
                     <div className="divider">
