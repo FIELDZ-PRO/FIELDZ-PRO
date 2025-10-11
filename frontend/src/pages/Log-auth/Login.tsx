@@ -6,7 +6,7 @@ import { useAuth } from "../../context/AuthContext";
 import "./style/Login.css";
 import React from "react";
 
-type JwtPayload = { role?: "CLUB" | "JOUEUR" | string };
+type JwtPayload = { role?: "CLUB" | "JOUEUR" | "ADMIN" | string };
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
 
 export default function Login() {
@@ -15,7 +15,7 @@ export default function Login() {
   const [showPwd, setShowPwd] = useState(false);
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [roleChoisi, setRoleChoisi] = useState<"CLUB" | "JOUEUR" | null>(null);
+  const [roleChoisi, setRoleChoisi] = useState<"CLUB" | "JOUEUR" | "ADMIN" | null>(null);
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -24,7 +24,7 @@ export default function Login() {
     setMessage("");
 
     if (!roleChoisi) {
-      setMessage("Veuillez choisir votre rôle (Joueur ou Club).");
+      setMessage("Veuillez choisir votre rôle (Joueur, Club ou Admin).");
       return;
     }
 
@@ -32,15 +32,23 @@ export default function Login() {
     try {
       const res = await axios.post(`${API_BASE}/api/auth/login`, {
         email,
-        motDePasse, //password: motDePasse, 
+        motDePasse,
       });
       const token: string = res.data.token;
       login(token);
 
       const role = jwtDecode<JwtPayload>(token)?.role;
-      if (role === "CLUB" && roleChoisi === "CLUB") navigate("/club2");
-      else if (role === "JOUEUR" && roleChoisi === "JOUEUR") navigate("/joueur");
-      else setMessage("Rôle invalide ou non autorisé pour ce compte.");
+      
+      // Redirection selon le rôle
+      if (role === "ADMIN" && roleChoisi === "ADMIN") {
+        navigate("/admin");
+      } else if (role === "CLUB" && roleChoisi === "CLUB") {
+        navigate("/club2");
+      } else if (role === "JOUEUR" && roleChoisi === "JOUEUR") {
+        navigate("/joueur");
+      } else {
+        setMessage("Rôle invalide ou non autorisé pour ce compte.");
+      }
     } catch (err: any) {
       const s = err?.response?.status;
       const d = err?.response?.data;
@@ -74,7 +82,7 @@ export default function Login() {
         <form className="form" onSubmit={handleSubmit} noValidate>
           {message && <div className="api-error">{message}</div>}
 
-          {/* Toggle rôle (UI) */}
+          {/* Toggle rôle (UI) - Ajout du bouton Admin */}
           <div className="field">
             <label className="label">Rôle</label>
             <div className="role-toggle" role="group" aria-label="Choisir un rôle">
@@ -91,6 +99,13 @@ export default function Login() {
                 onClick={() => setRoleChoisi("CLUB")}
               >
                 Club
+              </button>
+              <button
+                type="button"
+                className={`role-btn ${roleChoisi === "ADMIN" ? "active" : ""}`}
+                onClick={() => setRoleChoisi("ADMIN")}
+              >
+                Admin
               </button>
             </div>
           </div>

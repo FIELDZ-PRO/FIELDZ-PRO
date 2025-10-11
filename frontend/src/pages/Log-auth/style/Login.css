@@ -180,3 +180,30 @@
 
 .role-btn:hover { background: #e4efe6; }
 .role-btn.active { background: #184f25; color: #fff; }
+
+.role-toggle {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: space-between;
+}
+
+.role-btn {
+  flex: 1;
+  padding: 0.75rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 0.5rem;
+  background: white;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.role-btn:hover {
+  border-color: #10b981;
+}
+
+.role-btn.active {
+  background: #10b981;
+  color: white;
+  border-color: #10b981;
+}

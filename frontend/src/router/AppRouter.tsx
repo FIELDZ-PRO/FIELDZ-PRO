@@ -25,6 +25,12 @@ import { LoginClub } from '../pages/VueClub/LoginClub';
 import { MailSent } from '../pages/VueClub/MailSent';
 import { ForgotPasswordPageCLub } from '../pages/VueClub/ForgotPasswordClub';
 
+// Import des composants Admin
+import AdminLayout from '../components/admin/AdminLayout';
+import AdminDashboard from '../pages/admin/AdminDashboard';
+import AdminClubs from '../pages/admin/AdminClubs';
+import AdminJoueurs from '../pages/admin/AdminJoueurs';
+
 export default function AppRouter() {
   return (
     <Routes>
@@ -112,10 +118,20 @@ export default function AppRouter() {
           </ProtectedRoute>
         }
       />
+
+      {/* Routes Admin - Protégées */}
+      <Route 
+        path="/admin" 
+        element={
+          <ProtectedRoute requiredRole="ADMIN">
+            <AdminLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<AdminDashboard />} />
+        <Route path="clubs" element={<AdminClubs />} />
+        <Route path="joueurs" element={<AdminJoueurs />} />
+      </Route>
     </Routes>
-
-
-
-
   );
 }
