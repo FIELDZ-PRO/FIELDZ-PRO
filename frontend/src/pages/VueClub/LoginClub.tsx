@@ -2,6 +2,16 @@ import './LoginClub.css'
 import { useNavigate } from 'react-router-dom';
 import { ClubService } from '../../services/ClubService';
 import { useState } from 'react';
+import { jwtDecode } from "jwt-decode";
+
+
+interface TokenPayload {
+    sub: string;
+    role: string;
+    iat: number;
+    exp: number;
+}
+
 export const LoginClub = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -9,16 +19,21 @@ export const LoginClub = () => {
         e.preventDefault();
         console.log(email)
         console.log(password)
-        await ConnectUser(email, password)
-        onNavigate("/AccueilClub")
+        try {
+            const data = await ClubService.Login(email, password);
+            console.log("token is : " + data.token)
+            onNavigate("/AccueilClub")
+
+        }
+        catch (error) {
+            alert("Your credentials cannot give you the rights to access this part")
+
+        }
 
     };
 
-    async function ConnectUser(email: string, password: string) {
-        const data = await ClubService.Login(email, password);
-        console.log("token is : " + data.token)
 
-    }
+
     const onNavigate = useNavigate();
 
     return (
