@@ -174,13 +174,13 @@ const ReservationsPage = () => {
                                 {reservation.status === 'En attente' && (
                                     <>
                                         <button
-                                            className="btn btn-success"
+                                            className="btn2 btn2-success"
                                             onClick={() => updateReservationStatus(reservation.id, 'Confirmée')}
                                         >
                                             Confirmer
                                         </button>
                                         <button
-                                            className="btn btn-danger"
+                                            className="btn2 btn2-danger"
                                             onClick={() => updateReservationStatus(reservation.id, 'Annulée')}
                                         >
                                             Annuler
@@ -189,7 +189,7 @@ const ReservationsPage = () => {
                                 )}
                                 {reservation.status === 'Confirmée' && (
                                     <button
-                                        className="btn btn-danger"
+                                        className="btn2 btn2-danger"
                                         onClick={() => updateReservationStatus(reservation.id, 'Annulée')}
                                     >
                                         Annuler

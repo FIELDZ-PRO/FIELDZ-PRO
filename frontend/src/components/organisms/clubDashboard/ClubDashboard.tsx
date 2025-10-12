@@ -7,7 +7,7 @@ import TerrainsSection from './TerrainsSection';
 import CreneauFormSection from './CreneauFormSection';
 import CreneauRecurrentFormSection from './CreneauRecurrentFormSection';
 import CreneauxSection from './CreneauxSection';
-import { Terrain } from '../../../types'; 
+import { Terrain } from '../../../types';
 import ReservationParDateSection from "./ReservationParDateSection";
 import ReservationGroupByStatut from "./ReservationGroupByStatut";
 
@@ -39,91 +39,92 @@ const ClubDashboard: React.FC = () => {
   const [date, setDate] = useState(today);
 
   const handleVoirReservationsDate = async () => {
-  try {
-    const res = await fetch(
-      `http://localhost:8080/api/reservations/reservations/date?date=${date}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+    try {
+      const res = await fetch(
+        `http://localhost:8080/api/reservations/reservations/date?date=${date}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      setReservationsDate(data);
+    } catch (err) {
+      console.error("Erreur lors du chargement des réservations à la date :", err);
+    }
+  };
+
+
+
+
+  useEffect(() => {
+    const fetchClub = async () => {
+      try {
+        const res = await fetch('http://localhost:8080/api/club/me', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (!res.ok) throw new Error(`Erreur HTTP ${res.status}`);
+        const data = await res.json();
+        setClub(data);
+      } catch (err) {
+        console.error("Erreur lors du chargement du club :", err);
       }
-    );
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-    setReservationsDate(data);
-  } catch (err) {
-    console.error("Erreur lors du chargement des réservations à la date :", err);
-  }
-};
+    };
 
-
+    fetchClub();
+  }, [token]);
 
 
   useEffect(() => {
-  const fetchClub = async () => {
-    try {
-      const res = await fetch('http://localhost:8080/api/club/me', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (!res.ok) throw new Error(`Erreur HTTP ${res.status}`);
-      const data = await res.json();
-      setClub(data);
-    } catch (err) {
-      console.error("Erreur lors du chargement du club :", err);
-    }
-  };
+    const fetchTerrains = async () => {
+      try {
+        const res = await fetch('http://localhost:8080/api/terrains', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-  fetchClub();
-}, [token]);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        console.log(data);
+        setTerrains(data);
+      } catch (err) {
+        console.error('Erreur lors du chargement des terrains', err);
+      } finally {
+        setLoading(false); // 👈 ICI !
+      }
+    };
+
+    fetchTerrains();
+  }, [token]);
 
 
+  const [showTodayReservations, setShowTodayReservations] = useState(false);
   useEffect(() => {
-  const fetchTerrains = async () => {
-    try {
-      const res = await fetch('http://localhost:8080/api/terrains', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+    const fetchReservations = async () => {
+      try {
+        const res = await fetch("http://localhost:8080/api/reservations/reservations", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      setTerrains(data);
-    } catch (err) {
-      console.error('Erreur lors du chargement des terrains', err);
-    } finally {
-      setLoading(false); // 👈 ICI !
-    }
-  };
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        setReservations(data);
+      } catch (err) {
+        console.error("Erreur lors du chargement des réservations :", err);
+      }
+    };
 
-  fetchTerrains();
-}, [token]);
+    fetchReservations();
+  }, [token]);
 
-
-const [showTodayReservations, setShowTodayReservations] = useState(false);
-useEffect(() => {
-  const fetchReservations = async () => {
-    try {
-      const res = await fetch("http://localhost:8080/api/reservations/reservations", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      setReservations(data);
-    } catch (err) {
-      console.error("Erreur lors du chargement des réservations :", err);
-    }
-  };
-
-  fetchReservations();
-}, [token]);
-
-
+  console.log(terrains);
   const groupes = [
     { titre: '🔵 Réservations en attente', statut: 'RESERVE' },
     { titre: '🟢 Confirmées', statut: 'CONFIRMEE' },
@@ -147,53 +148,53 @@ useEffect(() => {
       <section className="mt-8">
         <h2 className="text-xl font-semibold mb-4">📋 Toutes les réservations du club</h2>
 
-  <button
-    onClick={() => setShowTodayReservations(!showTodayReservations)}
-    className="w-full text-left font-bold text-lg py-2 bg-gray-200 rounded-md px-4"
-  >
-    {showTodayReservations ? "▼" : "▶"} 📆 Réservations du jour
-  </button>
+        <button
+          onClick={() => setShowTodayReservations(!showTodayReservations)}
+          className="w-full text-left font-bold text-lg py-2 bg-gray-200 rounded-md px-4"
+        >
+          {showTodayReservations ? "▼" : "▶"} 📆 Réservations du jour
+        </button>
 
-  {showTodayReservations && (
-    <div className="mt-2">
-      <ReservationGroupByStatut
-        titre="✅ Confirmées"
-        statut="CONFIRMEE"
-        reservations={reservations}
-      />
-      <ReservationGroupByStatut
-        titre="📌 Réservées (à confirmer)"
-        statut="RESERVE"
-        reservations={reservations}
-      />
-      <ReservationGroupByStatut
-        titre="❌ Annulées par le joueur"
-        statut="ANNULE_PAR_JOUEUR"
-        reservations={reservations}
-      />
-      <ReservationGroupByStatut
-        titre="🚫 Annulées par le club"
-        statut="ANNULE_PAR_CLUB"
-        reservations={reservations}
-      />
-    </div>
-  )}
-</section>
+        {showTodayReservations && (
+          <div className="mt-2">
+            <ReservationGroupByStatut
+              titre="✅ Confirmées"
+              statut="CONFIRMEE"
+              reservations={reservations}
+            />
+            <ReservationGroupByStatut
+              titre="📌 Réservées (à confirmer)"
+              statut="RESERVE"
+              reservations={reservations}
+            />
+            <ReservationGroupByStatut
+              titre="❌ Annulées par le joueur"
+              statut="ANNULE_PAR_JOUEUR"
+              reservations={reservations}
+            />
+            <ReservationGroupByStatut
+              titre="🚫 Annulées par le club"
+              statut="ANNULE_PAR_CLUB"
+              reservations={reservations}
+            />
+          </div>
+        )}
+      </section>
 
       <ReservationParDateSection
-  date={date}
-  onDateChange={setDate}
-  onVoir={handleVoirReservationsDate}
-  reservations={reservationsDate}
-/>
+        date={date}
+        onDateChange={setDate}
+        onVoir={handleVoirReservationsDate}
+        reservations={reservationsDate}
+      />
 
-      
+
       <h1 className="text-2xl font-bold mb-4">📊 Dashboard du club</h1>
-      
+
     </div>
   );
 
-  
+
 };
 
 export default ClubDashboard;

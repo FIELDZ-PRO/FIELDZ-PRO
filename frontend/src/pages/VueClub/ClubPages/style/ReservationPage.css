@@ -177,7 +177,7 @@
     gap: 8px;
 }
 
-.btn {
+.btn2 {
     padding: 8px 16px;
     border-radius: 6px;
     font-size: 14px;
@@ -187,21 +187,21 @@
     transition: all 0.2s ease;
 }
 
-.btn-success {
+.btn2-success {
     background-color: #059669;
     color: white;
 }
 
-.btn-success:hover {
+.btn2-success:hover {
     background-color: #047857;
 }
 
-.btn-danger {
+.btn2-danger {
     background-color: #dc2626;
     color: white;
 }
 
-.btn-danger:hover {
+.btn2-danger:hover {
     background-color: #b91c1c;
 }
 

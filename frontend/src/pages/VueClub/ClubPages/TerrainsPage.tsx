@@ -1,38 +1,81 @@
-import React, { useState } from 'react';
-import { Plus, Edit, Trash2, MapPin, Clock, Euro } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Plus, Edit, Trash2, MapPin, Clock, Dumbbell } from 'lucide-react';
 import './style/TerrainsPage.css';
+import { Terrain } from '../../../types';
+
+export type TypeDeSport = 'Padel' | 'Football';
+
 
 const TerrainsPage = () => {
-    const [terrains, setTerrains] = useState([
-        { id: 1, name: 'Court 1', type: 'Padel', price: 40, status: 'Disponible', capacity: 4 },
-        { id: 2, name: 'Court 3', type: 'Synthétique', price: 80, status: 'Occupé', capacity: 22 },
-        { id: 3, name: 'Field 8', type: 'Foot', price: 70, status: 'Disponible', capacity: 22 },
-        { id: 4, name: 'Court 2', type: 'Padel', price: 40, status: 'Maintenance', capacity: 4 },
-        { id: 5, name: 'Field 5', type: 'Foot', price: 70, status: 'Disponible', capacity: 22 },
-    ]);
+    const [terrains, setTerrains] = useState<Omit<Terrain, 'id'>[]>([]);
+    const token = localStorage.getItem("token");
 
     const [showAddForm, setShowAddForm] = useState(false);
-    const [newTerrain, setNewTerrain] = useState({
-        name: '',
-        type: 'Padel',
-        price: 40,
-        capacity: 4
+    const [newTerrain, setNewTerrain] = useState<Omit<Terrain, "id">>({
+        nomTerrain: '',
+        typeSurface: '',
+        ville: '',
+        sport: 'padel',
+        politiqueClub: '',
     });
 
-    const handleAddTerrain = (e: React.FormEvent) => {
-        e.preventDefault();
-        const terrain = {
-            id: Date.now(),
-            ...newTerrain,
-            status: 'Disponible'
-        };
-        setTerrains([...terrains, terrain]);
-        setNewTerrain({ name: '', type: 'Padel', price: 40, capacity: 4 });
-        setShowAddForm(false);
+    const handleAjouterTerrain = async (terrain: Omit<Terrain, 'id'>) => {
+        try {
+            const res = await fetch('http://localhost:8080/api/terrains', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(terrain),
+            });
+
+            if (!res.ok) {
+                const error = await res.text();
+                alert("❌ Erreur : " + error);
+                return;
+            }
+
+            const newTerrain = await res.json();
+            setShowAddForm(false);
+            //alert(`✅ Terrain ajouté (ID: ${newTerrain.id})`);
+            console.log("success on adding the terrain")
+            setTerrains((prev) => [...prev, newTerrain]);
+        } catch (err) {
+            alert("❌ Erreur réseau ou serveur.");
+            console.error(err);
+        }
     };
 
-    const handleDeleteTerrain = (id: number) => {
-        setTerrains(terrains.filter(terrain => terrain.id !== id));
+    useEffect(() => {
+        const fetchTerrains = async () => {
+            try {
+                const res = await fetch('http://localhost:8080/api/terrains', {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+                console.log(data);
+                setTerrains(data);
+            } catch (err) {
+                console.error('Erreur lors du chargement des terrains', err);
+            }
+        };
+
+        fetchTerrains();
+    }, [token]);
+
+
+
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setNewTerrain({ ...newTerrain, [e.target.name]: e.target.value });
+    };
+    const handleDeleteTerrain = (nom: string) => {
+        setTerrains(terrains.filter(terrain => terrain.nomTerrain !== nom));
     };
 
     const getStatusColor = (status: string) => {
@@ -49,7 +92,7 @@ const TerrainsPage = () => {
             <div className="page-header">
                 <h1>Gestion des terrains</h1>
                 <button
-                    className="btn btn-primary"
+                    className="btn-add btn-primary"
                     onClick={() => setShowAddForm(true)}
                 >
                     <Plus size={16} />
@@ -59,16 +102,16 @@ const TerrainsPage = () => {
 
             <div className="terrains-grid">
                 {terrains.map((terrain) => (
-                    <div key={terrain.id} className="terrain-card">
+                    <div key={terrain.nomTerrain} className="terrain-card">
                         <div className="terrain-card-header">
-                            <h3>{terrain.name}</h3>
+                            <h3>{terrain.nomTerrain}</h3>
                             <div className="terrain-actions">
                                 <button className="action-btn edit">
                                     <Edit size={16} />
                                 </button>
                                 <button
                                     className="action-btn delete"
-                                    onClick={() => handleDeleteTerrain(terrain.id)}
+                                    onClick={() => handleDeleteTerrain(terrain.nomTerrain)}
                                 >
                                     <Trash2 size={16} />
                                 </button>
@@ -78,25 +121,17 @@ const TerrainsPage = () => {
                         <div className="terrain-info">
                             <div className="info-item">
                                 <MapPin size={16} />
-                                <span>{terrain.type}</span>
+                                <span>{terrain.ville}</span>
                             </div>
-                            <div className="info-item">
-                                <Euro size={16} />
-                                <span>{terrain.price}€/heure</span>
-                            </div>
+
                             <div className="info-item">
                                 <Clock size={16} />
-                                <span>{terrain.capacity} personnes max</span>
+                                <span>{terrain.typeSurface} </span>
                             </div>
-                        </div>
-
-                        <div className="terrain-status">
-                            <span
-                                className="status-badge"
-                                style={{ backgroundColor: getStatusColor(terrain.status) }}
-                            >
-                                {terrain.status}
-                            </span>
+                            <div className="info-item">
+                                <Dumbbell size={16} />
+                                <span>{terrain.sport} </span>
+                            </div>
                         </div>
                     </div>
                 ))}
@@ -109,52 +144,58 @@ const TerrainsPage = () => {
                             <h2>Ajouter un nouveau terrain</h2>
                             <button
                                 className="close-btn"
-                                onClick={() => setShowAddForm(false)}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    setShowAddForm(false);
+                                }}
                             >
                                 ×
                             </button>
                         </div>
 
-                        <form onSubmit={handleAddTerrain} className="terrain-form">
+                        <form onSubmit={(e) => {
+                            e.preventDefault();
+                            handleAjouterTerrain(newTerrain)
+                        }} className="terrain-form">
                             <div className="form-group">
                                 <label>Nom du terrain</label>
                                 <input
                                     type="text"
-                                    value={newTerrain.name}
-                                    onChange={(e) => setNewTerrain({ ...newTerrain, name: e.target.value })}
+                                    name='nomTerrain'
+                                    value={newTerrain.nomTerrain}
+                                    onChange={handleChange}
                                     required
                                 />
                             </div>
 
                             <div className="form-group">
-                                <label>Type</label>
-                                <select
-                                    value={newTerrain.type}
-                                    onChange={(e) => setNewTerrain({ ...newTerrain, type: e.target.value })}
-                                >
-                                    <option value="Padel">Padel</option>
-                                    <option value="Foot">Foot</option>
-                                    <option value="Synthétique">Synthétique</option>
-                                    <option value="Tennis">Tennis</option>
-                                </select>
-                            </div>
-
-                            <div className="form-group">
-                                <label>Prix (€/heure)</label>
+                                <label>Type de surface</label>
                                 <input
-                                    type="number"
-                                    value={newTerrain.price}
-                                    onChange={(e) => setNewTerrain({ ...newTerrain, price: parseInt(e.target.value) })}
+                                    type="string"
+                                    name='typeSurface'
+                                    value={newTerrain.typeSurface}
+                                    onChange={handleChange}
                                     required
                                 />
                             </div>
 
                             <div className="form-group">
-                                <label>Capacité (personnes)</label>
+                                <label>Ville du Terrain</label>
                                 <input
-                                    type="number"
-                                    value={newTerrain.capacity}
-                                    onChange={(e) => setNewTerrain({ ...newTerrain, capacity: parseInt(e.target.value) })}
+                                    type="string"
+                                    name='ville'
+                                    value={newTerrain.ville}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label>Politique du club</label>
+                                <textarea
+                                    name='politiqueClub'
+                                    value={newTerrain.politiqueClub}
+                                    onChange={handleChange}
                                     required
                                 />
                             </div>

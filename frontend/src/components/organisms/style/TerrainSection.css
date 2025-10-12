@@ -16,7 +16,8 @@
     gap: 12px;
 }
 
-.btn {
+.btnTerrain {
+    width: 50%;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -27,35 +28,35 @@
     transition: all 0.2s ease;
 }
 
-.btn-primary {
+.btnTerrain-primary {
     background-color: #2563eb;
     color: white;
     border: 1px solid #2563eb;
 }
 
-.btn-primary:hover {
+.btnTerrain-primary:hover {
     background-color: #1d4ed8;
     border-color: #1d4ed8;
 }
 
-.btn-secondary {
+.btnTerrain-secondary {
     background-color: #2563eb;
     color: white;
     border: 1px solid #2563eb;
 }
 
-.btn-secondary:hover {
+.btnTerrain-secondary:hover {
     background-color: #1d4ed8;
     border-color: #1d4ed8;
 }
 
-.btn-outline {
+.btnTerrain-outline {
     background-color: transparent;
     color: #2E7D32;
     border: 1px solid #2E7D32;
 }
 
-.btn-outline:hover {
+.btnTerrain-outline:hover {
     background-color: #eff6ff;
 }
 
@@ -102,11 +103,18 @@
     background-color: #ffffff;
     padding: 16px;
     font-size: 14px;
-    transition: background-color 0.2s ease;
+    transition:
+        background-color 0.25s ease,
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
 }
 
 .table-row:hover {
     background-color: #f8fafc;
+    transform: translateY(-3px);
+    /* lift slightly */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    /* subtle shadow */
 }
 
 .terrain-name {
@@ -118,10 +126,12 @@
     color: #64748b;
 }
 
-.terrain-price {
+.terrain-sport {
     color: #059669;
     font-weight: 600;
 }
+
+
 
 @media (max-width: 768px) {
     .action-buttons {
