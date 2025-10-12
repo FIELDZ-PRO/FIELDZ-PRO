@@ -5,12 +5,12 @@ import ReservationModal from "./ReservationModal";
 import CreneauxDisponiblesGroup from "./CreneauxDisponiblesGroup";
 
 // 👉 endpoints via fetch (déjà fournis)
-import { ClubService, ClubDto } from "../../../services/clubService";
+import { ClubService, ClubDto } from "../../../services/ClubService";
 
 // ⚠️ Doit correspondre à ton enum backend com.fieldz.model.Sport (UPPERCASE)
 const SPORTS = ["PADEL", "FOOT5", "TENNIS", "BASKET", "VOLLEY"];
 // Remplace par tes vraies villes si tu as une source
-const VILLES = ["Alger", "Oran", "Constantine", "Annaba", "Blida"];
+const VILLES = ["Alger", "Oran", "Constantine", "Annaba", "Blida","Béjaïa"];
 
 type Props = {
   joueur: Joueur | null;
