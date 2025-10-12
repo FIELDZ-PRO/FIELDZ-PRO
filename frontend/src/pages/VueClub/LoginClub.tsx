@@ -33,6 +33,9 @@ export const LoginClub = () => {
     };
 
 
+    const handleLoginGoogle = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+    }
 
     const onNavigate = useNavigate();
 

@@ -2,6 +2,7 @@
 import { InvalidTokenError, jwtDecode } from "jwt-decode";
 
 const UrlService = "http://localhost:8080/api";
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
 
 /* =======================
  * Types
@@ -79,6 +80,12 @@ async function Login(email: string, motDePasse: string): Promise<LoginResponse> 
         throw error;
     }
 }
+
+export const loginWithGoogle = () => {
+    window.location.href = `${API_BASE}/oauth2/authorization/google`;
+};
+
+
 
 /* =======================
  * Recherche Clubs (public)

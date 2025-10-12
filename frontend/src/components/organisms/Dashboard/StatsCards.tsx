@@ -8,11 +8,7 @@ const StatsCards = () => {
             value: '12',
             color: '#2563eb'
         },
-        {
-            label: 'Revenus estimés',
-            value: '€960',
-            color: '#059669'
-        },
+
         {
             label: 'Réservations cette semaine',
             value: '32',
