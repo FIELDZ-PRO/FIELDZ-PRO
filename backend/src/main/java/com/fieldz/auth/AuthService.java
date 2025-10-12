@@ -52,7 +52,7 @@ public class AuthService {
                     .typeRole(Role.CLUB)
                     .adresse(request.getAdresse())
                     //.nomClub(request.getNomClub())
-                    .nom(request.getNomClub())
+                    //.nom(request.getNomClub())
 
                     .build();
         }
