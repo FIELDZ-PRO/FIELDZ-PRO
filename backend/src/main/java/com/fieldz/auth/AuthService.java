@@ -51,7 +51,9 @@ public class AuthService {
                     .motDePasse(passwordEncoder.encode(request.getMotDePasse()))
                     .typeRole(Role.CLUB)
                     .adresse(request.getAdresse())
-                    .nomClub(request.getNomClub())
+                    //.nomClub(request.getNomClub())
+                    .nom(request.getNomClub())
+
                     .build();
         }
 

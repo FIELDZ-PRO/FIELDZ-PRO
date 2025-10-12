@@ -4,14 +4,18 @@ import com.fieldz.dto.ClubDto;
 import com.fieldz.model.Club;
 
 public class ClubMapper {
+
     public static ClubDto toDto(Club club) {
         if (club == null) return null;
+
         ClubDto dto = new ClubDto();
         dto.setId(club.getId());
-        dto.setNomClub(club.getNomClub());
-        dto.setNom(club.getNom()); // Attention au nom
+        dto.setNom(club.getNom());
+        dto.setVille(club.getVille());
         dto.setAdresse(club.getAdresse());
-        // Pas de mapping des terrains ici pour le DTO simple
+        dto.setTelephone(club.getTelephone());
+        dto.setBanniereUrl(club.getBanniereUrl());
+        dto.setSports(club.getSports());
         return dto;
     }
 }

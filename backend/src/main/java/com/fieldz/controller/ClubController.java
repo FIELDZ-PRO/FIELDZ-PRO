@@ -1,34 +1,15 @@
 package com.fieldz.controller;
-import com.fieldz.service.ClubService;
 
-import com.fieldz.model.Club;
-import com.fieldz.model.Terrain;
-import com.fieldz.model.Utilisateur;
-import com.fieldz.repository.TerrainRepository;
-import com.fieldz.repository.UtilisateurRepository;
+import com.fieldz.dto.ClubDto;
+import com.fieldz.model.Sport;
+import com.fieldz.service.ClubService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import com.fieldz.model.Reservation;
-import com.fieldz.repository.ReservationRepository;
-import com.fieldz.model.Creneau;
-import com.fieldz.model.Statut;
-import com.fieldz.repository.CreneauRepository;
-import java.time.LocalDate;
+
 import java.util.List;
-import org.springframework.format.annotation.DateTimeFormat; // ajoute cet import en haut
-import java.time.LocalDateTime;
-import java.util.List;
-
-import com.fieldz.model.Reservation;
-import com.fieldz.model.Terrain;
-
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-
-import com.fieldz.dto.ClubDto;
 
 @RestController
 @RequestMapping("/api/club")
@@ -36,21 +17,39 @@ import com.fieldz.dto.ClubDto;
 public class ClubController {
 
     private final ClubService clubService;
-    // Garde les autres repositories s'ils servent à d'autres endpoints
 
     @GetMapping("/me")
     @PreAuthorize("hasRole('CLUB')")
     public ResponseEntity<ClubDto> getClubConnecte(Authentication authentication) {
-        ClubDto clubDto = clubService.getClubConnecte(authentication);
-        return ResponseEntity.ok(clubDto);
+        return ResponseEntity.ok(clubService.getClubConnecte(authentication));
     }
 
     @GetMapping("/hello")
     @PreAuthorize("hasRole('CLUB')")
     public String helloClub(Authentication auth) {
-        // Ici tu peux soit déléguer à un service, soit laisser tel quel (c'est juste un test)
         return "Hello club : " + auth.getName();
     }
 
+    // ===== RECHERCHES =====
 
+    // 1) Par ville : GET /api/club/search/by-ville?ville=Alger
+    @GetMapping("/search/by-ville")
+    public ResponseEntity<List<ClubDto>> searchByVille(@RequestParam String ville) {
+        if (ville == null || ville.isBlank()) return ResponseEntity.badRequest().build();
+        return ResponseEntity.ok(clubService.searchByVille(ville));
+    }
+
+    // 2) Par sport : GET /api/club/search/by-sport?sport=PADEL
+    @GetMapping("/search/by-sport")
+    public ResponseEntity<List<ClubDto>> searchBySport(@RequestParam Sport sport) {
+        return ResponseEntity.ok(clubService.searchBySport(sport));
+    }
+
+    // 3) Par ville + sport : GET /api/club/search?ville=Alger&sport=PADEL
+    @GetMapping("/search")
+    public ResponseEntity<List<ClubDto>> searchByVilleAndSport(@RequestParam String ville,
+                                                               @RequestParam Sport sport) {
+        if (ville == null || ville.isBlank()) return ResponseEntity.badRequest().build();
+        return ResponseEntity.ok(clubService.searchByVilleAndSport(ville, sport));
+    }
 }

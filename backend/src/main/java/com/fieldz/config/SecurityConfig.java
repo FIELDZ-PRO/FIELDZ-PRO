@@ -1,31 +1,25 @@
 package com.fieldz.config;
 
 import com.fieldz.security.jwt.JwtAuthenticationFilter;
+import com.fieldz.security.oauth.CustomOAuth2UserService;
+import com.fieldz.security.oauth.OAuth2SuccessHandler;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+
 import static org.springframework.security.config.Customizer.withDefaults;
-
-import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
-import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-
-
-import com.fieldz.security.oauth.CustomOAuth2UserService;
-import com.fieldz.security.oauth.OAuth2SuccessHandler;
-
 
 @Configuration
 @EnableWebSecurity
@@ -33,48 +27,81 @@ import com.fieldz.security.oauth.OAuth2SuccessHandler;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtAuthenticationFilter jwtAuthFilter; // sera ajouté plus tard
-    private final AuthenticationProvider authenticationProvider; // sera défini plus tard
-
+    private final JwtAuthenticationFilter jwtAuthFilter;
+    private final AuthenticationProvider authenticationProvider;
     private final CustomOAuth2UserService oauth2UserService;
     private final OAuth2SuccessHandler oauth2SuccessHandler;
 
-
+    // -------- CHAIN API --------
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http
+    @Order(1)
+    SecurityFilterChain api(HttpSecurity http) throws Exception {
+        http
+                .securityMatcher("/api/**")
                 .cors(withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
-                .headers(headers -> headers.frameOptions(frame -> frame.disable()))
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
+                .headers(h -> h.frameOptions(f -> f.disable()))
+                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(e -> e
+                        .authenticationEntryPoint((req, res, ex) -> {
+                            res.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401
+                            res.setContentType("application/json");
+                            res.getWriter().write("{\"error\":\"Unauthorized\"}");
+                        })
+                        .accessDeniedHandler((req, res, ex) -> {
+                            res.setStatus(HttpServletResponse.SC_FORBIDDEN); // 403
+                            res.setContentType("application/json");
+                            res.getWriter().write("{\"error\":\"Forbidden\"}");
+                        })
+                )
                 .authorizeHttpRequests(auth -> auth
+                        // publiques API
                         .requestMatchers(
+                                "/api/auth/**",
                                 "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html",
-                                "/api/auth/**", "/h2-console/**", "/api/test",
-                                "/oauth2/**", "/login/**" // autoriser les routes OAuth
+                                "/h2-console/**"
                         ).permitAll()
+
+                        // 👉 rends les recherches publiques si tu veux
+                        .requestMatchers("/api/club/search/**").permitAll()
+
+                        // rôles API
                         .requestMatchers("/api/joueur/**").hasRole("JOUEUR")
                         .requestMatchers("/api/club/**").hasRole("CLUB")
                         .anyRequest().authenticated()
                 )
-
-                .oauth2Login(oauth -> oauth
-                        .defaultSuccessUrl("http://localhost:5173/oauth-success", true) // ou autre
-                        .userInfoEndpoint(userInfo -> userInfo
-                                .userService(oauth2UserService)
-                                // à créer
-                        )
-                                .successHandler(oauth2SuccessHandler)
-                        // ⬅️ Handler personnalisé (pour créer un JWT)
-                )
-
+                // IMPORTANT: PAS de oauth2Login() sur l'API
                 .authenticationProvider(authenticationProvider)
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                .build();
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+
+        // Pas de formLogin/basic/logout ici
+        http.formLogin(AbstractHttpConfigurer::disable);
+        http.httpBasic(AbstractHttpConfigurer::disable);
+        http.logout(AbstractHttpConfigurer::disable);
+        return http.build();
     }
 
+    // -------- CHAIN WEB --------
+    @Bean
+    @Order(2)
+    SecurityFilterChain web(HttpSecurity http) throws Exception {
+        http
+                .cors(withDefaults())
+                .csrf(AbstractHttpConfigurer::disable)
+                .headers(h -> h.frameOptions(f -> f.disable()))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/oauth2/**", "/login/**").permitAll()
+                        .anyRequest().permitAll()
+                )
+                // Ici tu gardes l’OAuth2 pour le site
+                .oauth2Login(oauth -> oauth
+                        .defaultSuccessUrl("http://localhost:5173/oauth-success", true)
+                        .userInfoEndpoint(userInfo -> userInfo.userService(oauth2UserService))
+                        .successHandler(oauth2SuccessHandler)
+                );
 
+        return http.build();
+    }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {

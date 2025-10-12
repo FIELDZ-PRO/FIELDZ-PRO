@@ -1,13 +1,18 @@
 package com.fieldz.dto;
 
 import lombok.Data;
+import java.util.Set;
+import com.fieldz.model.Sport;
+
 
 @Data
 public class ClubDto {
     private Long id;
-    private String nomClub;
-    private String nom; // Correction ici !
+    private String nom;          // remplace nomClub
+    private String ville;
     private String adresse;
-
-    // On n'ajoute pas la liste de terrains dans le DTO de base pour l'instant (sinon on risque d’avoir de gros objets ou de la récursivité)
+    private String telephone;
+    private String banniereUrl;
+    private Set<com.fieldz.model.Sport> sports;   // ou Set<String> si tu préfères décorréler
+    // Pas de terrains ici pour éviter gros payloads (fait un DTO dédié si besoin)
 }
