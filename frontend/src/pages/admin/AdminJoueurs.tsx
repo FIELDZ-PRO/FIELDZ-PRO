@@ -7,58 +7,57 @@ export default function AdminJoueurs() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedJoueur, setSelectedJoueur] = useState<JoueurAdmin | null>(null);
   const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState<string>("");
 
-  useEffect(() => {
-    loadJoueurs();
-  }, []);
+  useEffect(() => { loadJoueurs(); }, []);
 
   const loadJoueurs = async () => {
     try {
       const response = await adminService.getAllJoueurs();
       setJoueurs(response.data);
-    } catch (error) {
-      console.error('Erreur chargement joueurs', error);
+      setErr("");
+    } catch (error: any) {
+      console.error('Erreur chargement joueurs', error?.response?.data || error);
+      setErr(error?.response?.data?.message || error?.message || "Erreur inconnue");
     } finally {
       setLoading(false);
     }
   };
 
   const handleSearch = async () => {
-    if (!searchQuery.trim()) {
-      loadJoueurs();
-      return;
-    }
+    if (!searchQuery.trim()) return loadJoueurs();
     try {
       const response = await adminService.searchJoueurs(searchQuery);
       setJoueurs(response.data);
-    } catch (error) {
-      console.error('Erreur recherche', error);
+      setErr("");
+    } catch (error: any) {
+      console.error('Erreur recherche', error?.response?.data || error);
+      setErr(error?.response?.data?.message || error?.message || "Erreur recherche");
     }
   };
 
   const handleToggleStatus = async (id: number) => {
     try {
       await adminService.toggleJoueurStatus(id);
-      loadJoueurs();
+      await loadJoueurs();
       if (selectedJoueur?.id === id) {
         const response = await adminService.getJoueurDetails(id);
         setSelectedJoueur(response.data);
       }
-    } catch (error) {
-      console.error('Erreur toggle status', error);
-      alert('Erreur lors du changement de statut');
+    } catch (error: any) {
+      console.error('Erreur toggle status', error?.response?.data || error);
+      alert(error?.response?.data?.message || 'Erreur lors du changement de statut');
     }
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('fr-FR');
-  };
+  const formatDate = (dateString?: string) =>
+    dateString ? new Date(dateString).toLocaleDateString('fr-FR') : 'N/A';
 
   if (loading) return <div>Chargement...</div>;
+  if (err) return <div className="text-red-600">Erreur: {err}</div>;
 
   return (
     <div>
-      {/* Liste des joueurs */}
       {!selectedJoueur && (
         <div className="bg-white rounded-lg shadow">
           <div className="p-6 border-b">
@@ -92,9 +91,7 @@ export default function AdminJoueurs() {
                     <td className="px-6 py-4 font-medium">{joueur.nom}</td>
                     <td className="px-6 py-4">{joueur.prenom}</td>
                     <td className="px-6 py-4">{joueur.email}</td>
-                    <td className="px-6 py-4">
-                      {joueur.dateInscription ? formatDate(joueur.dateInscription) : 'N/A'}
-                    </td>
+                    <td className="px-6 py-4">{formatDate(joueur.dateInscription)}</td>
                     <td className="px-6 py-4">
                       <div className="flex gap-2">
                         <button
@@ -125,7 +122,6 @@ export default function AdminJoueurs() {
         </div>
       )}
 
-      {/* Détail joueur */}
       {selectedJoueur && (
         <div className="bg-white rounded-lg shadow">
           <div className="p-6 border-b">
@@ -151,9 +147,7 @@ export default function AdminJoueurs() {
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-500">Date d'inscription</p>
-                <p className="text-base">
-                  {selectedJoueur.dateInscription ? formatDate(selectedJoueur.dateInscription) : 'N/A'}
-                </p>
+                <p className="text-base">{formatDate(selectedJoueur.dateInscription)}</p>
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-500">Statut</p>

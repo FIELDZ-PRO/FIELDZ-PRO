@@ -1,76 +1,90 @@
-import axios from 'axios';
+import axios from "axios";
 
-const API_URL = 'http://localhost:8080/api/admin';
+const apiBaseURL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
 
-// Intercepteur pour ajouter le token automatiquement
-const api = axios.create({
-  baseURL: API_URL,
+const http = axios.create({
+  baseURL: apiBaseURL,
+  withCredentials: false,
 });
 
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
+// Auth: ajoute le token si présent
+http.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
 
-// Types
-export interface AdminStats {
+// Log des erreurs (pour voir le vrai message 500)
+http.interceptors.response.use(
+  (res) => res,
+  (err) => {
+    console.error("API ERROR:", {
+      url: err.config?.url,
+      method: err.config?.method,
+      status: err.response?.status,
+      data: err.response?.data,
+      message: err.message,
+    });
+    return Promise.reject(err);
+  }
+);
+
+export type AdminStats = {
   totalClubs: number;
   totalJoueurs: number;
   reservationsHebdomadaires: number;
-}
+};
 
-export interface ClubAdmin {
+export type ClubAdmin = {
   id: number;
-  nomClub: string;
-  nom: string;
-  adresse: string;
-  telephone: string;
-  emailResponsable: string;
-  nomResponsable: string;
-  login: string;
-  password: string;
-  sport: string;
-  ville: string;
-}
+  nom: string;                 // plus de nomClub
+  adresse?: string;
+  telephone?: string;
+  emailResponsable?: string;
+  nomResponsable?: string;
+  login?: string;              // renvoyé à la création
+  password?: string;           // renvoyé à la création
+  sport?: string;              // "PADEL, FOOT5"
+  ville?: string;
+};
 
-export interface CreateClubRequest {
-  nomClub: string;
-  adresse: string;
-  telephone: string;
-  sport: string;
-  ville: string;
-  nomResponsable: string;
-  emailResponsable: string;
-  telephoneResponsable: string;
-}
-
-export interface JoueurAdmin {
+export type JoueurAdmin = {
   id: number;
   nom: string;
   prenom: string;
   email: string;
-  telephone: string;
-  dateInscription: string;
+  telephone?: string;
+  dateInscription?: string;
   actif: boolean;
-}
+};
 
-// Services
+export type CreateClubRequest = {
+  nom: string;                 // remplace nomClub
+  adresse: string;
+  telephone: string;
+  sport?: string;
+  ville: string;
+  nomResponsable: string;
+  emailResponsable: string;
+  telephoneResponsable: string;
+};
+
 export const adminService = {
   // Dashboard
-  getStats: () => api.get<AdminStats>('/stats'),
+  getStats: () => http.get<AdminStats>("/api/admin/stats"),
 
   // Clubs
-  getAllClubs: () => api.get<ClubAdmin[]>('/clubs'),
-  searchClubs: (query: string) => api.get<ClubAdmin[]>(`/clubs/search?query=${query}`),
-  getClubDetails: (id: number) => api.get<ClubAdmin>(`/clubs/${id}`),
-  createClub: (data: CreateClubRequest) => api.post<ClubAdmin>('/clubs', data),
+  getAllClubs: () => http.get<ClubAdmin[]>("/api/admin/clubs"),
+  searchClubs: (q: string) =>
+    http.get<ClubAdmin[]>("/api/admin/clubs/search", { params: { query: q } }),
+  createClub: (payload: CreateClubRequest) =>
+    http.post<ClubAdmin>("/api/admin/clubs", payload),
 
   // Joueurs
-  getAllJoueurs: () => api.get<JoueurAdmin[]>('/joueurs'),
-  searchJoueurs: (query: string) => api.get<JoueurAdmin[]>(`/joueurs/search?query=${query}`),
-  getJoueurDetails: (id: number) => api.get<JoueurAdmin>(`/joueurs/${id}`),
-  toggleJoueurStatus: (id: number) => api.patch<JoueurAdmin>(`/joueurs/${id}/toggle-status`),
+  getAllJoueurs: () => http.get<JoueurAdmin[]>("/api/admin/joueurs"),
+  searchJoueurs: (q: string) =>
+    http.get<JoueurAdmin[]>("/api/admin/joueurs/search", { params: { query: q } }),
+  getJoueurDetails: (id: number) => http.get<JoueurAdmin>("/api/admin/joueurs/" + id),
+  toggleJoueurStatus: (id: number) =>
+    http.patch<JoueurAdmin>("/api/admin/joueurs/" + id + "/toggle-status", {}),
 };

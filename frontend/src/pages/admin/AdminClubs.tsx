@@ -8,9 +8,10 @@ export default function AdminClubs() {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [selectedClub, setSelectedClub] = useState<ClubAdmin | null>(null);
   const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState<string>("");
 
   const [newClub, setNewClub] = useState<CreateClubRequest>({
-    nomClub: '',
+    nom: '',
     adresse: '',
     telephone: '',
     sport: '',
@@ -20,42 +21,41 @@ export default function AdminClubs() {
     telephoneResponsable: '',
   });
 
-  useEffect(() => {
-    loadClubs();
-  }, []);
+  useEffect(() => { loadClubs(); }, []);
 
   const loadClubs = async () => {
     try {
       const response = await adminService.getAllClubs();
       setClubs(response.data);
-    } catch (error) {
-      console.error('Erreur chargement clubs', error);
+      setErr("");
+    } catch (error: any) {
+      console.error('Erreur chargement clubs', error?.response?.data || error);
+      setErr(error?.response?.data?.message || error?.message || "Erreur inconnue");
     } finally {
       setLoading(false);
     }
   };
 
   const handleSearch = async () => {
-    if (!searchQuery.trim()) {
-      loadClubs();
-      return;
-    }
+    if (!searchQuery.trim()) return loadClubs();
     try {
       const response = await adminService.searchClubs(searchQuery);
       setClubs(response.data);
-    } catch (error) {
-      console.error('Erreur recherche', error);
+      setErr("");
+    } catch (error: any) {
+      console.error('Erreur recherche', error?.response?.data || error);
+      setErr(error?.response?.data?.message || error?.message || "Erreur recherche");
     }
   };
 
   const handleCreateClub = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await adminService.createClub(newClub);
-      alert(`Club créé!\n\nIdentifiants:\nLogin: ${response.data.login}\nMot de passe: ${response.data.password}`);
+      const { data } = await adminService.createClub(newClub);
+      alert(`Club créé !\n\nIdentifiants:\nLogin: ${data.login}\nMot de passe: ${data.password}`);
       setShowCreateForm(false);
       setNewClub({
-        nomClub: '',
+        nom: '',
         adresse: '',
         telephone: '',
         sport: '',
@@ -65,21 +65,17 @@ export default function AdminClubs() {
         telephoneResponsable: '',
       });
       loadClubs();
-    } catch (error) {
-      console.error('Erreur création club', error);
-      alert('Erreur lors de la création du club');
+    } catch (error: any) {
+      console.error('Erreur création club', error?.response?.data || error);
+      alert(error?.response?.data?.message || 'Erreur lors de la création du club');
     }
   };
 
-  const filteredClubs = searchQuery
-    ? clubs
-    : clubs;
-
   if (loading) return <div>Chargement...</div>;
+  if (err) return <div className="text-red-600">Erreur: {err}</div>;
 
   return (
     <div>
-      {/* Liste des clubs */}
       {!selectedClub && (
         <div className="bg-white rounded-lg shadow">
           <div className="p-6 border-b">
@@ -116,11 +112,11 @@ export default function AdminClubs() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {filteredClubs.map((club) => (
+                {clubs.map((club) => (
                   <tr key={club.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 font-medium">{club.nomClub}</td>
-                    <td className="px-6 py-4">{club.sport}</td>
-                    <td className="px-6 py-4">{club.ville}</td>
+                    <td className="px-6 py-4 font-medium">{club.nom}</td>
+                    <td className="px-6 py-4">{club.sport || '—'}</td>
+                    <td className="px-6 py-4">{club.ville || '—'}</td>
                     <td className="px-6 py-4">
                       <button
                         onClick={() => setSelectedClub(club)}
@@ -138,7 +134,6 @@ export default function AdminClubs() {
         </div>
       )}
 
-      {/* Détail club */}
       {selectedClub && (
         <div className="bg-white rounded-lg shadow">
           <div className="p-6 border-b">
@@ -148,40 +143,39 @@ export default function AdminClubs() {
             >
               ← Retour à la liste
             </button>
-            <h2 className="text-2xl font-bold">{selectedClub.nomClub}</h2>
+            <h2 className="text-2xl font-bold">{selectedClub.nom}</h2>
           </div>
           <div className="p-6 space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <h3 className="font-semibold text-gray-700 mb-3">Informations générales</h3>
                 <div className="space-y-2 text-sm">
-                  <p><span className="font-medium">Sport:</span> {selectedClub.sport}</p>
-                  <p><span className="font-medium">Ville:</span> {selectedClub.ville}</p>
-                  <p><span className="font-medium">Email:</span> {selectedClub.emailResponsable}</p>
-                  <p><span className="font-medium">Téléphone:</span> {selectedClub.telephone}</p>
-                  <p><span className="font-medium">Adresse:</span> {selectedClub.adresse}</p>
+                  <p><span className="font-medium">Sport:</span> {selectedClub.sport || '—'}</p>
+                  <p><span className="font-medium">Ville:</span> {selectedClub.ville || '—'}</p>
+                  <p><span className="font-medium">Email:</span> {selectedClub.emailResponsable || '—'}</p>
+                  <p><span className="font-medium">Téléphone:</span> {selectedClub.telephone || '—'}</p>
+                  <p><span className="font-medium">Adresse:</span> {selectedClub.adresse || '—'}</p>
                 </div>
               </div>
               <div>
                 <h3 className="font-semibold text-gray-700 mb-3">Responsable</h3>
                 <div className="space-y-2 text-sm">
-                  <p><span className="font-medium">Nom:</span> {selectedClub.nomResponsable}</p>
-                  <p><span className="font-medium">Email:</span> {selectedClub.emailResponsable}</p>
+                  <p><span className="font-medium">Nom:</span> {selectedClub.nomResponsable || '—'}</p>
+                  <p><span className="font-medium">Email:</span> {selectedClub.emailResponsable || '—'}</p>
                 </div>
               </div>
             </div>
             <div>
               <h3 className="font-semibold text-gray-700 mb-3">Identifiants de connexion</h3>
               <div className="bg-gray-50 p-4 rounded-lg space-y-2 text-sm">
-                <p><span className="font-medium">Login:</span> {selectedClub.login}</p>
-                <p><span className="font-medium">Mot de passe:</span> {selectedClub.password}</p>
+                <p><span className="font-medium">Login:</span> {selectedClub.login || '—'}</p>
+                <p><span className="font-medium">Mot de passe:</span> {selectedClub.password || '—'}</p>
               </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* Modal création club */}
       {showCreateForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
@@ -191,14 +185,15 @@ export default function AdminClubs() {
                 <X size={24} />
               </button>
             </div>
+
             <form onSubmit={handleCreateClub} className="p-6 space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Nom du club *</label>
                   <input
                     type="text"
-                    value={newClub.nomClub}
-                    onChange={(e) => setNewClub({ ...newClub, nomClub: e.target.value })}
+                    value={newClub.nom}
+                    onChange={(e) => setNewClub({ ...newClub, nom: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                     required
                   />
@@ -274,6 +269,7 @@ export default function AdminClubs() {
                   />
                 </div>
               </div>
+
               <div className="flex gap-3 pt-4">
                 <button
                   type="button"
