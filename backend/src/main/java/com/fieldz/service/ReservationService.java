@@ -108,21 +108,24 @@ public class ReservationService {
         String email = authentication.getName();
         Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
+
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new ReservationIntrouvableException("Réservation introuvable."));
+
         if (reservation.getStatut() == Statut.ANNULE_PAR_JOUEUR || reservation.getStatut() == Statut.ANNULE_PAR_CLUB) {
             throw new ReservationDejaAnnuleeException("Cette réservation est déjà annulée.");
         }
 
-
         Creneau creneau = reservation.getCreneau();
-
-        boolean autorise = false;
         boolean estClub = false;
+        boolean autorise = false;
 
         if (utilisateur instanceof Joueur joueur) {
             autorise = reservation.getJoueur().getId().equals(joueur.getId());
         } else if (utilisateur instanceof Club club) {
+            if (creneau == null || creneau.getTerrain() == null || creneau.getTerrain().getClub() == null) {
+                throw new AnnulationNonAutoriseeException("Créneau/terrain introuvable pour cette réservation.");
+            }
             autorise = creneau.getTerrain().getClub().getId().equals(club.getId());
             estClub = true;
         }
@@ -131,22 +134,36 @@ public class ReservationService {
             throw new AnnulationNonAutoriseeException("Vous n’avez pas le droit d’annuler cette réservation.");
         }
 
+        // -- Annulation
         reservation.setStatut(estClub ? Statut.ANNULE_PAR_CLUB : Statut.ANNULE_PAR_JOUEUR);
         reservation.setDateAnnulation(LocalDateTime.now());
         reservation.setMotifAnnulation(motif);
 
-        creneau.setStatut(Statut.LIBRE);
-        creneau.setDisponible(true);
-        //creneau.setReservation(null); // SUPPRIMER PLUS TARD
-        creneauRepository.save(creneau);
+        // -- Libérer le créneau si encore lié
+        if (creneau != null) {
+            creneau.setStatut(Statut.LIBRE);
+            creneau.setDisponible(true);
+            creneauRepository.save(creneau);
+        }
 
         reservationRepository.save(reservation);
-        if (!estClub && reservation.getJoueur() != null) {
-            notificationService.envoyerEmailAuClubAnnulation(creneau.getTerrain().getClub(), reservation.getJoueur(), creneau);
+
+        // -- Notifications
+        if (estClub) {
+            // ✅ ICI : notification email + in-app au joueur (annulation par le club)
+            notificationService.notifierAnnulationReservationParClub(reservation,
+                    motif != null && !motif.isBlank() ? motif : "Annulée par le club");
+        } else {
+            // Annulation par le joueur -> prévenir le club (tu le faisais déjà)
+            if (reservation.getJoueur() != null && creneau != null) {
+                notificationService.envoyerEmailAuClubAnnulation(
+                        creneau.getTerrain().getClub(), reservation.getJoueur(), creneau);
+            }
         }
 
         return "Réservation annulée et historisée avec succès.";
     }
+
 
 
     public List<Reservation> getReservationsParDate(LocalDate parsedDate, Authentication authentication) {

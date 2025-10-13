@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import org.springframework.util.StringUtils;
+import com.fieldz.dto.UpdateTerrainRequest;
 
 @RestController
 @RequestMapping("/api/terrains")
@@ -73,5 +74,28 @@ public class TerrainController {
                 .map(TerrainMapper::toDto)
                 .toList();
         return ResponseEntity.ok(dtos);
+    }
+
+    // ✅ Modifier un terrain
+    @PutMapping("/{terrainId}")
+    @PreAuthorize("hasRole('CLUB')")
+    public ResponseEntity<TerrainDto> updateTerrain(
+            @PathVariable Long terrainId,
+            @RequestBody UpdateTerrainRequest req,
+            Authentication authentication) {
+
+        Terrain updated = terrainService.updateTerrain(terrainId, req, authentication);
+        return ResponseEntity.ok(TerrainMapper.toDto(updated));
+    }
+
+    // ✅ Supprimer un terrain (annule les réservations actives avant)
+    @DeleteMapping("/{terrainId}")
+    @PreAuthorize("hasRole('CLUB')")
+    public ResponseEntity<Void> supprimerTerrain(
+            @PathVariable Long terrainId,
+            Authentication authentication) {
+
+        terrainService.supprimerTerrain(terrainId, authentication);
+        return ResponseEntity.noContent().build();
     }
 }

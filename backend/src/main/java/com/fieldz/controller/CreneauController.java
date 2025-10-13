@@ -12,6 +12,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 import java.util.HashMap;
+import com.fieldz.exception.CreneauHasActiveReservationsException;
+import org.springframework.http.HttpStatus;
+import com.fieldz.dto.UpdateCreneauRequest;
 
 
 import java.util.List;
@@ -68,6 +71,44 @@ public class CreneauController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * DELETE /api/creneaux/{id}?force=false|true
+     * - force=false: 409 si réservations actives
+     * - force=true : annule les réservations actives, puis supprime
+     */
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('CLUB')")
+    public ResponseEntity<Map<String, Object>> deleteCreneau(@PathVariable Long id,
+                                                             @RequestParam(defaultValue = "false") boolean force,
+                                                             Authentication auth) {
+        int annulees = creneauService.supprimerCreneau(id, auth, force);
+        return ResponseEntity.ok(Map.of(
+                "creneauId", id,
+                "reservationsAnnulees", annulees,
+                "deleted", true
+        ));
+    }
 
+    @ExceptionHandler(CreneauHasActiveReservationsException.class)
+    public ResponseEntity<Map<String, Object>> handleActive(CreneauHasActiveReservationsException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
+                "code", "CRENEAU_HAS_ACTIVE_RESERVATIONS",
+                "message", ex.getMessage(),
+                "creneauId", ex.getCreneauId(),
+                "activeReservations", ex.getActiveCount()
+        ));
+    }
+
+    // ✅ Nouvelle méthode pour modifier un créneau
+    @PutMapping("/{creneauId}")
+    @PreAuthorize("hasRole('CLUB')")
+    public ResponseEntity<CreneauDto> updateCreneau(
+            @PathVariable Long creneauId,
+            @RequestBody UpdateCreneauRequest req,
+            Authentication authentication) {
+
+        Creneau updated = creneauService.updateCreneau(creneauId, req, authentication);
+        return ResponseEntity.ok(CreneauMapper.toDto(updated));
+    }
 
 }

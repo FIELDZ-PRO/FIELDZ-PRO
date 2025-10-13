@@ -1,30 +1,33 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const API_BASE = import.meta.env.VITE_API_URL;
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage('');
     setIsLoading(true);
 
     try {
-      await axios.post(`${API_BASE}/auth/forgot-password`, null, {
-        params: { email }
-      });
+      const res = await axios.post(
+        `${API_BASE}/api/auth/forgot-password`,
+        { email }, // 👈 body JSON (pas params)
+        { headers: { 'Content-Type': 'application/json' } }
+      );
 
-      setMessage("✅ Un lien de réinitialisation a été envoyé à votre adresse email.");
-    } catch (err) {
+      setMessage(res.data?.message || "✅ Si l'email existe, un lien a été envoyé.");
+    } catch (err: any) {
       console.error(err);
-      setMessage("❌ Une erreur est survenue. Vérifiez l'adresse email.");
+      const apiMsg = err?.response?.data?.message;
+      setMessage(apiMsg ? `❌ ${apiMsg}` : "❌ Erreur : impossible d'envoyer la demande.");
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
   };
 
   return (

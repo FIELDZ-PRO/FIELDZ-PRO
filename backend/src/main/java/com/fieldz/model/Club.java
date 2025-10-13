@@ -14,9 +14,7 @@ import java.util.Set;
 @SuperBuilder
 public class Club extends Utilisateur {
 
-    // rétro-compat: on mappe nom sur l'ancienne colonne nom_club si elle existe
-    @Column(name = "nom_club")
-    //private String nom;
+    // ⚠️ Supprimé : @Column(name = "nom_club") qui annotait 'ville' par erreur
 
     private String ville;
 
@@ -24,11 +22,9 @@ public class Club extends Utilisateur {
 
     private String telephone;
 
-    // URL publique ou chemin vers la bannière
     @Column(name = "banniere_url")
     private String banniereUrl;
 
-    // Plusieurs sports pris en charge par le club
     @ElementCollection(targetClass = Sport.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "club_sports", joinColumns = @JoinColumn(name = "club_id"))
     @Enumerated(EnumType.STRING)
@@ -38,4 +34,3 @@ public class Club extends Utilisateur {
     @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Terrain> terrains;
 }
-

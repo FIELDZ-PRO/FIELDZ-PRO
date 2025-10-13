@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import com.fieldz.service.NotificationService;
 import java.time.DayOfWeek;
 import java.util.ArrayList;
+import org.springframework.transaction.annotation.Transactional;
+
 
 
 import java.time.LocalDate;
@@ -21,6 +23,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Arrays;
+import com.fieldz.exception.CreneauHasActiveReservationsException;
 
 
 @Slf4j
@@ -203,7 +207,148 @@ public class CreneauService {
         return response;
     }
 
+    /**
+     * Supprime un créneau. Si des réservations actives existent:
+     * - force=false -> lève 409 avec le nombre de réservations actives.
+     * - force=true  -> annule d'abord ces réservations (ANNULE_PAR_CLUB) puis supprime le créneau.
+     * @return le nombre de réservations annulées avant suppression
+     */
+    @Transactional
+    public int supprimerCreneau(Long creneauId, Authentication authentication, boolean force) {
+        String email = authentication.getName();
+        Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
+        if (!(utilisateur instanceof Club club)) {
+            throw new RuntimeException("L'utilisateur n'est pas un club.");
+        }
 
+        Creneau creneau = creneauRepository.findById(creneauId)
+                .orElseThrow(() -> new RuntimeException("Créneau introuvable"));
 
+        if (!creneau.getTerrain().getClub().getId().equals(club.getId())) {
+            throw new RuntimeException("Ce créneau ne vous appartient pas.");
+        }
+
+        var statutsActifs = Arrays.asList(Statut.RESERVE, Statut.CONFIRMEE);
+
+        long activeCount = reservationRepository.countByCreneauIdAndStatutIn(creneauId, statutsActifs);
+        if (activeCount > 0 && !force) {
+            throw new CreneauHasActiveReservationsException(creneauId, activeCount);
+        }
+
+        int annulees = 0;
+        if (activeCount > 0) {
+            var actives = reservationRepository.findByCreneauIdAndStatutIn(creneauId, statutsActifs);
+            for (Reservation r : actives) {
+                r.setStatut(Statut.ANNULE_PAR_CLUB);
+                r.setDateAnnulation(LocalDateTime.now());
+                r.setMotifAnnulation("Créneau supprimé par le club");
+            }
+            reservationRepository.saveAll(actives);
+            annulees = actives.size();
+
+            // (Optionnel) notifications
+            for (Reservation r : actives) {
+                if (r.getJoueur() != null) {
+                    notificationService.envoyerEmailAnnulationCreneau(r.getJoueur().getEmail(), creneau);
+                }
+            }
+        }
+
+        // 🔓 DÉRÉFÉRENCER TOUTES les réservations (actives + historiques) avant suppression
+        var toutes = reservationRepository.findByCreneauId(creneauId);
+        if (!toutes.isEmpty()) {
+            for (Reservation r : toutes) {
+                r.setCreneau(null);
+            }
+            reservationRepository.saveAll(toutes);
+        }
+
+        // 🗑️ Supprimer le créneau
+        creneauRepository.delete(creneau);
+        log.info("Créneau {} supprimé par le club {} (réservations annulées: {}).", creneauId, club.getNom(), annulees);
+        return annulees;
+    }
+
+    @org.springframework.transaction.annotation.Transactional
+    public com.fieldz.model.Creneau updateCreneau(
+            Long creneauId,
+            com.fieldz.dto.UpdateCreneauRequest req,
+            org.springframework.security.core.Authentication authentication) {
+
+        String email = authentication.getName();
+        com.fieldz.model.Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
+        if (!(utilisateur instanceof com.fieldz.model.Club club)) {
+            throw new RuntimeException("L'utilisateur n'est pas un club.");
+        }
+
+        com.fieldz.model.Creneau c = creneauRepository.findById(creneauId)
+                .orElseThrow(() -> new RuntimeException("Créneau introuvable"));
+
+        if (!c.getTerrain().getClub().getId().equals(club.getId())) {
+            throw new RuntimeException("Ce créneau ne vous appartient pas.");
+        }
+
+        // Déplacement de terrain optionnel
+        if (req.getTerrainId() != null && !req.getTerrainId().equals(c.getTerrain().getId())) {
+            com.fieldz.model.Terrain nouveauTerrain = terrainRepository.findById(req.getTerrainId())
+                    .orElseThrow(() -> new RuntimeException("Terrain cible introuvable"));
+            if (!nouveauTerrain.getClub().getId().equals(club.getId())) {
+                throw new RuntimeException("Le terrain cible n'appartient pas à votre club.");
+            }
+            c.setTerrain(nouveauTerrain);
+        }
+
+        java.time.LocalDateTime oldDebut = c.getDateDebut();
+        java.time.LocalDateTime oldFin   = c.getDateFin();
+        Double oldPrix                   = c.getPrix();
+
+        if (req.getDateDebut() != null) c.setDateDebut(req.getDateDebut());
+        if (req.getDateFin() != null)   c.setDateFin(req.getDateFin());
+        if (req.getPrix() != null)      c.setPrix(req.getPrix());
+
+        if (c.getDateDebut() == null || c.getDateFin() == null) {
+            throw new RuntimeException("Les dates de début et de fin sont obligatoires.");
+        }
+        if (c.getDateDebut().isAfter(c.getDateFin())) {
+            throw new RuntimeException("L'heure de fin doit être après l'heure de début.");
+        }
+
+        // Chevauchements (en excluant le créneau courant)
+        java.util.List<com.fieldz.model.Creneau> chevauchants = creneauRepository.findCreneauxChevauchants(
+                c.getTerrain().getId(), c.getDateDebut(), c.getDateFin()
+        ).stream().filter(x -> !x.getId().equals(c.getId())).toList();
+
+        if (!chevauchants.isEmpty()) {
+            throw new RuntimeException("Un créneau existant chevauche les horaires proposés.");
+        }
+
+        com.fieldz.model.Creneau saved = creneauRepository.save(c);
+        log.info("Club {} a modifié le créneau id={} (terrain={}, {} -> {}, prix {} -> {}).",
+                club.getNom(), saved.getId(), saved.getTerrain().getNomTerrain(),
+                oldDebut, saved.getDateDebut(), oldPrix, saved.getPrix());
+
+        // Notifications simples si modif temps/prix (tu as déjà une méthode d’email d’annulation)
+        boolean changedTime = (oldDebut != null && !oldDebut.equals(saved.getDateDebut()))
+                || (oldFin != null && !oldFin.equals(saved.getDateFin()));
+        boolean changedPrix = (oldPrix != null && !oldPrix.equals(saved.getPrix()));
+
+        if (changedTime || changedPrix) {
+            var actives = reservationRepository.findByCreneauIdAndStatutIn(
+                    saved.getId(), java.util.Arrays.asList(com.fieldz.model.Statut.RESERVE, com.fieldz.model.Statut.CONFIRMEE));
+
+            for (com.fieldz.model.Reservation r : actives) {
+                try {
+                    if (r.getJoueur() != null) {
+                        notificationService.envoyerEmailAnnulationCreneau(r.getJoueur().getEmail(), saved);
+                    }
+                } catch (Exception ex) {
+                    log.warn("Notification de changement de créneau échouée pour réservation {}: {}", r.getId(), ex.getMessage());
+                }
+            }
+        }
+        return saved;
+    }
 
 }

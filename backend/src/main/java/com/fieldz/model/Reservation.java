@@ -28,8 +28,8 @@ public class Reservation {
     @JsonIgnoreProperties({"reservations", "hibernateLazyInitializer", "handler"})
     private Joueur joueur;
 
-    @ManyToOne
-    @JoinColumn(name = "creneau_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "creneau_id", nullable = true)
     @JsonIgnoreProperties({"reservation", "hibernateLazyInitializer", "handler"})
     private Creneau creneau;
 

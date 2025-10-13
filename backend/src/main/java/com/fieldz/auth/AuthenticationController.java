@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.fieldz.service.PasswordResetService;
 
+
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -14,16 +15,15 @@ public class AuthenticationController {
     private final PasswordResetService passwordResetService;
 
     @PostMapping("/forgot-password")
-    public ResponseEntity<String> forgotPassword(@RequestParam String email) {
-        String token = passwordResetService.generateResetToken(email);
+    public ResponseEntity<String> forgotPassword(@RequestBody ForgotPasswordRequest request) {
+        String token = passwordResetService.generateResetToken(request.getEmail());
 
-        // Simule l’envoi de mail
-        //System.out.println("Lien de réinitialisation : http://localhost:5173/reset-password?token=" + token);
+        // Affiche le lien dans la console (pour tests)
         System.out.println("Lien de réinitialisation : http://192.168.100.16:5173/reset-password?token=" + token);
-
 
         return ResponseEntity.ok("Un lien de réinitialisation a été généré.");
     }
+
 
     @PostMapping("/reset-password")
     public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordRequest request) {

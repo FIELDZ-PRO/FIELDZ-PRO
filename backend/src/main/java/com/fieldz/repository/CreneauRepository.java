@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import java.time.LocalDateTime;
 import java.util.Optional;
-
+import org.springframework.data.jpa.repository.Modifying;
 
 public interface CreneauRepository extends JpaRepository<Creneau, Long> {
     @Query("SELECT c FROM Creneau c WHERE c.dateDebut BETWEEN :dateStart AND :dateEnd AND c.terrain.id = :terrainId AND c.statut = 'LIBRE' AND c.disponible = true")
@@ -34,5 +34,9 @@ public interface CreneauRepository extends JpaRepository<Creneau, Long> {
 
     Optional<Creneau> findByTerrainAndDateDebutAndDateFin(Terrain terrain, LocalDateTime dateDebut, LocalDateTime dateFin);
 
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("DELETE FROM Creneau c WHERE c.terrain.id = :terrainId")
+    void deleteByTerrainId(Long terrainId);
 }
 
