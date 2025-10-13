@@ -270,3 +270,35 @@
         margin: 16px;
     }
 }
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+.empty-state-icon {
+    margin-bottom: 20px;
+    color: #6c757d;
+}
+
+.empty-state h3 {
+    margin-bottom: 10px;
+    color: #343a40;
+}
+
+.empty-state p {
+    margin-bottom: 20px;
+    color: #6c757d;
+    max-width: 300px;
+}
+
+.terrains-content {
+    min-height: 400px;
+}

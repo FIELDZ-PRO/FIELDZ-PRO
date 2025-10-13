@@ -81,6 +81,44 @@ async function Login(email: string, motDePasse: string): Promise<LoginResponse> 
     }
 }
 
+async function DeleteTerrain(terrainId: number): Promise<boolean> {
+    try {
+        await fetch(`${UrlService}/terrains/${terrainId}`, {
+            method: "DELETE",
+            headers: {
+                Accept: "*/*",
+                ...getAuthHeaders()
+            }
+        })
+        return true;
+    }
+    catch (error) {
+        console.error("The delete process didn't work check the logs");
+        return false;
+    }
+}
+
+async function ModifyTerrain(id: number, nomTerrain: string, typeSurface: string, ville: string, sport: string, politiqueClub: string): Promise<boolean> {
+    try {
+        await fetch(`${UrlService}/terrains/${id}`, {
+            method: "PUT",
+            headers: {
+                Accept: "*/*",
+                "Content-Type": "application/json",
+                ...getAuthHeaders()
+            },
+            body: JSON.stringify({ nomTerrain, typeSurface, ville, sport, politiqueClub }),
+
+        })
+        return true;
+    }
+    catch (error) {
+        console.error("The delete process didn't work check the logs");
+        return false;
+    }
+}
+
+
 export const loginWithGoogle = () => {
     window.location.href = `${API_BASE}/oauth2/authorization/google`;
 };
@@ -163,4 +201,7 @@ export const ClubService = {
     searchBySport,
     AjouterUnTerrain,
     getClubMe,
+    DeleteTerrain,
+    loginWithGoogle,
+    ModifyTerrain
 };
