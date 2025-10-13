@@ -155,9 +155,9 @@ const fetchClubConnecte = async () => {
   if (!date || !heureDebut || !heureFin)
     return alert("Veuillez remplir tous les champs du créneau");
 
-  const dateDebut = `${date}T${heureDebut}`;
-  const dateFin = `${date}T${heureFin}`;
-
+  // ✅ SOLUTION : Forcer le format sans timezone
+  const dateDebut = `${date}T${heureDebut}:00`;  // Format: "2025-10-15T14:00:00"
+  const dateFin = `${date}T${heureFin}:00`;
   const body = {
     dateDebut,
     dateFin,

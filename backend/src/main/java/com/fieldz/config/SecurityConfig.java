@@ -20,6 +20,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import static org.springframework.security.config.Customizer.withDefaults;
+import org.springframework.http.HttpMethod;
 
 @Configuration
 @EnableWebSecurity
@@ -64,7 +65,8 @@ public class SecurityConfig {
 
                         // 👉 rends les recherches publiques si tu veux
                         .requestMatchers("/api/club/search/**").permitAll()
-
+                        .requestMatchers(HttpMethod.GET, "/api/club/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/creneaux/club/*").permitAll()
                         // rôles API
                         .requestMatchers("/api/joueur/**").hasRole("JOUEUR")
                         .requestMatchers("/api/club/**").hasRole("CLUB")

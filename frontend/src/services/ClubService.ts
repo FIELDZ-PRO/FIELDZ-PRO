@@ -1,4 +1,4 @@
-// src/services/clubService.ts
+// src/services/ClubService.ts
 import { InvalidTokenError, jwtDecode } from "jwt-decode";
 
 const UrlService = "http://localhost:8080/api";
@@ -11,8 +11,6 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
 export type LoginResponse = {
     token: string;
 };
-
-
 
 interface TokenPayload {
     sub: string;
@@ -28,18 +26,20 @@ export type ClubDto = {
     adresse?: string;
     telephone?: string;
     banniereUrl?: string;
-    // Selon ton mapper côté back:
-    sport?: string;     // ex: "PADEL, FOOT_5"
-    sports?: string[];  // si un jour tu renvoies une liste
+    sport?: string;
+    sports?: string[];
 };
 
 /* =======================
  * Helpers
  * =======================
  */
-function getAuthHeaders() {
+function getAuthHeaders(): HeadersInit {
     const token = localStorage.getItem("token");
-    return token ? { Authorization: `Bearer ${token}` } : {};
+    if (token) {
+        return { "Authorization": `Bearer ${token}` };
+    }
+    return {};
 }
 
 async function jsonOrThrow(res: Response) {
@@ -62,7 +62,7 @@ async function Login(email: string, motDePasse: string): Promise<LoginResponse> 
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                Accept: "*/*",
+                "Accept": "*/*",
             },
             body: JSON.stringify({ email, motDePasse }),
         });
@@ -70,7 +70,7 @@ async function Login(email: string, motDePasse: string): Promise<LoginResponse> 
         const data: LoginResponse = await jsonOrThrow(res);
         const decoded = jwtDecode<TokenPayload>(data.token);
         if (decoded.role !== "CLUB") {
-            throw new InvalidTokenError("You don't have the authorization to access this side ")
+            throw new InvalidTokenError("You don't have the authorization to access this side");
         } else {
             localStorage.setItem("token", data.token);
             return data;
@@ -85,38 +85,38 @@ export const loginWithGoogle = () => {
     window.location.href = `${API_BASE}/oauth2/authorization/google`;
 };
 
-
-
 /* =======================
  * Recherche Clubs (public)
  * =======================
  */
-// GET /api/club/search?ville=Alger&sport=PADEL
 async function searchByVilleAndSport(ville: string, sport: string): Promise<ClubDto[]> {
     const url = `${UrlService}/club/search?ville=${encodeURIComponent(ville)}&sport=${encodeURIComponent(sport)}`;
     const res = await fetch(url);
     return jsonOrThrow(res);
 }
 
-// GET /api/club/search/by-ville?ville=Alger
 async function searchByVille(ville: string): Promise<ClubDto[]> {
     const url = `${UrlService}/club/search/by-ville?ville=${encodeURIComponent(ville)}`;
     const res = await fetch(url);
     return jsonOrThrow(res);
 }
 
-// GET /api/club/search/by-sport?sport=PADEL
 async function searchBySport(sport: string): Promise<ClubDto[]> {
     const url = `${UrlService}/club/search/by-sport?sport=${encodeURIComponent(sport)}`;
     const res = await fetch(url);
     return jsonOrThrow(res);
 }
 
+async function getClubById(id: number): Promise<ClubDto> {
+    const url = `${UrlService}/club/${id}`;
+    const res = await fetch(url);
+    return jsonOrThrow(res);
+}
+
 /* =======================
- * Endpoints protégés (exemples)
+ * Endpoints protégés
  * =======================
  */
-// ⚠️ Ajuste l’URL si besoin (ex: POST /api/terrains)
 async function AjouterUnTerrain(
     nomTerrain: string,
     typeSurface: string,
@@ -124,13 +124,19 @@ async function AjouterUnTerrain(
     sport: string
 ) {
     try {
+        const headers: HeadersInit = {
+            "Content-Type": "application/json",
+            "Accept": "*/*",
+        };
+        
+        const token = localStorage.getItem("token");
+        if (token) {
+            (headers as Record<string, string>)["Authorization"] = `Bearer ${token}`;
+        }
+
         const res = await fetch(`${UrlService}/terrains`, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Accept: "*/*",
-                ...getAuthHeaders(), // Authorization: Bearer <token>
-            },
+            headers: headers,
             body: JSON.stringify({ nomTerrain, typeSurface, ville, sport }),
         });
 
@@ -141,13 +147,18 @@ async function AjouterUnTerrain(
     }
 }
 
-// GET /api/club/me (récupérer le club connecté)
 async function getClubMe(): Promise<ClubDto> {
+    const token = localStorage.getItem("token");
+    const headers: HeadersInit = {
+        "Accept": "application/json",
+    };
+    
+    if (token) {
+        (headers as Record<string, string>)["Authorization"] = `Bearer ${token}`;
+    }
+
     const res = await fetch(`${UrlService}/club/me`, {
-        headers: {
-            Accept: "application/json",
-            ...getAuthHeaders(),
-        },
+        headers: headers,
     });
     return jsonOrThrow(res);
 }
@@ -161,6 +172,7 @@ export const ClubService = {
     searchByVilleAndSport,
     searchByVille,
     searchBySport,
+    getClubById,
     AjouterUnTerrain,
     getClubMe,
 };

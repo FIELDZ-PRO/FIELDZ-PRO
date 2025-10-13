@@ -350,5 +350,26 @@ public class CreneauService {
         }
         return saved;
     }
+    @Transactional(readOnly = true)
+public List<Creneau> getCreneauxDisponiblesParClub(Long clubId, String dateStr) {
+    if (dateStr == null || dateStr.isBlank()) {
+        // Si pas de date, retourner tous les créneaux disponibles du club
+        return creneauRepository.findByTerrainClubIdAndDisponibleTrue(clubId);
+    }
+    
+    try {
+        LocalDate date = LocalDate.parse(dateStr);
+        LocalDateTime startOfDay = date.atStartOfDay();
+        LocalDateTime endOfDay = date.atTime(23, 59, 59);
+        
+        return creneauRepository.findByTerrainClubIdAndDisponibleTrueAndDateDebutBetween(
+            clubId, startOfDay, endOfDay
+        );
+    } catch (Exception e) {
+        throw new RuntimeException("Format de date invalide. Utilisez YYYY-MM-DD");
+    }
+    
+
+}
 
 }

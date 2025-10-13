@@ -1,5 +1,6 @@
 package com.fieldz.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -8,14 +9,29 @@ import java.time.LocalDateTime;
 @Data
 public class CreneauDto {
     private Long id;
-    //private LocalDate date;
-    //private LocalTime heureDebut;
-    //private LocalTime heureFin;
+    
+    // Ancien format (pour compatibilité frontend)
+    private LocalDate date;
+    
+    @JsonFormat(pattern = "HH:mm")
+    private LocalTime heureDebut;
+    
+    @JsonFormat(pattern = "HH:mm")
+    private LocalTime heureFin;
+    
+    // Nouveau format (pour logique backend)
     private LocalDateTime dateDebut;
     private LocalDateTime dateFin;
+    
     private Double prix;
-    private String statut;      // LIBRE, RESERVE, etc.
+    private String statut;
     private boolean disponible;
-    //private Long terrainId;     // Pour ne pas exposer tout l'objet Terrain, seulement l'id
-    private TerrainDto terrain;
+    private TerrainSimpleDto terrain;
+    
+    @Data
+    public static class TerrainSimpleDto {
+        private Long id;
+        private String nom;
+        private String sport;
+    }
 }

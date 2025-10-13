@@ -52,4 +52,12 @@ public class ClubController {
         if (ville == null || ville.isBlank()) return ResponseEntity.badRequest().build();
         return ResponseEntity.ok(clubService.searchByVilleAndSport(ville, sport));
     }
+
+    // 4) Récupérer un club par son ID : GET /api/club/{id}
+    @GetMapping("/{id}")
+    public ResponseEntity<ClubDto> getClubById(@PathVariable Long id) {
+    return ResponseEntity.ok(clubService.getClubById(id));
+    }
+
+
 }

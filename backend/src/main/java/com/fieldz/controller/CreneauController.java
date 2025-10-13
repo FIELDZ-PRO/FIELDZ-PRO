@@ -11,11 +11,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import java.util.Map;
-import java.util.HashMap;
 import com.fieldz.exception.CreneauHasActiveReservationsException;
 import org.springframework.http.HttpStatus;
 import com.fieldz.dto.UpdateCreneauRequest;
-
 
 import java.util.List;
 
@@ -63,7 +61,6 @@ public class CreneauController {
         return ResponseEntity.ok("Créneau annulé avec succès.");
     }
 
-
     @PostMapping("/recurrent")
     @PreAuthorize("hasRole('CLUB')")
     public ResponseEntity<?> creerCreneauxRecurrents(@RequestBody CreneauRecurrentDto dto) {
@@ -71,11 +68,6 @@ public class CreneauController {
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * DELETE /api/creneaux/{id}?force=false|true
-     * - force=false: 409 si réservations actives
-     * - force=true : annule les réservations actives, puis supprime
-     */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('CLUB')")
     public ResponseEntity<Map<String, Object>> deleteCreneau(@PathVariable Long id,
@@ -99,7 +91,6 @@ public class CreneauController {
         ));
     }
 
-    // ✅ Nouvelle méthode pour modifier un créneau
     @PutMapping("/{creneauId}")
     @PreAuthorize("hasRole('CLUB')")
     public ResponseEntity<CreneauDto> updateCreneau(
@@ -111,4 +102,19 @@ public class CreneauController {
         return ResponseEntity.ok(CreneauMapper.toDto(updated));
     }
 
+    /**
+     * GET /api/creneaux/club/{clubId}?date=2025-10-13
+     * Retourne les créneaux disponibles d'un club pour une date donnée (PUBLIC)
+     */
+    @GetMapping("/club/{clubId}")
+    public ResponseEntity<List<CreneauDto>> getCreneauxDisponiblesParClub(
+            @PathVariable Long clubId,
+            @RequestParam(required = false) String date) {
+        
+        List<Creneau> creneaux = creneauService.getCreneauxDisponiblesParClub(clubId, date);
+        List<CreneauDto> dtos = creneaux.stream()
+                .map(CreneauMapper::toDto)
+                .toList();
+        return ResponseEntity.ok(dtos);
+    }
 }

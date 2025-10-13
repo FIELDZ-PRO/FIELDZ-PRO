@@ -46,7 +46,7 @@ public class PasswordResetService {
         // 🔗 Construction du lien (via variable d'env ou fallback IP LAN)
         String frontBase = System.getenv("FRONT_BASE_URL");
         if (frontBase == null || frontBase.isBlank()) {
-            frontBase = "http://192.168.100.16:5173";
+            frontBase = "http://10.188.124.180:5173/";
         }
         String resetUrl = frontBase + "/reset-password?token=" + token;
 

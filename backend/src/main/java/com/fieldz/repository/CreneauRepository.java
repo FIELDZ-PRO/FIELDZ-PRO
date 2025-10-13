@@ -38,5 +38,12 @@ public interface CreneauRepository extends JpaRepository<Creneau, Long> {
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("DELETE FROM Creneau c WHERE c.terrain.id = :terrainId")
     void deleteByTerrainId(Long terrainId);
+    // Tous les créneaux disponibles d'un club
+    List<Creneau> findByTerrainClubIdAndDisponibleTrue(Long clubId);
+
+// Créneaux disponibles d'un club pour une date spécifique
+    List<Creneau> findByTerrainClubIdAndDisponibleTrueAndDateDebutBetween(
+    Long clubId, LocalDateTime start, LocalDateTime end
+    );
 }
 

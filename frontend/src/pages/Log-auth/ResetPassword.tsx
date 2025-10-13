@@ -5,7 +5,7 @@ import axios from 'axios';
 const API_BASE =
   import.meta.env.VITE_API_URL ||
   import.meta.env.VITE_API_BASE_URL || // au cas où
-  "http://192.168.100.16:8080";
+  "http://10.188.124.180:5173/";
 
 const ResetPassword = () => {
   const [searchParams] = useSearchParams();

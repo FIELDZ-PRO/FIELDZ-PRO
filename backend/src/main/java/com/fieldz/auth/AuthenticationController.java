@@ -19,7 +19,7 @@ public class AuthenticationController {
         String token = passwordResetService.generateResetToken(request.getEmail());
 
         // Affiche le lien dans la console (pour tests)
-        System.out.println("Lien de réinitialisation : http://192.168.100.16:5173/reset-password?token=" + token);
+        System.out.println("Lien de réinitialisation : http://10.188.124.180:5173//reset-password?token=" + token);
 
         return ResponseEntity.ok("Un lien de réinitialisation a été généré.");
     }

@@ -1,16 +1,14 @@
 import React, { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./style/JoueurDashboardLayout.css";
 import { Creneau, Reservation, Joueur } from "../../../types";
 import ReservationModal from "./ReservationModal";
-import CreneauxDisponiblesGroup from "./CreneauxDisponiblesGroup";
-
-// 👉 endpoints via fetch (déjà fournis)
+import ReservationGroupByStatut from "./ReservationGroupByStatut";
 import { ClubService, ClubDto } from "../../../services/ClubService";
 
-// ⚠️ Doit correspondre à ton enum backend com.fieldz.model.Sport (UPPERCASE)
 const SPORTS = ["PADEL", "FOOT5", "TENNIS", "BASKET", "VOLLEY"];
 // Remplace par tes vraies villes si tu as une source
-const VILLES = ["Alger", "Oran", "Constantine", "Annaba", "Blida","Béjaïa"];
+const VILLES = ["Alger", "Oran", "Constantine", "Annaba", "Blida", "Béjaïa"];
 
 type Props = {
   joueur: Joueur | null;
@@ -29,6 +27,7 @@ const JoueurDashboardLayout: React.FC<Props> = ({
   onLogout,
   onNavigateToProfile,
 }) => {
+  const navigate = useNavigate();
   const [creneauSelectionne, setCreneauSelectionne] = useState<Creneau | null>(null);
   const [activeTab, setActiveTab] = useState<'recherche' | 'reservations' | 'annulees'>('recherche');
 
@@ -130,63 +129,78 @@ const JoueurDashboardLayout: React.FC<Props> = ({
               </div>
             )}
 
-            <div className="clubs-results-grid">
+            {/* Liste des clubs */}
+            <div className="clubs-list">
               {clubs.map((club) => (
-                <div key={club.id} className="club-card">
-                  <div className="club-card-header">
+                <div key={club.id} className="club-item">
+                  {/* Image à gauche */}
+                  <div className="club-image">
                     {club.banniereUrl ? (
-                      <img src={club.banniereUrl} alt={club.nom} className="club-banner" />
+                      <img src={club.banniereUrl} alt={club.nom} />
                     ) : (
-                      <div className="club-banner placeholder" />
-                    )}
-                    <div className="club-title">
-                      <h3>{club.nom}</h3>
-                      <span className="club-city">{club.ville || "—"}</span>
-                    </div>
-                  </div>
-                  <div className="club-card-body">
-                    <p><strong>Adresse :</strong> {club.adresse || "—"}</p>
-                    <p><strong>Téléphone :</strong> {club.telephone || "—"}</p>
-                    {club.sport && <p><strong>Sports :</strong> {club.sport}</p>}
-                    {!club.sport && club.sports && (
-                      <p><strong>Sports :</strong> {club.sports.join(", ")}</p>
+                      <div className="club-image-placeholder">📍</div>
                     )}
                   </div>
+                  
+                  {/* Contenu central */}
+                  <div className="club-details">
+                    <h3 className="club-title">{club.nom}</h3>
+                    <p className="club-ville">📍 {club.ville || "Ville non spécifiée"}</p>
+                    <p className="club-adresse"><strong>Adresse :</strong> {club.adresse || "—"}</p>
+                    
+                    {club.sport && (
+                      <span className="club-badge">{club.sport}</span>
+                    )}
+                    {!club.sport && club.sports && club.sports.length > 0 && (
+                      <div className="club-badges">
+                        {club.sports.map((s, idx) => (
+                          <span key={idx} className="club-badge">{s}</span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Bouton à droite */}
+                  <button 
+                    className="club-btn-voir"
+                    onClick={() => navigate(`/club/${club.id}`)}
+                  >
+                    Voir les créneaux
+                  </button>
                 </div>
               ))}
             </div>
 
             {!loadingSearch && !errSearch && clubs.length === 0 && (
-              <div className="empty-state mt-4">
+              <div className="empty-state">
                 Aucun club trouvé pour {sport.replace("_", " ")} à {ville}.
               </div>
             )}
-
-            {/* Liste de créneaux (comme avant) */}
-            <div className="mt-8">
-              <CreneauxDisponiblesGroup
-                creneaux={creneauxLibres}
-                onReserver={(c) => setCreneauSelectionne(c)}
-              />
-            </div>
           </div>
         );
 
       case 'reservations':
         return (
           <div className="tab-content-section">
-            <h2 className="page-title">Mes réservations</h2>
-            <div className="reservations-container">
-              {reservationsActives.length === 0 ? (
-                <div className="empty-state">Aucune réservation active</div>
-              ) : (
-                reservationsActives.map((r) => (
-                  <div key={r.id} className="reservation-item">
-                    {/* Place tes cartes de réservation ici */}
-                  </div>
-                ))
-              )}
-            </div>
+            <h2 className="page-title">Mes réservations ({reservationsActives.length})</h2>
+            
+            <ReservationGroupByStatut
+              titre="Réservations confirmées"
+              reservations={reservationsActives.filter(r => r.statut === "CONFIRMEE")}
+              onUpdate={onRefresh}
+            />
+            
+            <ReservationGroupByStatut
+              titre="Réservations en attente"
+              reservations={reservationsActives.filter(r => r.statut === "RESERVE")}
+              onUpdate={onRefresh}
+            />
+
+            {reservationsActives.length === 0 && (
+              <div className="empty-state">
+                Vous n'avez aucune réservation active pour le moment.
+              </div>
+            )}
           </div>
         );
 
@@ -194,17 +208,24 @@ const JoueurDashboardLayout: React.FC<Props> = ({
         return (
           <div className="tab-content-section">
             <h2 className="page-title">Réservations annulées</h2>
-            <div className="reservations-container">
-              {reservationsAnnulees.length === 0 ? (
-                <div className="empty-state">Aucune réservation annulée</div>
-              ) : (
-                reservationsAnnulees.map((r) => (
-                  <div key={r.id} className="reservation-item">
-                    {/* Place tes cartes de réservation ici */}
-                  </div>
-                ))
-              )}
-            </div>
+            
+            <ReservationGroupByStatut
+              titre="Annulées par vous"
+              reservations={reservationsAnnulees.filter(r => r.statut === "ANNULE_PAR_JOUEUR")}
+              onUpdate={onRefresh}
+            />
+            
+            <ReservationGroupByStatut
+              titre="Annulées par le club"
+              reservations={reservationsAnnulees.filter(r => r.statut === "ANNULE_PAR_CLUB")}
+              onUpdate={onRefresh}
+            />
+
+            {reservationsAnnulees.length === 0 && (
+              <div className="empty-state">
+                Vous n'avez aucune réservation annulée.
+              </div>
+            )}
           </div>
         );
 

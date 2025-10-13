@@ -1,0 +1,343 @@
+/* ClubDetailsJoueur.css */
+
+.club-details-container {
+  min-height: 100vh;
+  background: #f8fafc;
+  padding-bottom: 40px;
+}
+
+.club-details-loading,
+.club-details-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  gap: 16px;
+}
+
+.club-details-header {
+  background: white;
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.back-button {
+  background: transparent;
+  border: none;
+  color: #059669;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8px;
+  transition: opacity 0.2s;
+}
+
+.back-button:hover {
+  opacity: 0.7;
+}
+
+.club-details-header h1 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+/* Bannière */
+.club-banner {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #1f5a2f 0%, #059669 100%);
+}
+
+.club-banner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.club-banner-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.club-banner-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+  color: white;
+  padding: 24px;
+}
+
+.club-banner-overlay h2 {
+  margin: 0 0 8px 0;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.club-banner-overlay p {
+  margin: 0;
+  font-size: 16px;
+}
+
+/* Informations */
+.club-info-section {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.club-info-card,
+.club-contact-card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+.club-info-card h3,
+.club-contact-card h3 {
+  margin: 0 0 12px 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.club-info-card p,
+.club-contact-card p {
+  margin: 8px 0;
+  color: #374151;
+  line-height: 1.6;
+}
+
+/* Équipements */
+.club-equipements {
+  padding: 0 24px;
+  max-width: 1200px;
+  margin: 0 auto 24px;
+}
+
+.club-equipements h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 12px;
+}
+
+.equipements-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.equipement-badge {
+  background: #dcfce7;
+  color: #166534;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Calendrier */
+.date-selector {
+  padding: 0 24px;
+  max-width: 1200px;
+  margin: 0 auto 24px;
+}
+
+.date-selector h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 16px;
+}
+
+.dates-grid {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+.date-button {
+  flex-shrink: 0;
+  background: white;
+  border: 2px solid #e5e7eb;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.date-button:hover {
+  border-color: #059669;
+}
+
+.date-button.active {
+  background: #166534;
+  border-color: #166534;
+  color: white;
+}
+
+/* Créneaux */
+.creneaux-section {
+  padding: 0 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.creneaux-section h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 16px;
+}
+
+.no-creneaux {
+  background: white;
+  padding: 40px;
+  text-align: center;
+  border-radius: 12px;
+  border: 2px dashed #d1d5db;
+  color: #6b7280;
+}
+
+.creneaux-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.creneau-card {
+  background: white;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: box-shadow 0.2s;
+}
+
+.creneau-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.creneau-info {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.creneau-icon {
+  font-size: 32px;
+  background: #f3f4f6;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+}
+
+.creneau-details h4 {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.creneau-time {
+  margin: 4px 0;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.creneau-sport {
+  margin: 4px 0;
+  font-size: 13px;
+  color: #166534;
+  font-weight: 600;
+}
+
+.creneau-action {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.creneau-prix {
+  font-size: 18px;
+  font-weight: 700;
+  color: #059669;
+  margin: 0;
+}
+
+.btn-reserver {
+  background: #166534;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-reserver:hover {
+  background: #14532d;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .club-info-section {
+    grid-template-columns: 1fr;
+  }
+
+  .club-banner {
+    height: 200px;
+  }
+
+  .dates-grid {
+    gap: 8px;
+  }
+
+  .date-button {
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+
+  .creneau-card {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .creneau-action {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+}

@@ -3,9 +3,10 @@ package com.fieldz.service;
 import com.fieldz.dto.ClubDto;
 import com.fieldz.mapper.ClubMapper;
 import com.fieldz.model.Club;
+import com.fieldz.model.Creneau;
 import com.fieldz.model.Sport;
 import com.fieldz.model.Utilisateur;
-import com.fieldz.repository.ClubRepository;              // <-- ajout
+import com.fieldz.repository.ClubRepository;
 import com.fieldz.repository.UtilisateurRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +14,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;                                     // <-- ajout
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Slf4j
@@ -23,7 +26,7 @@ import java.util.Set;
 public class ClubService {
 
     private final UtilisateurRepository utilisateurRepository;
-    private final ClubRepository clubRepository;           // <-- ajout
+    private final ClubRepository clubRepository;
 
     @Transactional(readOnly = true)
     public ClubDto getClubConnecte(Authentication authentication) {
@@ -82,5 +85,18 @@ public class ClubService {
                 .stream().map(ClubMapper::toDto).toList();
     }
 
-    private boolean notBlank(String s) { return s != null && !s.isBlank(); }
+    // ---------- RÉCUPÉRER UN CLUB PAR ID ----------
+    
+    @Transactional(readOnly = true)
+    public ClubDto getClubById(Long id) {
+        Club club = clubRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Club non trouvé avec l'ID : " + id));
+        return ClubMapper.toDto(club);  // ← Utilise ClubMapper au lieu de ModelMapper
+    }
+
+    private boolean notBlank(String s) { 
+        return s != null && !s.isBlank(); 
+    }
+    
+
 }

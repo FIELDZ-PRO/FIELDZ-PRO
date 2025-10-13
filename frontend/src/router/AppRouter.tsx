@@ -31,6 +31,9 @@ import AdminDashboard from '../pages/admin/AdminDashboard';
 import AdminClubs from '../pages/admin/AdminClubs';
 import AdminJoueurs from '../pages/admin/AdminJoueurs';
 
+
+import ClubDetailsJoueur from '../pages/ClubDetailsJoueur';
+
 export default function AppRouter() {
   return (
     <Routes>
@@ -100,12 +103,20 @@ export default function AppRouter() {
       />
 
 
-
+        <Route
+          path="/club/:id"
+           element=
+           {
+            <ProtectedRoute requiredRole="JOUEUR">
+               <ClubDetailsJoueur />
+            </ProtectedRoute>
+            }
+      />
 
       <Route
         path="/joueur"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute requiredRole="JOUEUR">
             <JoueurDashboard />
           </ProtectedRoute>
         }
@@ -133,5 +144,8 @@ export default function AppRouter() {
         <Route path="joueurs" element={<AdminJoueurs />} />
       </Route>
     </Routes>
+
+
+
   );
 }
