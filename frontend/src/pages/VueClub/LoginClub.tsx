@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ClubService } from '../../services/ClubService';
 import { useState } from 'react';
 import { jwtDecode } from "jwt-decode";
-
+import { LoadingSpinner } from './LoadingScreen';
 
 interface TokenPayload {
     sub: string;
@@ -13,22 +13,28 @@ interface TokenPayload {
 }
 
 export const LoginClub = () => {
+    const [isLoading, setIsLoading] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setIsLoading(true);
         console.log(email)
         console.log(password)
-        try {
-            const data = await ClubService.Login(email, password);
-            console.log("token is : " + data.token)
-            onNavigate("/AccueilClub")
+        setTimeout(async () => {
+            try {
+                const data = await ClubService.Login(email, password);
+                console.log("token is : " + data.token)
+                onNavigate("/AccueilClub")
 
-        }
-        catch (error) {
-            alert("Your credentials cannot give you the rights to access this part")
+            }
+            catch (error) {
+                alert("Your credentials cannot give you the rights to access this part")
 
-        }
+            } finally {
+                setIsLoading(false)
+            }
+        }, 0)
 
     };
 
