@@ -1,0 +1,419 @@
+.profile-page-club {
+   min-height: 100vh;
+   background: #f8fafc;
+   padding: 80px 20px 40px;
+ }
+ 
+ .profile-container-club {
+   max-width: 900px;
+   margin: 0 auto;
+ }
+ 
+ .profile-header-club {
+   margin-bottom: 24px;
+ }
+ 
+ .profile-header-club h1 {
+   font-size: 28px;
+   font-weight: 700;
+   color: #111827;
+   margin: 0;
+ }
+ 
+ /* Carte principale */
+ .profile-card-club {
+   background: white;
+   border-radius: 16px;
+   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+   overflow: hidden;
+ }
+ 
+ /* Bannière */
+ .banniere-section {
+   position: relative;
+   width: 100%;
+   height: 250px;
+   background: linear-gradient(135deg, #1f5a2f 0%, #059669 100%);
+ }
+ 
+ .banniere-img {
+   width: 100%;
+   height: 100%;
+   object-fit: cover;
+ }
+ 
+ .banniere-placeholder {
+   width: 100%;
+   height: 100%;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   justify-content: center;
+   color: white;
+   gap: 12px;
+ }
+ 
+ .banniere-placeholder p {
+   margin: 0;
+   font-size: 16px;
+   font-weight: 500;
+ }
+ 
+ .banniere-upload-btn {
+   position: absolute;
+   bottom: 16px;
+   right: 16px;
+   background: rgba(0, 0, 0, 0.7);
+   color: white;
+   padding: 10px 20px;
+   border-radius: 8px;
+   cursor: pointer;
+   display: flex;
+   align-items: center;
+   gap: 8px;
+   font-size: 14px;
+   font-weight: 600;
+   transition: background 0.2s;
+   backdrop-filter: blur(10px);
+ }
+ 
+ .banniere-upload-btn:hover {
+   background: rgba(0, 0, 0, 0.85);
+ }
+ 
+ /* Section photo */
+ .profile-photo-section-club {
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   margin-top: -60px;
+   padding: 0 40px 32px;
+   border-bottom: 1px solid #e5e7eb;
+ }
+ 
+ .photo-wrapper-club {
+   position: relative;
+   margin-bottom: 16px;
+ }
+ 
+ .profile-photo-club,
+ .profile-photo-placeholder-club {
+   width: 120px;
+   height: 120px;
+   border-radius: 20px;
+   object-fit: cover;
+   border: 4px solid white;
+   background: white;
+ }
+ 
+ .profile-photo-placeholder-club {
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   background: #f3f4f6;
+   color: #9ca3af;
+ }
+ 
+ .photo-upload-btn-club {
+   position: absolute;
+   bottom: -4px;
+   right: -4px;
+   background: #059669;
+   color: white;
+   width: 36px;
+   height: 36px;
+   border-radius: 50%;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   cursor: pointer;
+   border: 3px solid white;
+   transition: background 0.2s;
+ }
+ 
+ .photo-upload-btn-club:hover {
+   background: #047857;
+ }
+ 
+ .club-name {
+   font-size: 26px;
+   font-weight: 700;
+   color: #111827;
+   margin: 0 0 4px 0;
+   text-align: center;
+ }
+ 
+ .club-ville {
+   color: #6b7280;
+   font-size: 15px;
+   margin: 0;
+   display: flex;
+   align-items: center;
+   gap: 4px;
+ }
+ 
+ /* Formulaire */
+ .profile-form-club {
+   padding: 40px;
+   display: flex;
+   flex-direction: column;
+   gap: 24px;
+ }
+ 
+ .profile-message {
+   padding: 12px 16px;
+   border-radius: 8px;
+   font-size: 14px;
+   font-weight: 500;
+ }
+ 
+ .profile-message.success {
+   background: #d1fae5;
+   color: #065f46;
+   border: 1px solid #059669;
+ }
+ 
+ .profile-message.error {
+   background: #fee2e2;
+   color: #991b1b;
+   border: 1px solid #ef4444;
+ }
+ 
+ .form-row {
+   display: grid;
+   grid-template-columns: 1fr 1fr;
+   gap: 20px;
+ }
+ 
+ .form-field {
+   display: flex;
+   flex-direction: column;
+   gap: 8px;
+ }
+ 
+ .form-field label {
+   display: flex;
+   align-items: center;
+   gap: 8px;
+   font-size: 14px;
+   font-weight: 600;
+   color: #374151;
+ }
+ 
+ .form-field input {
+   width: 100%;
+   padding: 12px 16px;
+   border: 2px solid #e5e7eb;
+   border-radius: 8px;
+   font-size: 15px;
+   color: #111827;
+   transition: all 0.2s;
+ }
+ 
+ .form-field input:focus {
+   outline: none;
+   border-color: #059669;
+   box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+ }
+ 
+ .form-field input:disabled {
+   background: #f9fafb;
+   cursor: not-allowed;
+ }
+ 
+ .field-note {
+   font-size: 12px;
+   color: #6b7280;
+   font-style: italic;
+ }
+ 
+ /* Sports */
+ .sports-grid {
+   display: flex;
+   flex-wrap: wrap;
+   gap: 10px;
+ }
+ 
+ .sport-chip {
+   padding: 10px 20px;
+   border: 2px solid #e5e7eb;
+   border-radius: 9999px;
+   background: white;
+   color: #374151;
+   font-size: 14px;
+   font-weight: 600;
+   cursor: pointer;
+   transition: all 0.2s;
+ }
+ 
+ .sport-chip:hover:not(:disabled) {
+   border-color: #059669;
+   background: #f0fdf4;
+ }
+ 
+ .sport-chip.active {
+   background: #059669;
+   color: white;
+   border-color: #059669;
+ }
+ 
+ .sport-chip:disabled {
+   cursor: not-allowed;
+   opacity: 0.7;
+ }
+ 
+ /* Boutons d'action */
+ .profile-actions {
+   display: flex;
+   gap: 12px;
+   margin-top: 16px;
+   justify-content: flex-end;
+ }
+ 
+ .btn-edit,
+ .btn-save,
+ .btn-cancel {
+   padding: 12px 24px;
+   border-radius: 8px;
+   font-size: 15px;
+   font-weight: 600;
+   cursor: pointer;
+   transition: all 0.2s;
+   display: flex;
+   align-items: center;
+   gap: 8px;
+   border: none;
+ }
+ 
+ .btn-edit {
+   background: #059669;
+   color: white;
+   width: 100%;
+   justify-content: center;
+ }
+ 
+ .btn-edit:hover {
+   background: #047857;
+   transform: translateY(-1px);
+ }
+ 
+ .btn-cancel {
+   background: #f3f4f6;
+   color: #374151;
+   border: 2px solid #d1d5db;
+ }
+ 
+ .btn-cancel:hover {
+   background: #e5e7eb;
+ }
+ 
+ .btn-save {
+   background: #059669;
+   color: white;
+ }
+ 
+ .btn-save:hover {
+   background: #047857;
+   transform: translateY(-1px);
+ }
+ 
+ .btn-save:disabled {
+   opacity: 0.6;
+   cursor: not-allowed;
+ }
+ 
+ /* ===== RESPONSIVE ===== */
+ @media (max-width: 768px) {
+   .profile-page-club {
+     padding: 70px 16px 30px;
+   }
+ 
+   .banniere-section {
+     height: 180px;
+   }
+ 
+   .banniere-upload-btn {
+     bottom: 12px;
+     right: 12px;
+     padding: 8px 16px;
+     font-size: 13px;
+   }
+ 
+   .profile-photo-section-club {
+     padding: 0 24px 24px;
+     margin-top: -50px;
+   }
+ 
+   .profile-photo-club,
+   .profile-photo-placeholder-club {
+     width: 100px;
+     height: 100px;
+   }
+ 
+   .photo-upload-btn-club {
+     width: 32px;
+     height: 32px;
+   }
+ 
+   .club-name {
+     font-size: 22px;
+   }
+ 
+   .profile-form-club {
+     padding: 24px;
+   }
+ 
+   .form-row {
+     grid-template-columns: 1fr;
+     gap: 16px;
+   }
+ 
+   .profile-actions {
+     flex-direction: column-reverse;
+   }
+ 
+   .btn-edit,
+   .btn-save,
+   .btn-cancel {
+     width: 100%;
+     justify-content: center;
+   }
+ }
+ 
+ @media (max-width: 480px) {
+   .banniere-section {
+     height: 150px;
+   }
+ 
+   .profile-photo-club,
+   .profile-photo-placeholder-club {
+     width: 90px;
+     height: 90px;
+     border-radius: 16px;
+   }
+ 
+   .club-name {
+     font-size: 20px;
+   }
+ 
+   .profile-form-club {
+     padding: 20px;
+   }
+ 
+   .form-field input {
+     padding: 10px 14px;
+     font-size: 14px;
+   }
+ 
+   .sport-chip {
+     padding: 8px 16px;
+     font-size: 13px;
+   }
+ 
+   .btn-edit,
+   .btn-save,
+   .btn-cancel {
+     padding: 10px 20px;
+     font-size: 14px;
+   }
+ }

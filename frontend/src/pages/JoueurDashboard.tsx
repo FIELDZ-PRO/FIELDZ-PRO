@@ -70,7 +70,7 @@ const JoueurDashboard: React.FC = () => {
         logout();
         navigate("/");
       }}
-      onNavigateToProfile={() => navigate("/profil")}
+      onNavigateToProfile={() => navigate("/profil-joueur")}
     />
   );
 };

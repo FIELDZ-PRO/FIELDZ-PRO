@@ -18,7 +18,9 @@ import ResetPassword from "../pages/Log-auth/ResetPassword";
 import ForgotPassword from '../pages/ForgotPassword';
 import OAuthSuccess from '../pages/Log-auth/oauth-success';
 import CompleteProfile from '../pages/CompleteProfile';
-import ProfilPage from '../pages/ProfilPage';
+import ProfilJoueur from '../pages/ProfilJoueur';
+import ProfilClub from '../pages/ProfilClub';
+
 import AccueilClub from '../pages/VueClub/AccueilClub';
 import Club from '../pages/Club';
 import { NavigationProvider } from '../pages/VueClub/Context/NavigationContext';
@@ -51,7 +53,9 @@ export default function AppRouter() {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/oauth-success" element={<OAuthSuccess />} />
       <Route path="/complete-profile" element={<CompleteProfile />} />
-      <Route path="/profil" element={<ProfilPage />} />
+      <Route path="/profil-club" element={<ProfilClub />} />
+      <Route path="/profil-joueur" element={<ProfilJoueur />} />
+
 
 
       {/*Club Pages*/}
