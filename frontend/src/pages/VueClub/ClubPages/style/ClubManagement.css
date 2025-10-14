@@ -2,6 +2,9 @@
     padding: 32px;
     background-color: #f8fafc;
     min-height: calc(100vh - 64px);
+    box-sizing: border-box;
+    /* Add this */
+
 }
 
 .page-header {
@@ -19,12 +22,17 @@
 }
 
 .management-content {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    display: flex;
+    flex-direction: column;
     gap: 32px;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+    /* Add this */
+    box-sizing: border-box;
 }
 
-.club-info-section,
+.club-info-section2,
 .settings-sections {
     display: flex;
     flex-direction: column;
@@ -237,6 +245,32 @@ input:checked+.slider:before {
     border: none;
 }
 
+.btn-add {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border: none;
+}
+
+.btn-modify {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border: none;
+}
+
 .btn-primary {
     background-color: #2E7D32;
     color: white;
@@ -258,7 +292,7 @@ input:checked+.slider:before {
 
 @media (max-width: 1024px) {
     .management-content {
-        grid-template-columns: 1fr;
+        max-width: 100%;
     }
 }
 
@@ -276,12 +310,10 @@ input:checked+.slider:before {
     .setting-item {
         flex-direction: column;
         align-items: flex-start;
-        gap: 12px;
     }
 
     .payment-method {
         flex-direction: column;
         align-items: flex-start;
-        gap: 12px;
     }
 }

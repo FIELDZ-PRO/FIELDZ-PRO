@@ -3,8 +3,18 @@ export type Club = {
   nomClub: string;
   adresse?: string;
   telephone?: string;
+  banniereUrl?: string;
+  sports?: string[];
 };
 
+export type ClubData = {
+  nom: string;
+  ville: string;
+  adresse: string;
+  telephone: string;
+  banniereUrl: string;
+  sports: string[];
+};
 
 export type Joueur = {
   id: number;

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Plus, Edit, Trash2, MapPin, Clock, Dumbbell } from 'lucide-react';
+import { Plus, Edit, Trash2, MapPin, Clock, Dumbbell, Goal } from 'lucide-react';
 import './style/TerrainsPage.css';
 import { Terrain } from '../../../types';
 import { ClubService } from '../../../services/ClubService';
@@ -183,7 +183,7 @@ const TerrainsPage = () => {
                             </div>
 
                             <div className="info-item">
-                                <Clock size={16} />
+                                <Goal size={16} />
                                 <span>{terrain.typeSurface} </span>
                             </div>
                             <div className="info-item">

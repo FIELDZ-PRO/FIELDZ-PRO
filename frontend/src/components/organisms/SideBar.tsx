@@ -9,7 +9,7 @@ const Sidebar = () => {
         { id: 'accueil' as NavigationItem, label: 'Accueil', icon: Home },
         { id: 'terrains' as NavigationItem, label: 'Gestion des terrains', icon: MapPin },
         { id: 'reservations' as NavigationItem, label: 'Gestion des réservations', icon: Calendar },
-        { id: 'club' as NavigationItem, label: 'Gestion des club', icon: Settings },
+        { id: 'club' as NavigationItem, label: 'Paramètres des clubs', icon: Settings },
     ];
 
     return (
