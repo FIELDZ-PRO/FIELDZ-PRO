@@ -42,7 +42,7 @@ export default function Register() {
         nom: form.nom,
         email: form.email,
         motDePasse: form.motDePasse,
-        role: "JOUEUR", // ← Toujours JOUEUR
+        role: "JOUEUR",
         adresse: "",
         nomClub: ""
       });
@@ -56,116 +56,124 @@ export default function Register() {
   };
 
   return (
-    <div className="auth-page">
-      <div className="auth-card">
-        <div className="avatar" aria-hidden />
-        <h1 className="title">Bienvenue</h1>
-        <p className="subtitle">Créez votre compte joueur</p>
+    <>
+      <button 
+        className="back-to-home"
+        onClick={() => navigate('/')}
+      >
+        ← Retour
+      </button>
+      
+      <div className="auth-page">
+        <div className="auth-card">
+          <div className="avatar" aria-hidden />
+          <h1 className="title">Bienvenue</h1>
+          <p className="subtitle">Créez votre compte joueur</p>
 
-        {/* Onglets (actif à droite) */}
-        <div className="tabs register">
-          <Link to="/login" className="tab">Connexion</Link>
-          <Link to="/register" className="tab">Inscription</Link>
-          <span className="indicator" />
+          <div className="tabs register">
+            <Link to="/login" className="tab">Connexion</Link>
+            <Link to="/register" className="tab">Inscription</Link>
+            <span className="indicator" />
+          </div>
+
+          <form className="form" onSubmit={handleSubmit} noValidate>
+            {message && <div className="api-error">{message}</div>}
+
+            <div className="field">
+              <label className="label">Votre nom</label>
+              <div className="input-wrap">
+                <input
+                  className="input"
+                  name="nom"
+                  placeholder="Exemple : Aziz CoupDeCouteau"
+                  value={form.nom}
+                  onChange={onChange}
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="field">
+              <label className="label">Email</label>
+              <div className="input-wrap">
+                <span className="icon email" aria-hidden />
+                <input
+                  className="input"
+                  type="email"
+                  name="email"
+                  placeholder="Votre email : example@gmail.com"
+                  value={form.email}
+                  onChange={onChange}
+                  autoComplete="email"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="field">
+              <label className="label">Mot de passe</label>
+              <div className="input-wrap">
+                <span className="icon lock" aria-hidden />
+                <input
+                  className="input"
+                  type={showPwd ? "text" : "password"}
+                  name="motDePasse"
+                  placeholder="Votre mot de passe"
+                  value={form.motDePasse}
+                  onChange={onChange}
+                  autoComplete="new-password"
+                  required
+                />
+                <button
+                  type="button"
+                  className="eye"
+                  onClick={() => setShowPwd((s) => !s)}
+                  aria-label={showPwd ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                />
+              </div>
+            </div>
+
+            <div className="field">
+              <label className="label">Confirmez votre mot de passe</label>
+              <div className="input-wrap">
+                <span className="icon lock" aria-hidden />
+                <input
+                  className="input"
+                  type={showPwd ? "text" : "password"}
+                  name="confirm"
+                  placeholder="Confirmation"
+                  value={form.confirm}
+                  onChange={onChange}
+                  autoComplete="new-password"
+                  required
+                />
+                <button
+                  type="button"
+                  className="eye"
+                  onClick={() => setShowPwd((s) => !s)}
+                  aria-label={showPwd ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                />
+              </div>
+            </div>
+
+            <button className="primary" disabled={isLoading}>
+              {isLoading ? "Création..." : "S'inscrire"}
+            </button>
+
+            <div className="divider" />
+            <p className="continue">Ou continuer avec</p>
+
+            <div className="oauth-row">
+              <button type="button" className="oauth google" disabled>
+                <span className="g">G</span> Google
+              </button>
+              <button type="button" className="oauth facebook" disabled>
+                <span className="f">f</span> Facebook
+              </button>
+            </div>
+          </form>
         </div>
-
-        <form className="form" onSubmit={handleSubmit} noValidate>
-          {message && <div className="api-error">{message}</div>}
-
-          <div className="field">
-            <label className="label">Votre nom</label>
-            <div className="input-wrap">
-              <input
-                className="input"
-                name="nom"
-                placeholder="Exemple : Aziz CoupDeCouteau"
-                value={form.nom}
-                onChange={onChange}
-                required
-              />
-            </div>
-          </div>
-
-          <div className="field">
-            <label className="label">Email</label>
-            <div className="input-wrap">
-              <span className="icon email" aria-hidden />
-              <input
-                className="input"
-                type="email"
-                name="email"
-                placeholder="Votre email : example@gmail.com"
-                value={form.email}
-                onChange={onChange}
-                autoComplete="email"
-                required
-              />
-            </div>
-          </div>
-
-          <div className="field">
-            <label className="label">Mot de passe</label>
-            <div className="input-wrap">
-              <span className="icon lock" aria-hidden />
-              <input
-                className="input"
-                type={showPwd ? "text" : "password"}
-                name="motDePasse"
-                placeholder="Votre mot de passe"
-                value={form.motDePasse}
-                onChange={onChange}
-                autoComplete="new-password"
-                required
-              />
-              <button
-                type="button"
-                className="eye"
-                onClick={() => setShowPwd((s) => !s)}
-                aria-label={showPwd ? "Masquer le mot de passe" : "Afficher le mot de passe"}
-              />
-            </div>
-          </div>
-
-          <div className="field">
-            <label className="label">Confirmez votre mot de passe</label>
-            <div className="input-wrap">
-              <span className="icon lock" aria-hidden />
-              <input
-                className="input"
-                type={showPwd ? "text" : "password"}
-                name="confirm"
-                placeholder="Confirmation"
-                value={form.confirm}
-                onChange={onChange}
-                autoComplete="new-password"
-                required
-              />
-              <button
-                type="button"
-                className="eye"
-                onClick={() => setShowPwd((s) => !s)}
-                aria-label={showPwd ? "Masquer le mot de passe" : "Afficher le mot de passe"}
-              />
-            </div>
-          </div>
-
-          <button className="primary" disabled={isLoading}>
-            {isLoading ? "Création..." : "S'inscrire"}
-          </button>
-
-          <div className="divider" />
-          <p className="continue">Ou continuer avec</p>
-
-          <div className="oauth-row">
-            <button type="button" className="oauth google" disabled>
-              <span className="g">G</span> Google
-            </button>
-            <button type="button" className="oauth facebook" disabled>
-              <span className="f">f</span> Facebook
-            </button>
-          </div>
-        </form>
       </div>
-    </div>
+    </>
   );
 }

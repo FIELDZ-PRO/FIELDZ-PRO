@@ -380,4 +380,31 @@
     padding: 0.45rem 0.7rem;
     font-size: 13px;
   }
+ /* Bouton retour simple */
+.back-to-home {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  background: transparent;
+  border: none;
+  color: #1f5a2f;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  z-index: 1001;
+  padding: 8px 12px;
+  transition: opacity 0.2s;
+}
+
+.back-to-home:hover {
+  opacity: 0.7;
+}
+
+@media (max-width: 768px) {
+  .back-to-home {
+    top: 16px;
+    left: 16px;
+    font-size: 15px;
+  }
+}
 }

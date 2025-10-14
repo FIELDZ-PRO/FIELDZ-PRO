@@ -1,128 +1,225 @@
 /* Navbar.css */
 .navbar {
-   position: fixed;    /* colle la barre en haut */
-   top: 0;
-   left: 0;
-   right: 0;           /* étend sur toute la largeur */
-   background-color: #ffffff;
-   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-   z-index: 1000;
- }
- 
- .navbar__container {
-   max-width: 1280px;  /* ou la largeur de ton choix */
-   margin: 0 auto;     /* centre le contenu */
-   padding: 0 1rem;    /* un petit souffle à droite/gauche */
-   display: flex;
-   align-items: center;
-   justify-content: space-between;
-   height: 64px;       /* ajustable selon ta maquette */
- }
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: #ffffff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  z-index: 1000;
+}
 
-/* Bouton Connexion Club - Style cubique */
-.navbar-btn.club-login {
-  padding: 0.6rem 2rem !important;
-  background: #184f25 !important;
-  color: white !important;
-  border: 2px solid #184f25 !important;
-  border-radius: 0.5rem !important; /* ← Légèrement arrondi (cubique) */
+.navbar__container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+
+.navbar__logo {
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+  text-decoration: none;
+  color: inherit;
+  font-size: 24px;
+  font-weight: 700;
+  color: #0D4E1D;
+  z-index: 1001;
+}
+
+.navbar__logo:hover,
+.navbar__logo:focus {
+  text-decoration: none;
+}
+
+/* Menu central */
+.navbar__menu {
+  display: flex;
+  gap: 32px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  align-items: center;
+}
+
+.navbar__menu a {
+  text-decoration: none;
+  color: #1f2937;
   font-weight: 600;
+  font-size: 16px;
+  transition: color 0.2s;
+}
+
+.navbar__menu a:hover {
+  color: #065f46;
+}
+
+/* Actions visibles que sur desktop */
+.navbar__actions-desktop {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+/* Menu actions (cachées sur desktop, visibles sur mobile dans le menu) */
+.navbar__menu-actions {
+  display: none;
+}
+
+/* Boutons */
+.navbar-btn {
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
   white-space: nowrap;
 }
 
-.navbar-btn.club-login:hover {
-  background: #266b39 !important;
-  border-color: #266b39 !important;
-}
- 
- .navbar__logo 
- {
-   display: inline-flex;       /* si tu veux centrer verticalement */
-   align-items: center;
-   height: 32px;
-   text-decoration: none;      /* ← c’est l’important */
-   color: inherit;             /* conserve la couleur par défaut */
-   }
-   .navbar__logo:hover,
-   .navbar__logo:focus 
-   {
-   text-decoration: none;
-   }     
- /* Menu central */
- .navbar__menu {
-   display: flex;
-   gap: 32px;
-   list-style: none;
-   margin: 0;
-   padding: 0;
- }
- 
- .navbar__menu a {
-   text-decoration: none;
-   color: #1f2937; /* gris foncé */
-   font-weight: 600;
-   font-size: 16px;
- }
- 
- .navbar__menu a:hover {
-   color: #065f46; /* vert foncé */
- }
- 
- /* Actions (boutons) */
- .navbar__actions {
-   display: flex;
-   gap: 12px;
- }
- 
- /* Style générique de bouton */
- .btn {
-   font-size: 14px;
-   padding: 8px 20px;
-   border-radius: 9999px; /* arrondi complet */
-   cursor: pointer;
-   border: 1px solid transparent;
-   display: inline-flex;
-   align-items: center;
-   justify-content: center;
- }
- 
- /* Bouton « text » (outline) */
- .btn--text {
-   background: transparent;
-   color: #1f2937;
-   border-color: #1f2937;
- }
- 
- .btn--text:hover {
-   background: rgba(31, 41, 55, 0.05);
- }
- 
- /* Bouton Connexion */
 .navbar-btn.login {
-  border: 2px solid #004225;   /* ton vert */
+  border: 2px solid #004225;
   color: #004225;
   background: transparent;
-  padding: 6px 16px;
+  padding: 8px 18px;  /* ← Réduit */
   border-radius: 8px;
   font-weight: 500;
-  transition: 0.2s;
+  font-size: 14px;  /* ← Réduit */
 }
 
-.navbar-btn.login:hover {
-  background: #004225;
-  color: #fff;
-}
-
-/* Bouton Inscription */
 .navbar-btn.register {
   background: #004225;
   color: #fff;
-  padding: 6px 16px;
+  padding: 8px 18px;  /* ← Réduit */
   border-radius: 8px;
   font-weight: 500;
-  transition: 0.2s;
+  font-size: 14px;  /* ← Réduit */
+  border: 2px solid #004225;
 }
 
-.navbar-btn.register:hover {
-  background: #006837; /* un vert un peu plus foncé au hover */
+.navbar-btn.club-login {
+  padding: 8px 20px;  /* ← Réduit */
+  background: #184f25;
+  color: white;
+  border: 2px solid #184f25;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 14px;  /* ← Réduit */
+}
+
+/* Toggle burger (caché sur desktop) */
+.navbar__mobile-toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  color: #1f2937;
+  z-index: 1001;
+}
+
+.navbar__mobile-toggle svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .navbar__container {
+    height: 56px;
+  }
+
+  .navbar__logo {
+    font-size: 20px;
+  }
+
+  /* Cache les actions desktop sur mobile */
+  .navbar__actions-desktop {
+    display: none;
+  }
+
+  /* Affiche le menu burger */
+  .navbar__mobile-toggle {
+    display: block;
+  }
+
+  /* Menu burger */
+  .navbar__menu {
+    position: fixed;
+    top: 56px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: white;
+    flex-direction: column;
+    gap: 0;
+    padding: 0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    overflow-y: auto;
+    align-items: stretch;
+  }
+
+  .navbar__menu.active {
+    transform: translateX(0);
+  }
+
+  .navbar__menu li {
+    width: 100%;
+    border-bottom: 1px solid #f3f4f6;
+  }
+
+  .navbar__menu li:last-child {
+    border-bottom: none;
+  }
+
+  .navbar__menu > li > a {
+    display: block;
+    padding: 16px 20px;
+    width: 100%;
+    font-size: 15px;
+  }
+
+  .navbar__menu > li > a:hover {
+    background: #f9fafb;
+  }
+
+  /* Affiche les boutons DANS le menu burger */
+  .navbar__menu-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 20px;
+    background: #f9fafb;
+    margin-top: auto;
+  }
+
+  .navbar__menu-actions .navbar-btn {
+    width: 100%;
+    padding: 12px;
+    text-align: center;
+    font-size: 15px;
+  }
+
+  .navbar-btn.club-login {
+    padding: 12px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar__container {
+    height: 52px;
+  }
+
+  .navbar__logo {
+    font-size: 18px;
+  }
+
+  .navbar__menu {
+    top: 52px;
+  }
 }

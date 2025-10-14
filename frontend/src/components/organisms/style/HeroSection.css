@@ -8,6 +8,7 @@
   background:#fff;
   overflow:hidden;
   direction: ltr;
+  padding-top: 64px;
 }
 .hero .container{ max-width:1200px; margin:0 auto; padding:0 2rem; }
 
@@ -211,7 +212,8 @@
 }
 
 @media (max-width: 768px) {
-  .hero{ min-height:auto; }
+  .hero{ min-height:auto; 
+    padding-top: 56px;}
   .hero .container{ padding:0 1rem; }
   
   .hero-content{
@@ -288,6 +290,10 @@
 }
 
 @media (max-width: 480px) {
+.hero {
+    padding-top: 52px;
+  }
+
   .hero-title{
     font-size:1.8rem;
   }
