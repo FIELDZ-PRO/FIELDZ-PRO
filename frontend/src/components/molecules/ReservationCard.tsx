@@ -16,36 +16,32 @@ const ReservationCard: React.FC<Props> = ({ reservation, role, onUpdate }) => {
   const { token } = useAuth();
   const [showMotifModal, setShowMotifModal] = useState(false);
 
-  const {
-    id,
-    statut,
-    joueur,
-    creneau,
-    dateAnnulation,
-    motifAnnulation,
-  } = reservation;
+  const { id, statut, joueur, creneau, dateAnnulation, motifAnnulation } = reservation;
 
-  const dateDebut = format(new Date(creneau.dateDebut), "EEEE dd MMMM yyyy 'à' HH:mm", { locale: fr });
-  const dateFin = format(new Date(creneau.dateFin), "HH:mm", { locale: fr });
-  const terrain = creneau.terrain.nomTerrain;
+  // --- SAFE ACCESS ---
+  const c = creneau ?? null;
+
+  const dateDebutStr = c?.dateDebut
+    ? format(new Date(c.dateDebut), "EEEE dd MMMM yyyy 'à' HH:mm", { locale: fr })
+    : "Créneau supprimé";
+
+  const dateFinStr = c?.dateFin
+    ? format(new Date(c.dateFin), "HH:mm", { locale: fr })
+    : "—";
+
+  const terrainStr = c?.terrain?.nomTerrain ?? "Créneau supprimé";
 
   const handleConfirmer = async () => {
     if (!token) {
       toast.error("❌ Utilisateur non authentifié");
       return;
     }
-
     try {
       const res = await fetch(`http://localhost:8080/api/reservations/${id}/confirmer`, {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
       });
-
       if (!res.ok) throw new Error("Erreur lors de la confirmation");
-
       toast.success("✅ Réservation confirmée !");
       onUpdate ? onUpdate() : window.location.reload();
     } catch (err) {
@@ -58,15 +54,10 @@ const ReservationCard: React.FC<Props> = ({ reservation, role, onUpdate }) => {
     try {
       const res = await fetch(`http://localhost:8080/api/reservations/${id}/annuler`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ motif }),
       });
-
       if (!res.ok) throw new Error("Erreur lors de l'annulation");
-
       toast.success("✅ Réservation annulée !");
       setShowMotifModal(false);
       onUpdate ? onUpdate() : window.location.reload();
@@ -78,18 +69,12 @@ const ReservationCard: React.FC<Props> = ({ reservation, role, onUpdate }) => {
 
   const handleAnnulerSansMotif = async () => {
     if (!window.confirm("Annuler cette réservation ?")) return;
-
     try {
       const res = await fetch(`http://localhost:8080/api/reservations/${id}/annuler`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
       });
-
       if (!res.ok) throw new Error("Erreur lors de l'annulation");
-
       toast.success("✅ Réservation annulée !");
       onUpdate ? onUpdate() : window.location.reload();
     } catch (err) {
@@ -110,12 +95,16 @@ const ReservationCard: React.FC<Props> = ({ reservation, role, onUpdate }) => {
 
   return (
     <div className={getStatutClass()}>
-      <div className="card-title">👤 Joueur : {joueur.prenom} {joueur.nom}</div>
-      <div className="card-info">📅 {dateDebut} → {dateFin}</div>
-      <div className="card-info">📍 Terrain : {terrain}</div>
+      <div className="card-title">👤 Joueur : {joueur?.prenom} {joueur?.nom}</div>
+
+      {/* Dates & lieu : safe fallback si créneau supprimé */}
+      <div className="card-info">📅 {dateDebutStr} → {dateFinStr}</div>
+      <div className="card-info">📍 Terrain : {terrainStr}</div>
 
       {statut.startsWith('ANNULE') && dateAnnulation && (
-        <div className="card-info">❌ Annulé le : {format(new Date(dateAnnulation), "dd/MM/yyyy à HH:mm")}</div>
+        <div className="card-info">
+          ❌ Annulé le : {format(new Date(dateAnnulation), "dd/MM/yyyy 'à' HH:mm", { locale: fr })}
+        </div>
       )}
 
       {motifAnnulation && (
@@ -126,25 +115,12 @@ const ReservationCard: React.FC<Props> = ({ reservation, role, onUpdate }) => {
         <div className="card-actions">
           {role === 'club' && (
             <>
-              <button
-                onClick={handleConfirmer}
-                className="jd-btn-success"
-              >
-                ✅ Confirmer
-              </button>
-              <button
-                onClick={handleAnnulerSansMotif}
-                className="jd-btn-danger"
-              >
-                ❌ Annuler
-              </button>
+              <button onClick={handleConfirmer} className="jd-btn-success">✅ Confirmer</button>
+              <button onClick={handleAnnulerSansMotif} className="jd-btn-danger">❌ Annuler</button>
             </>
           )}
           {role === 'joueur' && (
-            <button
-              onClick={() => setShowMotifModal(true)}
-              className="jd-btn-danger"
-            >
+            <button onClick={() => setShowMotifModal(true)} className="jd-btn-danger">
               ❌ Annuler
             </button>
           )}
