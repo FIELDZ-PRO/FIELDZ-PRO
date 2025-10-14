@@ -6,21 +6,12 @@ import React from "react";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
 
-type Role = "JOUEUR" | "CLUB";
-
 export default function Register() {
-  const [form, setForm] = useState<{
-    nom: string;
-    email: string;
-    motDePasse: string;
-    confirm: string;
-    role: Role | null;
-  }>({
+  const [form, setForm] = useState({
     nom: "",
     email: "",
     motDePasse: "",
     confirm: "",
-    role: null,
   });
 
   const [showPwd, setShowPwd] = useState(false);
@@ -28,11 +19,10 @@ export default function Register() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
   const validate = () => {
-    if (!form.role) return "Choisissez un rôle : Joueur ou Club.";
     if (!form.nom.trim()) return "Nom requis";
     if (!/^\S+@\S+\.\S+$/.test(form.email)) return "Email invalide";
     if (form.motDePasse.length < 6) return "Mot de passe trop court (≥6)";
@@ -48,11 +38,11 @@ export default function Register() {
 
     setIsLoading(true);
     try {
-     await axios.post(`${API_BASE}/api/auth/register`, {
+      await axios.post(`${API_BASE}/api/auth/register`, {
         nom: form.nom,
         email: form.email,
-        motDePasse: form.motDePasse,   
-        role: form.role,
+        motDePasse: form.motDePasse,
+        role: "JOUEUR", // ← Toujours JOUEUR
         adresse: "",
         nomClub: ""
       });
@@ -70,7 +60,7 @@ export default function Register() {
       <div className="auth-card">
         <div className="avatar" aria-hidden />
         <h1 className="title">Bienvenue</h1>
-        <p className="subtitle">Connectez-vous ou créer un compte</p>
+        <p className="subtitle">Créez votre compte joueur</p>
 
         {/* Onglets (actif à droite) */}
         <div className="tabs register">
@@ -81,27 +71,6 @@ export default function Register() {
 
         <form className="form" onSubmit={handleSubmit} noValidate>
           {message && <div className="api-error">{message}</div>}
-
-          {/* Toggle rôle */}
-          <div className="field">
-            <label className="label">Rôle</label>
-            <div className="role-toggle" role="group" aria-label="Choisir un rôle">
-              <button
-                type="button"
-                className={`role-btn ${form.role === "JOUEUR" ? "active" : ""}`}
-                onClick={() => setForm({ ...form, role: "JOUEUR" })}
-              >
-                Joueur
-              </button>
-              <button
-                type="button"
-                className={`role-btn ${form.role === "CLUB" ? "active" : ""}`}
-                onClick={() => setForm({ ...form, role: "CLUB" })}
-              >
-                Club
-              </button>
-            </div>
-          </div>
 
           <div className="field">
             <label className="label">Votre nom</label>
@@ -180,8 +149,8 @@ export default function Register() {
             </div>
           </div>
 
-          <button className="primary" disabled={isLoading || !form.role}>
-            {isLoading ? "Création..." : "S’inscrire"}
+          <button className="primary" disabled={isLoading}>
+            {isLoading ? "Création..." : "S'inscrire"}
           </button>
 
           <div className="divider" />

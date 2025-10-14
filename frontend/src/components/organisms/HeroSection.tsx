@@ -50,12 +50,10 @@ const Hero = ({ onNavigate }: HeroProps) => {
               </p>
             </div>
             <ul className="hero-benefits">
-            <li><CheckCircle2 size={18}/> Clubs vérifiés</li>
-             <li><Shield size={18}/> Paiement sécurisé</li>
-            <li><Clock size={18}/> Annulation flexible</li>
+              <li><CheckCircle2 size={18}/> Clubs vérifiés</li>
+              <li><Shield size={18}/> Paiement sécurisé</li>
+              <li><Clock size={18}/> Annulation flexible</li>
             </ul>
-            
-
 
             {/* CTA Buttons */}
             <div className="hero-cta">
@@ -120,7 +118,7 @@ const Hero = ({ onNavigate }: HeroProps) => {
 
                 {/* Search button */}
                 <button 
-                  onClick={() => onNavigate('player')}
+                  onClick={() => window.location.href = '/login'}
                   className="btn-search"
                 >
                   <Search size={20} />
@@ -133,7 +131,11 @@ const Hero = ({ onNavigate }: HeroProps) => {
                 <p className="quick-access-title">Accès rapide :</p>
                 <div className="quick-access-buttons">
                   {['Football', 'Padel', 'Tennis'].map(sport => (
-                    <button key={sport} className="quick-btn">
+                    <button 
+                      key={sport} 
+                      className="quick-btn"
+                      onClick={() => window.location.href = '/register'}
+                    >
                       {sport}
                     </button>
                   ))}

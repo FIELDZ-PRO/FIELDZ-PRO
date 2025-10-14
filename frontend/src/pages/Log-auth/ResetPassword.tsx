@@ -1,11 +1,8 @@
 import React, { useMemo, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, Link } from 'react-router-dom';
 import axios from 'axios';
-
-const API_BASE =
-  import.meta.env.VITE_API_URL ||
-  import.meta.env.VITE_API_BASE_URL || // au cas où
-  "http://10.188.124.180:5173/";
+import './style/Login.css';
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
 
 const ResetPassword = () => {
   const [searchParams] = useSearchParams();
@@ -16,41 +13,43 @@ const ResetPassword = () => {
   const [message, setMessage] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage('');
 
     if (!token) {
-      setMessage('❌ Lien invalide (token manquant).');
+      setMessage('Lien invalide (token manquant).');
       return;
     }
     if (newPassword.length < 8) {
-      setMessage('❌ Le mot de passe doit contenir au moins 8 caractères.');
+      setMessage('Le mot de passe doit contenir au moins 8 caractères.');
       return;
     }
     if (newPassword !== confirmPassword) {
-      setMessage('❌ Les mots de passe ne correspondent pas.');
+      setMessage('Les mots de passe ne correspondent pas.');
       return;
     }
 
     try {
       setLoading(true);
-      await axios.post(`${API_BASE}/api/auth/reset-password`,  // <-- corrigé
+      await axios.post(`${API_BASE}/api/auth/reset-password`,
         { token, newPassword },
         { headers: { 'Content-Type': 'application/json' } }
       );
-      setMessage('✅ Mot de passe réinitialisé avec succès ! Vous pouvez vous connecter.');
+      setSuccess(true);
+      setMessage('Mot de passe réinitialisé avec succès !');
     } catch (error: any) {
       console.error('Erreur :', error);
       const status = error.response?.status;
       if (status === 400 || status === 404) {
-        setMessage('❌ Le lien est invalide ou a expiré.');
+        setMessage('Le lien est invalide ou a expiré.');
       } else if (status === 429) {
-        setMessage('⛔ Trop de tentatives. Réessayez dans quelques minutes.');
+        setMessage('Trop de tentatives. Réessayez dans quelques minutes.');
       } else {
         const apiMsg = error.response?.data?.message || error.response?.data;
-        setMessage(`❌ ${apiMsg || 'Une erreur est survenue.'}`);
+        setMessage(apiMsg || 'Une erreur est survenue.');
       }
     } finally {
       setLoading(false);
@@ -58,51 +57,77 @@ const ResetPassword = () => {
   };
 
   return (
-    <div style={{ maxWidth: 400, margin: 'auto', padding: 16 }}>
-      <h2>Réinitialiser le mot de passe</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type={showPassword ? 'text' : 'password'}
-          placeholder="Nouveau mot de passe"
-          value={newPassword}
-          onChange={(e) => setNewPassword(e.target.value)}
-          required
-          style={{ display: 'block', marginBottom: 10, width: '100%' }}
-        />
+    <div className="auth-page">
+      <div className="auth-card">
+        <div className="avatar" aria-hidden />
+        <h1 className="title">Réinitialiser le mot de passe</h1>
+        <p className="subtitle">Choisissez un nouveau mot de passe sécurisé</p>
 
-        <input
-          type={showPassword ? 'text' : 'password'}
-          placeholder="Confirmer le mot de passe"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          required
-          style={{ display: 'block', marginBottom: 10, width: '100%' }}
-        />
+        {success ? (
+          <div className="form">
+            <div className="api-success" style={{ 
+              padding: '1rem', 
+              background: '#d4edda', 
+              color: '#155724', 
+              borderRadius: '0.5rem',
+              marginBottom: '1rem'
+            }}>
+              ✅ {message}
+            </div>
+            <Link to="/login" className="primary" style={{ textAlign: 'center', display: 'block' }}>
+              Se connecter
+            </Link>
+          </div>
+        ) : (
+          <form className="form" onSubmit={handleSubmit} noValidate>
+            {message && <div className="api-error">{message}</div>}
 
-        <button
-          type="button"
-          onClick={() => setShowPassword(!showPassword)}
-          style={{ marginBottom: 10 }}
-        >
-          {showPassword ? '🙈 Masquer' : '👁️ Afficher'}
-        </button>
+            <div className="field">
+              <label className="label">Nouveau mot de passe</label>
+              <div className="input-wrap">
+                <span className="icon lock" aria-hidden />
+                <input
+                  className="input"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Minimum 8 caractères"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  autoComplete="new-password"
+                  required
+                />
+                <button
+                  type="button"
+                  className="eye"
+                  onClick={() => setShowPassword(!showPassword)}
+                  aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                />
+              </div>
+            </div>
 
-        <button type="submit" style={{ width: '100%' }} disabled={loading || !token}>
-          {loading ? 'Réinitialisation…' : 'Réinitialiser'}
-        </button>
-      </form>
+            <div className="field">
+              <label className="label">Confirmer le mot de passe</label>
+              <div className="input-wrap">
+                <span className="icon lock" aria-hidden />
+                <input
+                  className="input"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Retapez votre mot de passe"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  autoComplete="new-password"
+                  required
+                />
+              </div>
+            </div>
 
-      {message && (
-        <p
-          style={{
-            marginTop: 10,
-            color: message.startsWith('✅') ? 'green' : 'red',
-            fontWeight: 500,
-          }}
-        >
-          {message}
-        </p>
-      )}
+            <button className="primary" disabled={loading || !token}>
+              {loading ? 'Réinitialisation...' : 'Réinitialiser le mot de passe'}
+            </button>
+
+            <Link className="forgot" to="/login">Retour à la connexion</Link>
+          </form>
+        )}
+      </div>
     </div>
   );
 };

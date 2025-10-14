@@ -18,7 +18,22 @@
    justify-content: space-between;
    height: 64px;       /* ajustable selon ta maquette */
  }
- 
+
+/* Bouton Connexion Club - Style cubique */
+.navbar-btn.club-login {
+  padding: 0.6rem 2rem !important;
+  background: #184f25 !important;
+  color: white !important;
+  border: 2px solid #184f25 !important;
+  border-radius: 0.5rem !important; /* ← Légèrement arrondi (cubique) */
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.navbar-btn.club-login:hover {
+  background: #266b39 !important;
+  border-color: #266b39 !important;
+}
  
  .navbar__logo 
  {

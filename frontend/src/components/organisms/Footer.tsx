@@ -56,7 +56,8 @@ const Footer: React.FC = () => (
     </div>
 
     <div className="footer__bottom">
-      © 2024 FIELDZ. Tous droits réservés.
+      <p>© 2024 FIELDZ. Tous droits réservés.</p>
+      <a href="/admin/login" className="footer__admin-link">Portail Admin</a>
     </div>
   </footer>
 )

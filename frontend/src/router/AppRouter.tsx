@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Login from '../pages/Log-auth/Login';
 import Register from '../pages/Log-auth/Register';
+import AdminLogin from '../components/admin/AdminLogin';
 
 import ClubDashboard from '../pages/ClubDashboard';
 import ClubDashboard2 from '../pages/ClubDashboard2';
@@ -129,6 +130,7 @@ export default function AppRouter() {
           </ProtectedRoute>
         }
       />
+      <Route path="/admin/login" element={<AdminLogin />} />
 
       {/* Routes Admin - Protégées */}
       <Route 

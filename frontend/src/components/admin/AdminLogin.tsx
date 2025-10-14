@@ -1,15 +1,15 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import { useAuth } from "../../context/AuthContext";
-import "./style/Login.css";
+import "../../pages/Log-auth/style/Login.css";
 import React from "react";
 
-type JwtPayload = { role?: "JOUEUR" | string };
+type JwtPayload = { role?: "ADMIN" | string };
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
 
-export default function Login() {
+export default function AdminLogin() {
   const [email, setEmail] = useState("");
   const [motDePasse, setMotDePasse] = useState("");
   const [showPwd, setShowPwd] = useState(false);
@@ -21,8 +21,8 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage("");
-
     setIsLoading(true);
+
     try {
       const res = await axios.post(`${API_BASE}/api/auth/login`, {
         email,
@@ -33,11 +33,10 @@ export default function Login() {
 
       const role = jwtDecode<JwtPayload>(token)?.role;
       
-      // Redirection : uniquement JOUEUR autorisé
-      if (role === "JOUEUR") {
-        navigate("/joueur");
+      if (role === "ADMIN") {
+        navigate("/admin");
       } else {
-        setMessage("Cette page est réservée aux joueurs. Les clubs doivent utiliser 'Connexion Club'.");
+        setMessage("Accès refusé. Cette page est réservée aux administrateurs.");
       }
     } catch (err: any) {
       const s = err?.response?.status;
@@ -51,35 +50,24 @@ export default function Login() {
     }
   };
 
-  const loginWithGoogle = () => {
-    window.location.href = `${API_BASE}/oauth2/authorization/google`;
-  };
-
   return (
     <div className="auth-page">
       <div className="auth-card">
         <div className="avatar" aria-hidden />
-        <h1 className="title">Bienvenue</h1>
-        <p className="subtitle">Connectez-vous ou créer un compte</p>
-
-        {/* Onglets (actif à gauche) */}
-        <div className="tabs login">
-          <Link to="/login" className="tab">Connexion</Link>
-          <Link to="/register" className="tab">Inscription</Link>
-          <span className="indicator" />
-        </div>
+        <h1 className="title">Portail Admin</h1>
+        <p className="subtitle">Connexion réservée aux administrateurs</p>
 
         <form className="form" onSubmit={handleSubmit} noValidate>
           {message && <div className="api-error">{message}</div>}
 
           <div className="field">
-            <label className="label">Email</label>
+            <label className="label">Email administrateur</label>
             <div className="input-wrap">
               <span className="icon email" aria-hidden />
               <input
                 className="input"
                 type="email"
-                placeholder="Votre email : example@gmail.com"
+                placeholder="admin@fieldz.dz"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 autoComplete="username"
@@ -113,20 +101,6 @@ export default function Login() {
           <button className="primary" disabled={isLoading}>
             {isLoading ? "Connexion..." : "Se connecter"}
           </button>
-
-          <Link className="forgot" to="/forgot-password">Mot de passe oublié ?</Link>
-
-          <div className="divider" />
-          <p className="continue">Ou continuer avec</p>
-
-          <div className="oauth-row">
-            <button type="button" className="oauth google" onClick={loginWithGoogle}>
-              <span className="g">G</span> Google
-            </button>
-            <button type="button" className="oauth facebook" disabled>
-              <span className="f">f</span> Facebook
-            </button>
-          </div>
         </form>
       </div>
     </div>

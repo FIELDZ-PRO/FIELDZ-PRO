@@ -6,6 +6,12 @@ import './style/Navbar.css';
 
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
+  
+    const handleNavigate = (view: 'landing' | 'player' | 'club') => {
+    if (view === 'player') navigate('/register');
+    if (view === 'club') navigate('/LoginClub');
+  };
+      
 
   return (
     <nav className="navbar">
@@ -24,22 +30,29 @@ const Navbar: React.FC = () => {
 
         {/* Actions à droite */}
         <div className="navbar__actions">
-         <Button
-  variant="text"
-  className="navbar-btn login"
-  onClick={() => navigate('/login')}
->
-  Connexion
-</Button>
+          <Button
+            variant="text"
+            className="navbar-btn login"
+            onClick={() => navigate('/login')}
+          >
+            Connexion
+          </Button>
 
-<Button
-  variant="primary"
-  className="navbar-btn register"
-  onClick={() => navigate('/register')}
->
-  Inscription
-</Button>
+          <Button
+            variant="primary"
+            className="navbar-btn register"
+            onClick={() => navigate('/register')}
+          >
+            Inscription
+          </Button>
 
+          <Button
+            variant="text"
+            className="navbar-btn club-login"
+            onClick={() => navigate('/LoginClub')}
+          >
+            Connexion Club
+          </Button>
         </div>
       </div>
     </nav>

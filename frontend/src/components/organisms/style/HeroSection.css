@@ -64,35 +64,38 @@
 
 /* (optionnel) Bénéfices pour combler le vide sous le slogan */
 
+/* Bénéfices - Pastilles alignées */
 .hero-benefits {
   display: flex;
-  gap: 0.5rem;
-  position: relative;
-  top: -20px;
-  left: -40px;
+  flex-wrap: wrap;  /* ← Permet de passer à la ligne sur mobile */
+  gap: 0.75rem;     /* ← Espacement entre les pastilles */
+  margin-top: 1rem;
+  padding: 0;
+  list-style: none;
 }
 
-
-
-.hero-benefits li 
-{
+.hero-benefits li {
   display: flex;
-  align-items: center;
-  gap: 6px;
+  align-items: center;  /* ← CRITIQUE : aligne icône et texte verticalement */
+  gap: 0.5rem;
   font-weight: 600;
   color: #1f2937;
   background: #fff;
   border: 1.5px solid #184f25;
   border-radius: 9999px;
-  padding: .45rem .9rem;   /* ⚡ réduit */
-  font-size: 0.9rem;       /* ⚡ légèrement plus petit */
-  white-space: nowrap;     /* ⚡ empêche le texte de couper */
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  transition: all 0.2s;
 }
+
 .hero-benefits li:hover {
   transform: translateY(-2px);
   background: #eef5ef;
 }
+
 .hero-benefits svg {
+  flex-shrink: 0;  /* ← Empêche l'icône de se rétrécir */
   color: #184f25;
 }
 

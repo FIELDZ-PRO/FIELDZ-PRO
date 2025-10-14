@@ -24,8 +24,8 @@ const steps = [
   },
 ]
 
-const HowItWorksSection: React.FC = () => (
-  <section className="how-it-works">
+const HowItWorks: React.FC = () => (
+  <section id="tutorial" className="how-it-works">
     <h2 className="how-it-works__heading">Comment ça marche ?</h2>
     <p className="how-it-works__subheading">
       Réserver ton terrain n’a jamais été aussi simple. Suis ces 3 étapes faciles.
@@ -44,4 +44,4 @@ const HowItWorksSection: React.FC = () => (
   </section>
 )
 
-export default HowItWorksSection
+export default HowItWorks

@@ -20,13 +20,13 @@ const advantages = [
   },
   {
     icon: <Gift size={32} className="why-icon" />,
-    title: '100% gratuit pour l\'utilisateur',
+    title: "100% gratuit pour l'utilisateur",
     description: 'Aucun frais supplémentaire, tu paies uniquement le terrain.',
   },
 ]
 
 const WhyFIELdZ: React.FC = () => (
-  <section className="why">
+  <section id="about" className="why">
     <div className="why__header">
       <h2>Pourquoi FIELDZ ?</h2>
       <p>Découvre tous les avantages de notre plateforme de réservation</p>
