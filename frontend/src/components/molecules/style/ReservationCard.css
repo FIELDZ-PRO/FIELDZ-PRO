@@ -1,0 +1,345 @@
+/* ReservationCard.css - Style Bolt */
+
+.reservation-card-bolt {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  transition: box-shadow 0.2s;
+  gap: 20px;
+}
+
+.reservation-card-bolt:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.reservation-card-bolt.cancelled {
+  background: #f9fafb;
+  opacity: 0.85;
+}
+
+/* Partie gauche */
+.reservation-left {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  flex: 1;
+}
+
+.sport-icon {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+  color: white;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.sport-icon.cancelled {
+  background: #d1d5db;
+}
+
+.reservation-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.terrain-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+.club-name {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.reservation-info {
+  display: flex;
+  gap: 16px;
+  margin-top: 4px;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: #374151;
+}
+
+.info-item svg {
+  color: #6b7280;
+}
+
+.cancellation-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #ef4444;
+  margin-top: 8px;
+}
+
+.cancellation-reason {
+  color: #6b7280;
+}
+
+/* Partie droite */
+.reservation-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.status-badge.confirmed {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.status-badge.pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-badge.cancelled {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.reservation-price {
+  font-size: 20px;
+  font-weight: 700;
+  color: #111827;
+  margin: 4px 0;
+}
+
+.reservation-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-confirm,
+.btn-cancel {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-confirm {
+  background: #10b981;
+  color: white;
+}
+
+.btn-confirm:hover {
+  background: #059669;
+}
+
+.btn-cancel {
+  background: #ef4444;
+  color: white;
+}
+
+.btn-cancel:hover {
+  background: #dc2626;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .reservation-card-bolt {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .reservation-left {
+    width: 100%;
+  }
+
+  .reservation-right {
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .reservation-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .reservation-info {
+    flex-direction: column;
+    gap: 8px;
+  }
+  /* === RESPONSIVE AMÉLIORÉ === */
+
+/* Tablette */
+@media (max-width: 1024px) {
+  .reservation-card-bolt {
+    padding: 16px;
+  }
+
+  .sport-icon {
+    width: 44px;
+    height: 44px;
+    font-size: 18px;
+  }
+
+  .terrain-name {
+    font-size: 17px;
+  }
+
+  .reservation-price {
+    font-size: 18px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .reservation-card-bolt {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 14px;
+    gap: 16px;
+  }
+
+  .reservation-left {
+    width: 100%;
+  }
+
+  .sport-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+  }
+
+  .terrain-name {
+    font-size: 16px;
+  }
+
+  .club-name {
+    font-size: 13px;
+  }
+
+  .reservation-info {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .info-item {
+    font-size: 13px;
+  }
+
+  .reservation-right {
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .status-badge {
+    order: 1;
+    font-size: 12px;
+    padding: 5px 10px;
+  }
+
+  .reservation-price {
+    order: 2;
+    font-size: 18px;
+  }
+
+  .reservation-actions {
+    order: 3;
+    width: 100%;
+    margin-top: 12px;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .btn-confirm,
+  .btn-cancel {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .cancellation-info {
+    font-size: 12px;
+    flex-wrap: wrap;
+  }
+}
+
+/* Très petit mobile */
+@media (max-width: 480px) {
+  .reservation-card-bolt {
+    padding: 12px;
+  }
+
+  .reservation-left {
+    gap: 12px;
+  }
+
+  .sport-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+  }
+
+  .terrain-name {
+    font-size: 15px;
+  }
+
+  .club-name {
+    font-size: 12px;
+  }
+
+  .info-item {
+    font-size: 12px;
+  }
+
+  .reservation-price {
+    font-size: 16px;
+  }
+
+  .status-badge {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+
+  .btn-confirm,
+  .btn-cancel {
+    font-size: 13px;
+    padding: 9px;
+  }
+}
+}

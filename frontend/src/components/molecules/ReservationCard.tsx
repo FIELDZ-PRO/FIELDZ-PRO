@@ -4,7 +4,9 @@ import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { toast } from 'react-toastify';
 import { useAuth } from '../../context/AuthContext';
+import { Calendar, Clock, MapPin, XCircle, CheckCircle, AlertCircle } from 'lucide-react';
 import MotifAnnulationModal from "./MotifAnnulationModal";
+import './style/ReservationCard.css';
 
 type Props = {
   reservation: Reservation;
@@ -25,9 +27,10 @@ const ReservationCard: React.FC<Props> = ({ reservation, role, onUpdate }) => {
     motifAnnulation,
   } = reservation;
 
-  const dateDebut = format(new Date(creneau.dateDebut), "EEEE dd MMMM yyyy 'à' HH:mm", { locale: fr });
-  const dateFin = format(new Date(creneau.dateFin), "HH:mm", { locale: fr });
+  const dateDebut = new Date(creneau.dateDebut);
+  const dateFin = new Date(creneau.dateFin);
   const terrain = creneau.terrain.nomTerrain;
+  const club = creneau.terrain.club?.nom || 'Club';
 
   const handleConfirmer = async () => {
     if (!token) {
@@ -98,58 +101,96 @@ const ReservationCard: React.FC<Props> = ({ reservation, role, onUpdate }) => {
     }
   };
 
-  const getStatutClass = () => {
+  // Obtenir l'icône du sport
+  const getSportIcon = () => {
+    const sport = creneau.terrain.sport?.toLowerCase() || '';
+    if (sport.includes('padel')) return 'P';
+    if (sport.includes('tennis')) return 'T';
+    if (sport.includes('foot')) return 'F';
+    if (sport.includes('basket')) return 'B';
+    return 'S';
+  };
+
+  // Obtenir le badge de statut
+  const getStatutBadge = () => {
     switch (statut) {
-      case 'CONFIRMEE': return 'reservation-card confirmee';
-      case 'RESERVE': return 'reservation-card reserve';
-      case 'ANNULE_PAR_JOUEUR': return 'reservation-card annule-joueur';
-      case 'ANNULE_PAR_CLUB': return 'reservation-card annule-club';
-      default: return 'reservation-card';
+      case 'CONFIRMEE':
+        return <span className="status-badge confirmed"><CheckCircle size={16} /> Confirmé</span>;
+      case 'RESERVE':
+        return <span className="status-badge pending"><AlertCircle size={16} /> En attente</span>;
+      case 'ANNULE_PAR_JOUEUR':
+      case 'ANNULE_PAR_CLUB':
+        return <span className="status-badge cancelled"><XCircle size={16} /> Annulé</span>;
+      default:
+        return null;
     }
   };
 
+  const isAnnulee = statut.startsWith('ANNULE');
+
   return (
-    <div className={getStatutClass()}>
-      <div className="card-title">👤 Joueur : {joueur.prenom} {joueur.nom}</div>
-      <div className="card-info">📅 {dateDebut} → {dateFin}</div>
-      <div className="card-info">📍 Terrain : {terrain}</div>
+    <div className={`reservation-card-bolt ${isAnnulee ? 'cancelled' : ''}`}>
+      <div className="reservation-left">
+        <div className={`sport-icon ${isAnnulee ? 'cancelled' : ''}`}>
+          {getSportIcon()}
+        </div>
+        
+        <div className="reservation-details">
+          <h4 className="terrain-name">{terrain}</h4>
+          <p className="club-name">{club} • {creneau.terrain.sport || 'Sport'}</p>
+          
+          <div className="reservation-info">
+            <div className="info-item">
+              <Calendar size={16} />
+              <span>{format(dateDebut, 'dd/MM/yyyy', { locale: fr })}</span>
+            </div>
+            <div className="info-item">
+              <Clock size={16} />
+              <span>{format(dateDebut, 'HH:mm')} - {format(dateFin, 'HH:mm')}</span>
+            </div>
+          </div>
 
-      {statut.startsWith('ANNULE') && dateAnnulation && (
-        <div className="card-info">❌ Annulé le : {format(new Date(dateAnnulation), "dd/MM/yyyy à HH:mm")}</div>
-      )}
-
-      {motifAnnulation && (
-        <div className="card-info">📝 Motif : {motifAnnulation}</div>
-      )}
-
-      {statut === 'RESERVE' && (
-        <div className="card-actions">
-          {role === 'club' && (
-            <>
-              <button
-                onClick={handleConfirmer}
-                className="jd-btn-success"
-              >
-                ✅ Confirmer
-              </button>
-              <button
-                onClick={handleAnnulerSansMotif}
-                className="jd-btn-danger"
-              >
-                ❌ Annuler
-              </button>
-            </>
-          )}
-          {role === 'joueur' && (
-            <button
-              onClick={() => setShowMotifModal(true)}
-              className="jd-btn-danger"
-            >
-              ❌ Annuler
-            </button>
+          {isAnnulee && dateAnnulation && (
+            <div className="cancellation-info">
+              <XCircle size={14} />
+              <span>Annulé le {format(new Date(dateAnnulation), 'dd/MM/yyyy à HH:mm')}</span>
+              {motifAnnulation && (
+                <span className="cancellation-reason"> • {motifAnnulation}</span>
+              )}
+            </div>
           )}
         </div>
-      )}
+      </div>
+
+      <div className="reservation-right">
+        {getStatutBadge()}
+        <div className="reservation-price">{creneau.prix || 2500} DA</div>
+        
+        {!isAnnulee && (
+          <div className="reservation-actions">
+            {statut === 'RESERVE' && role === 'club' && (
+              <>
+                <button onClick={handleConfirmer} className="btn-confirm">
+                  Confirmer
+                </button>
+                <button onClick={handleAnnulerSansMotif} className="btn-cancel">
+                  Annuler
+                </button>
+              </>
+            )}
+            {statut === 'RESERVE' && role === 'joueur' && (
+              <button onClick={() => setShowMotifModal(true)} className="btn-cancel">
+                Annuler
+              </button>
+            )}
+            {statut === 'CONFIRMEE' && role === 'joueur' && (
+              <button onClick={() => setShowMotifModal(true)} className="btn-cancel">
+                Annuler
+              </button>
+            )}
+          </div>
+        )}
+      </div>
 
       {showMotifModal && (
         <MotifAnnulationModal

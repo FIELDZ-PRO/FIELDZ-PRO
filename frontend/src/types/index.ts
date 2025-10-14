@@ -21,17 +21,25 @@ export type Creneau = {
   id: number;
   dateDebut: string;   // Format ISO, ex: "2025-08-06T18:00:00"
   dateFin: string;
+  date?: string;       // ← AJOUTE (optionnel)
+  heureDebut?: string; // ← AJOUTE (optionnel, format "HH:mm")
+  heureFin?: string;   // ← AJOUTE (optionnel, format "HH:mm")
   prix: number;
   statut: Statut;
   disponible: boolean;
   terrain: {
+    id?: number;         // ← AJOUTE (optionnel)
+    nom?: string;        // ← AJOUTE (alias de nomTerrain)
     nomTerrain: string;
+    sport?: string;      // ← AJOUTE (optionnel)
     typeSurface?: string;
     taille?: string;
     ville?: string;
     politiqueClub?: string;
     club?: {
-      nom: string;
+      id?: number;       // ← AJOUTE (optionnel)
+      nom?: string;      // ← AJOUTE (alias de nomClub)
+      nomClub?: string;  // ← REND optionnel
     };
   };
 };

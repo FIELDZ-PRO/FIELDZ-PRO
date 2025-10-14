@@ -1,43 +1,43 @@
-/* === Reset minimal pour éviter les débordements === */
+/* === Reset minimal === */
 *,
 *::before,
 *::after { box-sizing: border-box; }
 
 /* === Thème === */
 :root{
-  --card:#1f5f2d;          /* vert carte */
-  --card-2:#184f25;        /* vert plus foncé (avatar/onglet actif) */
-  --field:#9caf98;         /* gris-vert des champs */
+  --card:#1f5f2d;
+  --card-2:#184f25;
+  --field:#9caf98;
   --field-text:#1f2937;
   --white:#ffffff;
-  --lav:#ffffff;           /* lavande onglet inactif */
+  --lav:#ffffff;
   --focus:#b9dabc;
   --divider:rgba(255,255,255,.35);
   --btn:#ffffff;
   --btn-text:#1a4d28;
 }
-/* Force le titre en blanc et centré, même si un style global existe */
+
 .auth-card .title {
-   color: #fff !important;
-   text-align: center !important;
-   display: block;
-   width: 100%;
-   margin-left: 0;
- }
- 
+  color: #fff !important;
+  text-align: center !important;
+  display: block;
+  width: 100%;
+  margin-left: 0;
+}
+
 /* === Layout global === */
 .auth-page{
   min-height:100dvh;
   display:flex;
   align-items:flex-start;
   justify-content:center;
-  background:#fff;                 /* fond blanc */
+  background:#fff;
   padding:32px 12px;
 }
 
 .auth-card{
   width:100%;
-  max-width:420px;                 /* plus compact */
+  max-width:420px;
   background:var(--card);
   color:#fff;
   border-radius:16px;
@@ -50,13 +50,18 @@
   width:60px; height:60px; border-radius:999px;
   margin:2px auto 8px; background:var(--card-2); position:relative;
 }
-.avatar::after{ content:""; position:absolute; inset:14px; border-radius:999px; border:3px solid #fff; }
+.avatar::after{ 
+  content:""; position:absolute; inset:14px; 
+  border-radius:999px; border:3px solid #fff; 
+}
 
 .title{
-  text-align:center; margin:6px 0 2px; font-size:32px; font-weight:800; /* centré + plus petit */
+  text-align:center; margin:6px 0 2px; 
+  font-size:32px; font-weight:800;
 }
 .subtitle{
-  text-align:center; margin:0 0 14px; opacity:.95; font-size:18px;
+  text-align:center; margin:0 0 14px; 
+  opacity:.95; font-size:18px;
 }
 
 /* === Onglets pill === */
@@ -84,13 +89,16 @@
 /* === Formulaire === */
 .form{ margin-top:6px; }
 .field{ margin:14px 0; }
-.label{ display:block; font-weight:700; margin-bottom:8px; font-size:16px; }
+.label{ 
+  display:block; font-weight:700; 
+  margin-bottom:8px; font-size:16px; 
+}
 
 .input-wrap{ position:relative; }
 .input{
   width:100%; height:40px; border-radius:8px; border:0;
   background:var(--field); color:var(--field-text);
-  padding:0 44px 0 44px;            /* espace icônes */
+  padding:0 44px 0 44px;
   outline:2px solid transparent;
 }
 .input::placeholder{ color: rgba(30,41,59,.75); }
@@ -101,8 +109,12 @@
   width:20px; height:20px; opacity:.85; pointer-events:none;
   background:center/contain no-repeat;
 }
-.icon.email{ background-image:url("data:image/svg+xml;utf8,<svg fill='%23000000' opacity='0.8' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Zm0 4-8 5L4 8V6l8 5 8-5v2Z'/></svg>"); }
-.icon.lock{ background-image:url("data:image/svg+xml;utf8,<svg fill='%23000000' opacity='0.8' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M17 9h-1V7a4 4 0 1 0-8 0v2H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2Zm-8-2a3 3 0 1 1 6 0v2H9V7Zm8 11H7v-7h10v7Z'/></svg>"); }
+.icon.email{ 
+  background-image:url("data:image/svg+xml;utf8,<svg fill='%23000000' opacity='0.8' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Zm0 4-8 5L4 8V6l8 5 8-5v2Z'/></svg>"); 
+}
+.icon.lock{ 
+  background-image:url("data:image/svg+xml;utf8,<svg fill='%23000000' opacity='0.8' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M17 9h-1V7a4 4 0 1 0-8 0v2H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2Zm-8-2a3 3 0 1 1 6 0v2H9V7Zm8 11H7v-7h10v7Z'/></svg>"); 
+}
 
 .eye{
   position:absolute; right:8px; top:50%; transform:translateY(-50%);
@@ -116,11 +128,19 @@
 /* === CTA & liens === */
 .primary{
   width:100%; height:44px; border:0; border-radius:8px;
-  background:var(--btn); color:var(--btn-text); font-weight:800; margin-top:8px; cursor:pointer;
+  background:var(--btn); color:var(--btn-text); 
+  font-weight:800; margin-top:8px; cursor:pointer;
+  transition: all 0.2s;
+}
+
+.primary:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 
 .forgot{
-  display:block; text-align:center; margin:10px 0 6px; color:#fff; font-weight:700;
+  display:block; text-align:center; margin:10px 0 6px; 
+  color:#fff; font-weight:700;
   text-decoration:underline; text-underline-offset:3px;
 }
 
@@ -131,7 +151,9 @@
   margin:8px 0 10px; opacity:.95; font-size:14px;
 }
 .continue::before,
-.continue::after{ content:""; flex:1; height:1px; background:var(--divider); }
+.continue::after{ 
+  content:""; flex:1; height:1px; background:var(--divider); 
+}
 
 .oauth-row{ display:flex; gap:10px; }
 .oauth{
@@ -142,7 +164,8 @@
   display:flex; align-items:center; justify-content:center; gap:8px;
 }
 .oauth .g, .oauth .f{
-  width:30px; height:30px; border-radius:999px; display:inline-grid; place-items:center;
+  width:30px; height:30px; border-radius:999px; 
+  display:inline-grid; place-items:center;
   background: rgba(255,255,255,.12); font-weight:900;
 }
 
@@ -152,8 +175,7 @@
   padding:8px 10px; border-radius:8px; margin-bottom:8px;
 }
 
-
-/* ===== Toggle de rôle (Joueur / Club) ===== */
+/* ===== Toggle de rôle ===== */
 .role-toggle {
   display: flex;
   gap: 6px;
@@ -175,35 +197,187 @@
   padding: 0.55rem 0.9rem;
   border-radius: 9999px;
   cursor: pointer;
-  transition: background 0.15s, color 0.15s, transform 0.08s;
+  transition: all 0.15s;
 }
 
 .role-btn:hover { background: #e4efe6; }
 .role-btn.active { background: #184f25; color: #fff; }
 
-.role-toggle {
-  display: flex;
-  gap: 0.5rem;
-  justify-content: space-between;
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .auth-page{
+    padding: 24px 16px;
+    align-items: center;
+  }
+
+  .auth-card{
+    max-width: 100%;
+    padding: 20px;
+  }
+
+  .avatar{
+    width: 56px;
+    height: 56px;
+  }
+
+  .avatar::after{
+    inset: 12px;
+    border-width: 2px;
+  }
+
+  .title{
+    font-size: 28px;
+    margin: 4px 0;
+  }
+
+  .subtitle{
+    font-size: 16px;
+    margin: 0 0 12px;
+  }
+
+  .tabs{
+    height: 30px;
+    font-size: 13px;
+  }
+
+  .tab{
+    line-height: 24px;
+    font-size: 13px;
+  }
+
+  .label{
+    font-size: 15px;
+    margin-bottom: 6px;
+  }
+
+  .input{
+    height: 38px;
+    font-size: 15px;
+  }
+
+  .icon{
+    width: 18px;
+    height: 18px;
+  }
+
+  .primary{
+    height: 42px;
+    font-size: 15px;
+  }
+
+  .forgot{
+    font-size: 14px;
+    margin: 8px 0 4px;
+  }
+
+  .continue{
+    font-size: 13px;
+    margin: 6px 0 8px;
+  }
+
+  .oauth{
+    height: 42px;
+    font-size: 14px;
+  }
+
+  .oauth .g, .oauth .f{
+    width: 28px;
+    height: 28px;
+  }
+
+  .role-toggle{
+    max-width: 100%;
+  }
+
+  .role-btn{
+    padding: 0.5rem 0.8rem;
+    font-size: 14px;
+  }
 }
 
-.role-btn {
-  flex: 1;
-  padding: 0.75rem;
-  border: 2px solid #e5e7eb;
-  border-radius: 0.5rem;
-  background: white;
-  cursor: pointer;
-  font-weight: 500;
-  transition: all 0.2s;
-}
+@media (max-width: 480px) {
+  .auth-page{
+    padding: 16px 12px;
+  }
 
-.role-btn:hover {
-  border-color: #10b981;
-}
+  .auth-card{
+    padding: 18px;
+    border-radius: 12px;
+  }
 
-.role-btn.active {
-  background: #10b981;
-  color: white;
-  border-color: #10b981;
+  .avatar{
+    width: 52px;
+    height: 52px;
+  }
+
+  .avatar::after{
+    inset: 10px;
+  }
+
+  .title{
+    font-size: 24px;
+  }
+
+  .subtitle{
+    font-size: 15px;
+  }
+
+  .tabs{
+    height: 28px;
+  }
+
+  .tab{
+    line-height: 22px;
+    font-size: 12px;
+  }
+
+  .field{
+    margin: 12px 0;
+  }
+
+  .label{
+    font-size: 14px;
+  }
+
+  .input{
+    height: 36px;
+    font-size: 14px;
+    padding: 0 40px 0 40px;
+  }
+
+  .icon{
+    width: 16px;
+    height: 16px;
+    left: 10px;
+  }
+
+  .eye{
+    width: 28px;
+    height: 28px;
+    right: 6px;
+  }
+
+  .eye::before{
+    width: 18px;
+    height: 18px;
+  }
+
+  .primary{
+    height: 40px;
+    font-size: 14px;
+  }
+
+  .forgot{
+    font-size: 13px;
+  }
+
+  .oauth{
+    height: 40px;
+    font-size: 13px;
+  }
+
+  .role-btn{
+    padding: 0.45rem 0.7rem;
+    font-size: 13px;
+  }
 }

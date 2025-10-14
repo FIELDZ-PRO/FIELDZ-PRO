@@ -1,22 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ClubService, ClubDto } from "../services/ClubService";
+import ReservationModal from "../components/organisms/joueurDashboardDoss/ReservationModal";
+import { Creneau } from "../types";
 import "./style/ClubDetailsJoueur.css";
 
-type Creneau = {
-  id: number;
-  terrain: { 
-    nom: string;
-    sport?: string;
-  };
-  date?: string;           // ← AJOUTE (optionnel)
-  heureDebut?: string;     // ← AJOUTE (optionnel)
-  heureFin?: string;       // ← AJOUTE (optionnel)
-  dateDebut: string;       // Garde pour compatibilité
-  dateFin: string;         // Garde pour compatibilité
-  prix: number;
-  disponible: boolean;
-};
+
+
 const ClubDetailsJoueur: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -31,6 +21,7 @@ const ClubDetailsJoueur: React.FC = () => {
   });
   
   const [creneaux, setCreneaux] = useState<Creneau[]>([]);
+  const [selectedCreneau, setSelectedCreneau] = useState<Creneau | null>(null); // ← AJOUTE
 
   // Charger les infos du club
   useEffect(() => {
@@ -63,8 +54,6 @@ const ClubDetailsJoueur: React.FC = () => {
         }
         
         const data = await res.json();
-        console.log("Créneaux reçus:", data);
-        console.log("Premier créneau:", data[0]);
         setCreneaux(data || []);
       } catch (err: any) {
         console.error("Erreur chargement créneaux:", err);
@@ -83,19 +72,34 @@ const ClubDetailsJoueur: React.FC = () => {
     });
   };
 
-
   const generateDates = () => {
-    const dates: string[] = [];
-    const today = new Date();
-    for (let i = 0; i < 7; i++) {
-      const date = new Date(today);
-      date.setDate(today.getDate() + i);
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
-      dates.push(`${year}-${month}-${day}`);
-    }
-    return dates;
+  const dates: string[] = [];
+  const today = new Date();
+  for (let i = 0; i < 21; i++) {  // ← 21 jours (3 semaines)
+    const date = new Date(today);
+    date.setDate(today.getDate() + i);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    dates.push(`${year}-${month}-${day}`);
+  }
+  return dates;
+};
+
+  // ← AJOUTE : Fonction pour ouvrir la modal
+  const handleReserver = (creneau: Creneau) => {
+    setSelectedCreneau(creneau);
+  };
+
+  // ← AJOUTE : Fonction après réservation réussie
+  const handleReservationSuccess = () => {
+    setSelectedCreneau(null);
+    // Recharger les créneaux pour mettre à jour la liste
+    const url = `http://localhost:8080/api/creneaux/club/${id}?date=${selectedDate}`;
+    fetch(url)
+      .then(res => res.json())
+      .then(data => setCreneaux(data || []))
+      .catch(err => console.error("Erreur rechargement:", err));
   };
 
   if (loading) {
@@ -197,14 +201,12 @@ const ClubDetailsJoueur: React.FC = () => {
                 <div className="creneau-info">
                   <div className="creneau-icon">🎾</div>
                   <div className="creneau-details">
-                    {/* ✅ Afficher le nom du terrain */}
                     <h4>{creneau.terrain.nom}</h4>
                     
                     <p className="creneau-time">
-                      ⏰ {creneau.heureDebut || (creneau.dateDebut)} - {creneau.heureFin || (creneau.dateFin)}
+                      ⏰ {creneau.heureDebut || creneau.dateDebut} - {creneau.heureFin || creneau.dateFin}
                     </p>
               
-                    {/* ✅ Afficher le sport du terrain */}
                     <p className="creneau-sport">
                       {creneau.terrain.sport || "Sport"}
                     </p>
@@ -212,13 +214,27 @@ const ClubDetailsJoueur: React.FC = () => {
                 </div>
                 <div className="creneau-action">
                   <p className="creneau-prix">{creneau.prix} DA</p>
-                  <button className="btn-reserver">Réserver</button>
+                  <button 
+                    className="btn-reserver"
+                    onClick={() => handleReserver(creneau)} // ← MODIFIÉ
+                  >
+                    Réserver
+                  </button>
                 </div>
               </div>
             ))}
           </div>
         )}
       </div>
+
+      {/* ← AJOUTE : Modal de réservation */}
+      {selectedCreneau && (
+        <ReservationModal
+          creneau={selectedCreneau}
+          onClose={() => setSelectedCreneau(null)}
+          onReservation={handleReservationSuccess}
+        />
+      )}
     </div>
   );
 };

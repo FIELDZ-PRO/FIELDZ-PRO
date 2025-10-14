@@ -7,7 +7,6 @@ import ReservationGroupByStatut from "./ReservationGroupByStatut";
 import { ClubService, ClubDto } from "../../../services/ClubService";
 
 const SPORTS = ["PADEL", "FOOT5", "TENNIS", "BASKET", "VOLLEY"];
-// Remplace par tes vraies villes si tu as une source
 const VILLES = ["Alger", "Oran", "Constantine", "Annaba", "Blida", "Béjaïa"];
 
 type Props = {
@@ -31,7 +30,7 @@ const JoueurDashboardLayout: React.FC<Props> = ({
   const [creneauSelectionne, setCreneauSelectionne] = useState<Creneau | null>(null);
   const [activeTab, setActiveTab] = useState<'recherche' | 'reservations' | 'annulees'>('recherche');
 
-  // --- Recherche clubs (nouveau) ---
+  // --- Recherche clubs ---
   const [sport, setSport] = useState<string>(SPORTS[0] || "");
   const [ville, setVille] = useState<string>(VILLES[0] || "");
   const [loadingSearch, setLoadingSearch] = useState<boolean>(false);
@@ -82,13 +81,22 @@ const JoueurDashboardLayout: React.FC<Props> = ({
 
             {/* Formulaire de recherche Clubs */}
             <form onSubmit={handleSearchClubs} className="search-form">
-              <div className="form-row">
+              <div 
+                className="form-row" 
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr auto',
+                  gap: '1.5rem',
+                  alignItems: 'end'
+                }}
+              >
                 <div className="form-group">
                   <label>Sport</label>
                   <select
                     className="form-select"
                     value={sport}
                     onChange={(e) => setSport(e.target.value)}
+                    style={{ height: '48px', padding: '0 1rem', borderRadius: '8px', border: '1px solid #d1d5db' }}
                   >
                     {SPORTS.map((s) => (
                       <option key={s} value={s}>
@@ -104,6 +112,7 @@ const JoueurDashboardLayout: React.FC<Props> = ({
                     className="form-select"
                     value={ville}
                     onChange={(e) => setVille(e.target.value)}
+                    style={{ height: '48px', padding: '0 1rem', borderRadius: '8px', border: '1px solid #d1d5db' }}
                   >
                     {VILLES.map((v) => (
                       <option key={v} value={v}>
@@ -115,7 +124,12 @@ const JoueurDashboardLayout: React.FC<Props> = ({
 
                 <div className="form-group">
                   <label>&nbsp;</label>
-                  <button className="btn-search" type="submit" disabled={!canSearch || loadingSearch}>
+                  <button 
+                    className="btn-search" 
+                    type="submit" 
+                    disabled={!canSearch || loadingSearch}
+                    style={{ height: '48px', padding: '0 2rem' }}
+                  >
                     {loadingSearch ? "Recherche..." : "Rechercher"}
                   </button>
                 </div>

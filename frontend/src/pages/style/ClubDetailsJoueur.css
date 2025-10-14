@@ -173,10 +173,22 @@
   gap: 12px;
   overflow-x: auto;
   padding-bottom: 8px;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+.dates-grid::-webkit-scrollbar {
+  height: 6px;
+}
+
+.dates-grid::-webkit-scrollbar-thumb {
+  background: #22c55e;
+  border-radius: 3px;
 }
 
 .date-button {
   flex-shrink: 0;
+  min-width: 120px;
   background: white;
   border: 2px solid #e5e7eb;
   padding: 12px 20px;
@@ -258,6 +270,7 @@
   align-items: center;
   justify-content: center;
   border-radius: 12px;
+  flex-shrink: 0;
 }
 
 .creneau-details h4 {
@@ -285,6 +298,7 @@
   flex-direction: column;
   align-items: flex-end;
   gap: 8px;
+  flex-shrink: 0;
 }
 
 .creneau-prix {
@@ -304,20 +318,79 @@
   font-size: 14px;
   cursor: pointer;
   transition: background 0.2s;
+  white-space: nowrap;
 }
 
 .btn-reserver:hover {
   background: #14532d;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1024px) {
   .club-info-section {
-    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 20px;
+  }
+
+  .club-equipements,
+  .date-selector,
+  .creneaux-section {
+    padding: 0 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .club-details-header {
+    padding: 12px 16px;
+  }
+
+  .club-details-header h1 {
+    font-size: 18px;
   }
 
   .club-banner {
     height: 200px;
+  }
+
+  .club-banner-overlay {
+    padding: 16px;
+  }
+
+  .club-banner-overlay h2 {
+    font-size: 24px;
+  }
+
+  .club-banner-overlay p {
+    font-size: 14px;
+  }
+
+  .club-info-section {
+    grid-template-columns: 1fr;
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .club-info-card,
+  .club-contact-card {
+    padding: 16px;
+  }
+
+  .club-equipements,
+  .date-selector,
+  .creneaux-section {
+    padding: 0 16px;
+  }
+
+  .club-equipements h3,
+  .date-selector h3,
+  .creneaux-section h3 {
+    font-size: 17px;
+    margin-bottom: 12px;
+  }
+
+  .equipement-badge {
+    font-size: 13px;
+    padding: 6px 12px;
   }
 
   .dates-grid {
@@ -325,6 +398,7 @@
   }
 
   .date-button {
+    min-width: 110px;
     padding: 10px 16px;
     font-size: 13px;
   }
@@ -333,11 +407,151 @@
     flex-direction: column;
     align-items: stretch;
     gap: 16px;
+    padding: 14px;
+  }
+
+  .creneau-info {
+    gap: 12px;
+  }
+
+  .creneau-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 28px;
+  }
+
+  .creneau-details h4 {
+    font-size: 15px;
+  }
+
+  .creneau-time,
+  .creneau-sport {
+    font-size: 13px;
   }
 
   .creneau-action {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    width: 100%;
+  }
+
+  .creneau-prix {
+    font-size: 17px;
+  }
+
+  .btn-reserver {
+    padding: 10px 24px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .club-details-header {
+    padding: 10px 12px;
+  }
+
+  .club-details-header h1 {
+    font-size: 16px;
+  }
+
+  .back-button {
+    font-size: 14px;
+    padding: 6px;
+  }
+
+  .club-banner {
+    height: 180px;
+  }
+
+  .club-banner-overlay {
+    padding: 12px;
+  }
+
+  .club-banner-overlay h2 {
+    font-size: 20px;
+    margin-bottom: 4px;
+  }
+
+  .club-banner-overlay p {
+    font-size: 13px;
+  }
+
+  .club-info-section {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .club-info-card,
+  .club-contact-card {
+    padding: 14px;
+  }
+
+  .club-info-card h3,
+  .club-contact-card h3 {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+
+  .club-info-card p,
+  .club-contact-card p {
+    font-size: 14px;
+  }
+
+  .club-equipements,
+  .date-selector,
+  .creneaux-section {
+    padding: 0 12px;
+  }
+
+  .club-equipements h3,
+  .date-selector h3,
+  .creneaux-section h3 {
+    font-size: 16px;
+  }
+
+  .equipement-badge {
+    font-size: 12px;
+    padding: 5px 10px;
+  }
+
+  .date-button {
+    min-width: 100px;
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  .creneau-card {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .creneau-icon {
+    width: 44px;
+    height: 44px;
+    font-size: 24px;
+  }
+
+  .creneau-details h4 {
+    font-size: 14px;
+  }
+
+  .creneau-time,
+  .creneau-sport {
+    font-size: 12px;
+  }
+
+  .creneau-prix {
+    font-size: 16px;
+  }
+
+  .btn-reserver {
+    padding: 8px 20px;
+    font-size: 13px;
+  }
+
+  .no-creneaux {
+    padding: 30px 20px;
+    font-size: 14px;
   }
 }
