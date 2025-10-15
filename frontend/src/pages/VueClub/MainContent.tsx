@@ -5,7 +5,7 @@ import TerrainsPage from './ClubPages/TerrainsPage';
 import ReservationsPage from './ClubPages/ReservationsPage';
 import FacturationPage from './ClubPages/FacturationPage';
 import ClubManagementPage from './ClubPages/ClubManagement';
-
+import { CreateReservationPage } from './ClubPages/CreateReservation';
 const MainContent = () => {
     const { activeItem } = useNavigation();
 
@@ -19,6 +19,8 @@ const MainContent = () => {
                 return <ReservationsPage />;
             case 'club':
                 return <ClubManagementPage />;
+            case 'createReservation':
+                return <CreateReservationPage />
             default:
                 return <Dashboard />;
         }

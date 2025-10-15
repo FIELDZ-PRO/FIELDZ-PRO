@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
-export type NavigationItem = 'accueil' | 'terrains' | 'reservations' | 'facturation' | 'club';
+export type NavigationItem = 'accueil' | 'terrains' | 'reservations' | 'facturation' | 'club' | 'createReservation';
 
 interface NavigationContextType {
     activeItem: NavigationItem;

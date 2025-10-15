@@ -81,6 +81,7 @@ async function Login(email: string, motDePasse: string): Promise<LoginResponse> 
     }
 }
 
+
 async function DeleteTerrain(terrainId: number): Promise<boolean> {
     try {
         await fetch(`${UrlService}/terrains/${terrainId}`, {
@@ -166,7 +167,7 @@ async function AjouterUnTerrain(
             "Content-Type": "application/json",
             "Accept": "*/*",
         };
-        
+
         const token = localStorage.getItem("token");
         if (token) {
             (headers as Record<string, string>)["Authorization"] = `Bearer ${token}`;
@@ -185,12 +186,12 @@ async function AjouterUnTerrain(
     }
 }
 
-async function getClubMe(): Promise<ClubDto> {
+export async function getClubMe(): Promise<ClubDto> {
     const token = localStorage.getItem("token");
     const headers: HeadersInit = {
         "Accept": "application/json",
     };
-    
+
     if (token) {
         (headers as Record<string, string>)["Authorization"] = `Bearer ${token}`;
     }
@@ -215,5 +216,5 @@ export const ClubService = {
     getClubMe,
     DeleteTerrain,
     loginWithGoogle,
-    ModifyTerrain
+    ModifyTerrain,
 };
