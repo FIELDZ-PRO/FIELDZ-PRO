@@ -61,6 +61,10 @@ const ReservationsPage = () => {
 
     const getStatusColor = (status: string) => {
         switch (status) {
+            case 'Libre': return '#07ca00ff';
+            case 'Réservé': return '#005ca8ff';
+            case 'Annulée par le club': return '#c23400ff';
+            case 'Annulée par le joeuer': return '#d80f00ff';
             case 'Confirmée': return '#059669';
             case 'En attente': return '#d97706';
             case 'Annulée': return '#dc2626';

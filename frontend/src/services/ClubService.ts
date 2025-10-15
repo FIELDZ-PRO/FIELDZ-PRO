@@ -1,5 +1,6 @@
 // src/services/ClubService.ts
 import { InvalidTokenError, jwtDecode } from "jwt-decode";
+import { Terrain } from "../types";
 
 const UrlService = "http://localhost:8080/api";
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
@@ -11,6 +12,16 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
 export type LoginResponse = {
     token: string;
 };
+
+export interface ReservationSummary {
+    clientName: string;
+    terrain: string;
+    data: string;
+    time: string;
+    status: string;
+    price: number;
+    phone: string;
+}
 
 interface TokenPayload {
     sub: string;
@@ -151,6 +162,55 @@ async function getClubById(id: number): Promise<ClubDto> {
     const res = await fetch(url);
     return jsonOrThrow(res);
 }
+
+async function getTerrains(): Promise<Terrain[]> {
+    try {
+        const res = await fetch(`${UrlService}/terrains`, {
+            method: "GET",
+            headers: {
+                Accept: "*/*",
+                ...getAuthHeaders()
+            },
+        })
+
+        const data = await res.json();
+        return data;
+    }
+    catch (error) {
+        console.log(error)
+        throw error
+    }
+}
+async function getCreneaux(terrains: Terrain[]): Promise<ReservationSummary[]> {
+    try {
+
+        const res = await fetch(`${UrlService}/creneaux/terrains`, {
+            method: "GET",
+            headers: {
+                Accept: "*/*",
+                ...getAuthHeaders()
+            },
+        })
+
+        const data = await res.json();
+        return data;
+    }
+    catch (error) {
+        console.log(error)
+        throw error
+    }
+}
+async function GetCreneauSummary(): Promise<ReservationSummary[]> {
+    try {
+        const terrains = await getTerrains()
+        const creneaux = await getCreneaux(terrains)
+        return [];
+    }
+    catch (error) {
+        throw error
+    }
+}
+
 
 /* =======================
  * Endpoints protégés
