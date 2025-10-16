@@ -45,6 +45,23 @@ export type ClubDto = {
  * Helpers
  * =======================
  */
+
+
+export function isTokenValid(token: string | null) {
+    if (!token) return false;
+
+    try {
+        const decoded = jwtDecode(token);
+        const currentTime = Date.now() / 1000; // in seconds
+
+        return decoded.exp && decoded.exp > currentTime;
+    } catch (error) {
+        console.error("Invalid token:", error);
+        return false;
+    }
+}
+
+
 function getAuthHeaders(): HeadersInit {
     const token = localStorage.getItem("token");
     if (token) {

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import './style/CreneauForm.css'
 interface CreneauFormProps {
   terrains: { id: number; nomTerrain: string; typeSurface?: string }[];
   onSubmit: (data: {
@@ -48,54 +48,40 @@ const CreneauForm: React.FC<CreneauFormProps> = ({ terrains, onSubmit }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="form-group">
-      <select
-        className="input-field"
-        value={terrainId}
-        onChange={(e) => setTerrainId(e.target.value)}
-      >
-        <option value="">-- Sélectionner un terrain --</option>
-        {terrains.map((t) => (
-          <option key={t.id} value={t.id}>
-            {t.nomTerrain} ({t.typeSurface})
-          </option>
-        ))}
-      </select>
+    <form onSubmit={handleSubmit} className="creneau-form">
+      <div className="creneau-form-group">
+        <label>Terrain</label>
+        <select value={terrainId} onChange={(e) => setTerrainId(e.target.value)}>
+          <option value="">-- Sélectionner un terrain --</option>
+          {terrains.map((t) => (
+            <option key={t.id} value={t.id}>
+              {t.nomTerrain} ({t.typeSurface})
+            </option>
+          ))}
+        </select>
+      </div>
 
-      <input
-        type="date"
-        className="input-field"
-        value={date}
-        onChange={(e) => setDate(e.target.value)}
-      />
+      <div className="creneau-form-group">
+        <label>Date</label>
+        <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+      </div>
 
-      <input
-        type="time"
-        className="input-field"
-        value={heureDebut}
-        onChange={(e) => setHeureDebut(e.target.value)}
-      />
+      <div className="creneau-form-group">
+        <label>Heure de début</label>
+        <input type="time" value={heureDebut} onChange={(e) => setHeureDebut(e.target.value)} />
+      </div>
 
-      <input
-        type="time"
-        className="input-field"
-        value={heureFin}
-        onChange={(e) => setHeureFin(e.target.value)}
-      />
+      <div className="creneau-form-group">
+        <label>Heure de fin</label>
+        <input type="time" value={heureFin} onChange={(e) => setHeureFin(e.target.value)} />
+      </div>
 
-      <input
-        type="number"
-        className="input-field"
-        placeholder="Prix (Da)"
-        min="0"
-        step="0.01"
-        value={prix}
-        onChange={(e) => setPrix(e.target.value)}
-      />
+      <div className="creneau-form-group">
+        <label>Prix (Da)</label>
+        <input type="number" value={prix} onChange={(e) => setPrix(e.target.value)} />
+      </div>
 
-      <button type="submit" className="btn btn-creneau">
-        ➕ Proposer
-      </button>
+      <button type="submit">➕ Proposer</button>
     </form>
   );
 };

@@ -1,0 +1,56 @@
+/* ---------- CreneauForm Styles ---------- */
+.creneau-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    background: #f9fafb;
+    padding: 1.5rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.creneau-form-group {
+    display: flex;
+    flex-direction: column;
+    min-width: 160px;
+}
+
+.creneau-form label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 0.25rem;
+}
+
+.creneau-form input,
+.creneau-form select {
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    color: #374151;
+    background-color: #fff;
+}
+
+.creneau-form input:focus,
+.creneau-form select:focus {
+    outline: none;
+    border-color: #10b981;
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
+}
+
+.creneau-form button {
+    background-color: #10b981;
+    color: #fff;
+    font-weight: 500;
+    border: none;
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.creneau-form button:hover {
+    background-color: #059669;
+}
