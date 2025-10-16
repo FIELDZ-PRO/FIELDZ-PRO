@@ -1,8 +1,8 @@
 // src/components/organisms/clubDashboard/CreneauGroup.tsx
 import React, { useState } from 'react';
 import { Creneau } from '../../../types';
-import CreneauCard from '../../molecules/CreneauCard'; // adapte le chemin si besoin
-
+import CreneauCard from '../../molecules/CreneauCard';
+import './CreneauGroup.css'; // Import the CSS file
 
 interface Props {
   titre: string;
@@ -10,28 +10,31 @@ interface Props {
 }
 
 const CreneauGroup: React.FC<Props> = ({ titre, creneaux }) => {
-  const [visible, setVisible] = useState(false); // 👈 masqué par défaut
+  const [visible, setVisible] = useState(false);
 
   return (
-    <div className="border rounded-md my-4 bg-white shadow-sm">
+    <div className="creneau-group">
       <button
         onClick={() => setVisible(!visible)}
-        className="w-full text-left p-3 font-semibold bg-gray-100 hover:bg-gray-200 rounded-t"
+        className={`dropdown-button ${visible ? 'open' : ''}`}
       >
-        {visible ? '▾' : '▸'} {titre} ({creneaux.length})
+        <span className="dropdown-icon">▶</span>
+        <span>{titre}</span>
+        <span className="creneau-count">{creneaux.length}</span>
       </button>
 
       {visible && (
-        <div className="p-4 space-y-2">
-          {creneaux.map((c) => (
-  <CreneauCard
-    key={c.id}
-    creneau={c}
-    role="club"       // 👈 active le bouton Annuler
-    onUpdate={() => window.location.reload()} // ou un refetch propre
-  />
-))}
-
+        <div className="dropdown-content">
+          <div className="creneau-list">
+            {creneaux.map((c) => (
+              <CreneauCard
+                key={c.id}
+                creneau={c}
+                role="club"
+                onUpdate={() => window.location.reload()}
+              />
+            ))}
+          </div>
         </div>
       )}
     </div>

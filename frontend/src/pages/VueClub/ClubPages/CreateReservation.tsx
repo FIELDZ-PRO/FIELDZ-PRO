@@ -147,7 +147,7 @@ export const CreateReservationPage: React.FC = () => {
             {/* Dashboard Stats */}
             <div className="card-section">
                 <h1 className="stats-title">
-                    📊 Dashboard du club
+                    Dashboard du club
                 </h1>
 
                 <div className="stats-container">

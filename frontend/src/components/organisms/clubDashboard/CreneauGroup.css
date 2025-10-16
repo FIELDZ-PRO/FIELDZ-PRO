@@ -1,0 +1,114 @@
+/* src/components/organisms/clubDashboard/CreneauGroup.css */
+.creneau-group {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    margin: 16px 0;
+    background-color: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.2s ease;
+}
+
+.creneau-group:hover {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-button {
+    width: 100%;
+    text-align: left;
+    padding: 16px;
+    font-weight: 600;
+    background: linear-gradient(135deg, #f9fafb 0%, #ffffff 100%);
+    border: none;
+    border-bottom: 1px solid #f3f4f6;
+    border-radius: 8px 8px 0 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+}
+
+.dropdown-button:hover {
+    background: linear-gradient(135deg, #f3f4f6 0%, #f9fafb 100%);
+    transform: translateY(-1px);
+}
+
+.dropdown-button:active {
+    transform: translateY(0);
+}
+
+.dropdown-icon {
+    font-size: 18px;
+    font-weight: bold;
+    color: #4b5563;
+    transition: transform 0.3s ease;
+    min-width: 16px;
+    text-align: center;
+}
+
+.dropdown-button.open .dropdown-icon {
+    transform: rotate(90deg);
+    color: #009b10;
+}
+
+.dropdown-content {
+    padding: 16px;
+    background-color: #fafafa;
+    border-radius: 0 0 8px 8px;
+}
+
+.creneau-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Badge for count */
+.creneau-count {
+    background-color: #c71111;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    margin-left: auto;
+}
+
+/* Enhanced focus state for accessibility */
+.dropdown-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(59, 246, 84, 0.3);
+}
+
+/* Loading state animation */
+.dropdown-button.loading .dropdown-icon {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .dropdown-button {
+        padding: 14px;
+        font-size: 14px;
+    }
+
+    .dropdown-content {
+        padding: 12px;
+    }
+
+    .creneau-count {
+        font-size: 11px;
+        padding: 1px 6px;
+    }
+}

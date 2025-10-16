@@ -56,10 +56,10 @@ const ReservationParDateSection: React.FC<Props> = ({
   reservations,
 }) => {
 
-    
+
   return (
     <section>
-      <div className="section-title">📅 Voir les réservations pour une date donnée</div>
+      <div className="section-title">Voir les réservations pour une date donnée</div>
       <div className="form-group flex gap-4 items-center">
         <input
           type="date"
@@ -71,7 +71,7 @@ const ReservationParDateSection: React.FC<Props> = ({
           onClick={onVoir}
           className="btn btn-view"
         >
-          🔍 Voir les réservations
+          Voir les réservations
         </button>
       </div>
 
@@ -81,20 +81,20 @@ const ReservationParDateSection: React.FC<Props> = ({
         ) : (
           reservations.map((r) => (
             <div key={r.id} className="list-card bg-gray-100 opacity-80 mb-2">
-  <div className="flex justify-between items-center">
-    <div>
-      <strong>Créneau #{r.creneau?.id}</strong>{" – "}
-      {formatDateFr(r.creneau.dateDebut)} | {formatHour(r.creneau.dateDebut)}–{formatHour(r.creneau.dateFin)}
-      {" – Terrain : "}{r.creneau.terrain?.nomTerrain}
-      {" – Joueur : "}{r.joueur?.prenom} {r.joueur?.nom}{"–"}
-    </div>
+              <div className="flex justify-between items-center">
+                <div>
+                  <strong>Créneau #{r.creneau?.id}</strong>{" – "}
+                  {formatDateFr(r.creneau.dateDebut)} | {formatHour(r.creneau.dateDebut)}–{formatHour(r.creneau.dateFin)}
+                  {" – Terrain : "}{r.creneau.terrain?.nomTerrain}
+                  {" – Joueur : "}{r.joueur?.prenom} {r.joueur?.nom}{"–"}
+                </div>
 
-<span className={`ml-4 px-3 py-1 text-sm rounded font-medium ${getStatutClass(r.statut)}`}>
-      {formatStatutFr(r.statut)}
-    </span>
-  </div>
-</div>
-        ))
+                <span className={`ml-4 px-3 py-1 text-sm rounded font-medium ${getStatutClass(r.statut)}`}>
+                  {formatStatutFr(r.statut)}
+                </span>
+              </div>
+            </div>
+          ))
         )}
       </div>
     </section>
