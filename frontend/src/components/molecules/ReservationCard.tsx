@@ -14,30 +14,47 @@ type Props = {
   onUpdate?: () => void;
 };
 
+// Helpers sûrs
+const isValidDate = (d: Date | null) => !!d && !Number.isNaN(d.getTime());
+const safeFormat = (d: Date | null, fmt: string) =>
+  isValidDate(d) ? format(d as Date, fmt, { locale: fr }) : '—';
+
 const ReservationCard: React.FC<Props> = ({ reservation, role, onUpdate }) => {
   const { token } = useAuth();
   const [showMotifModal, setShowMotifModal] = useState(false);
 
   const {
     id,
-    statut,
+    statut: _statut,
     joueur,
-    creneau,
+    creneau: _creneau,
     dateAnnulation,
     motifAnnulation,
-  } = reservation;
+  } = reservation || {};
 
-  const dateDebut = new Date(creneau.dateDebut);
-  const dateFin = new Date(creneau.dateFin);
-  const terrain = creneau.terrain.nomTerrain;
-  const club = creneau.terrain.club?.nom || 'Club';
+  // Défauts robustes
+  const creneau = _creneau ?? ({} as any);
+  const statut = _statut ?? 'RESERVE';
+
+  // Dates sûres
+  const startRaw: string | null = creneau?.dateDebut ?? null;
+  const endRaw: string | null = creneau?.dateFin ?? null;
+
+  const dateDebut = startRaw ? new Date(startRaw) : null;
+  const dateFin = endRaw ? new Date(endRaw) : null;
+
+  // Terrain / Club sûrs
+  const terrain: string = creneau?.terrain?.nomTerrain ?? 'Terrain';
+  const club: string = creneau?.terrain?.club?.nom ?? 'Club';
+  const sport: string = (creneau?.terrain?.sport as string) || 'Sport';
+
+  const prix = typeof creneau?.prix === 'number' ? creneau.prix : 2500;
 
   const handleConfirmer = async () => {
     if (!token) {
       toast.error("❌ Utilisateur non authentifié");
       return;
     }
-
     try {
       const res = await fetch(`http://localhost:8080/api/reservations/${id}/confirmer`, {
         method: 'PATCH',
@@ -46,9 +63,7 @@ const ReservationCard: React.FC<Props> = ({ reservation, role, onUpdate }) => {
           Authorization: `Bearer ${token}`,
         },
       });
-
       if (!res.ok) throw new Error("Erreur lors de la confirmation");
-
       toast.success("✅ Réservation confirmée !");
       onUpdate ? onUpdate() : window.location.reload();
     } catch (err) {
@@ -67,9 +82,7 @@ const ReservationCard: React.FC<Props> = ({ reservation, role, onUpdate }) => {
         },
         body: JSON.stringify({ motif }),
       });
-
       if (!res.ok) throw new Error("Erreur lors de l'annulation");
-
       toast.success("✅ Réservation annulée !");
       setShowMotifModal(false);
       onUpdate ? onUpdate() : window.location.reload();
@@ -81,7 +94,6 @@ const ReservationCard: React.FC<Props> = ({ reservation, role, onUpdate }) => {
 
   const handleAnnulerSansMotif = async () => {
     if (!window.confirm("Annuler cette réservation ?")) return;
-
     try {
       const res = await fetch(`http://localhost:8080/api/reservations/${id}/annuler`, {
         method: 'PUT',
@@ -90,9 +102,7 @@ const ReservationCard: React.FC<Props> = ({ reservation, role, onUpdate }) => {
           Authorization: `Bearer ${token}`,
         },
       });
-
       if (!res.ok) throw new Error("Erreur lors de l'annulation");
-
       toast.success("✅ Réservation annulée !");
       onUpdate ? onUpdate() : window.location.reload();
     } catch (err) {
@@ -101,17 +111,17 @@ const ReservationCard: React.FC<Props> = ({ reservation, role, onUpdate }) => {
     }
   };
 
-  // Obtenir l'icône du sport
+  // Icône sport
   const getSportIcon = () => {
-    const sport = creneau.terrain.sport?.toLowerCase() || '';
-    if (sport.includes('padel')) return 'P';
-    if (sport.includes('tennis')) return 'T';
-    if (sport.includes('foot')) return 'F';
-    if (sport.includes('basket')) return 'B';
+    const s = sport.toLowerCase();
+    if (s.includes('padel')) return 'P';
+    if (s.includes('tennis')) return 'T';
+    if (s.includes('foot')) return 'F';
+    if (s.includes('basket')) return 'B';
     return 'S';
   };
 
-  // Obtenir le badge de statut
+  // Badge statut
   const getStatutBadge = () => {
     switch (statut) {
       case 'CONFIRMEE':
@@ -126,7 +136,10 @@ const ReservationCard: React.FC<Props> = ({ reservation, role, onUpdate }) => {
     }
   };
 
-  const isAnnulee = statut.startsWith('ANNULE');
+  const isAnnulee = statut?.startsWith?.('ANNULE') ?? false;
+
+  // Si les dates sont manquantes, on évite le crash et on affiche un fallback propre
+  const hasDates = isValidDate(dateDebut) && isValidDate(dateFin);
 
   return (
     <div className={`reservation-card-bolt ${isAnnulee ? 'cancelled' : ''}`}>
@@ -134,26 +147,34 @@ const ReservationCard: React.FC<Props> = ({ reservation, role, onUpdate }) => {
         <div className={`sport-icon ${isAnnulee ? 'cancelled' : ''}`}>
           {getSportIcon()}
         </div>
-        
+
         <div className="reservation-details">
           <h4 className="terrain-name">{terrain}</h4>
-          <p className="club-name">{club} • {creneau.terrain.sport || 'Sport'}</p>
-          
+          <p className="club-name">{club} • {sport}</p>
+
           <div className="reservation-info">
             <div className="info-item">
               <Calendar size={16} />
-              <span>{format(dateDebut, 'dd/MM/yyyy', { locale: fr })}</span>
+              <span>
+                {hasDates ? safeFormat(dateDebut, 'dd/MM/yyyy') : 'Date inconnue'}
+              </span>
             </div>
             <div className="info-item">
               <Clock size={16} />
-              <span>{format(dateDebut, 'HH:mm')} - {format(dateFin, 'HH:mm')}</span>
+              <span>
+                {hasDates
+                  ? `${safeFormat(dateDebut, 'HH:mm')} - ${safeFormat(dateFin, 'HH:mm')}`
+                  : '--:--'}
+              </span>
             </div>
           </div>
 
           {isAnnulee && dateAnnulation && (
             <div className="cancellation-info">
               <XCircle size={14} />
-              <span>Annulé le {format(new Date(dateAnnulation), 'dd/MM/yyyy à HH:mm')}</span>
+              <span>
+                Annulé le {safeFormat(new Date(dateAnnulation), 'dd/MM/yyyy à HH:mm')}
+              </span>
               {motifAnnulation && (
                 <span className="cancellation-reason"> • {motifAnnulation}</span>
               )}
@@ -164,8 +185,8 @@ const ReservationCard: React.FC<Props> = ({ reservation, role, onUpdate }) => {
 
       <div className="reservation-right">
         {getStatutBadge()}
-        <div className="reservation-price">{creneau.prix || 2500} DA</div>
-        
+        <div className="reservation-price">{prix} DA</div>
+
         {!isAnnulee && (
           <div className="reservation-actions">
             {statut === 'RESERVE' && role === 'club' && (
