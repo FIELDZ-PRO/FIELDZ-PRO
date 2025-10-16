@@ -42,7 +42,6 @@
 
 /* ====== Section Wrappers ====== */
 
-.section-wrapper,
 .reservations-section,
 .card-section {
     background-color: #ffffff;
@@ -54,7 +53,6 @@
 }
 
 /* Subtle elevation effect on hover */
-.section-wrapper:hover,
 .reservations-section:hover,
 .card-section:hover {
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
@@ -182,7 +180,6 @@
         font-size: 26px;
     }
 
-    .section-wrapper,
     .reservations-section,
     .card-section {
         padding: 20px;

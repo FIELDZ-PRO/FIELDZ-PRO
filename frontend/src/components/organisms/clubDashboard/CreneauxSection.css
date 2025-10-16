@@ -1,0 +1,28 @@
+.section-wrapper {
+    background-color: #ffffff;
+    border-radius: 16px;
+    padding: 28px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.section-wrapper:hover {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    transform: translateY(-3px);
+}
+
+
+.section-wrapper+.section-wrapper {
+    margin-top: 40px;
+}
+
+@media (max-width: 768px) {
+
+
+    .section-wrapper {
+        padding: 20px;
+    }
+
+
+}

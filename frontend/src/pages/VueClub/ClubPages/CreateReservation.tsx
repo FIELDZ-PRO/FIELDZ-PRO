@@ -125,7 +125,7 @@ export const CreateReservationPage: React.FC = () => {
 
 
             {/* Créneaux Section */}
-            <div className="section-wrapper">
+            <div >
                 <CreneauxSection
                     terrains={terrains}
                     reservations={reservations}

@@ -43,7 +43,7 @@ const CreneauRecurrentFormSection: React.FC<Props> = ({ terrains, onSubmit }) =>
 
   return (
     <section>
-      <h2 className="text-xl font-semibold mb-2">♻️ Créneaux récurrents</h2>
+      <h2 className="text-xl font-semibold mb-2">Créneaux récurrents</h2>
       <CreneauRecurrentForm
         terrains={terrains}
         terrainId={terrainId}

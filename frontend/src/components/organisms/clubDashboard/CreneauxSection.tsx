@@ -7,7 +7,7 @@ import { Reservation, Terrain } from '../../../types';
 import { useAuth } from '../../../context/AuthContext';
 import { Creneau } from '../../../types';
 import CreneauGroup from './CreneauGroup';
-
+import './CreneauxSection.css'
 
 type Props = {
   terrains: Terrain[];
@@ -106,15 +106,34 @@ const CreneauxSection: React.FC<Props> = ({ terrains, reservations, setReservati
   };
 
   return (
-  <section>
-    <div className="section-title">🏟️ Ajout de créneaux</div>
-    <CreneauFormSection terrains={terrains} onSubmit={handleAddCreneauPonctuel} />
-    <CreneauRecurrentFormSection terrains={terrains} onSubmit={handleAddCreneauxRecurrents} />
+    <div className="flex flex-col gap-10">  {/* ⬅️ adds nice vertical space between sections */}
 
-    <h2 className="text-2xl font-bold my-4">📅 Créneaux à venir</h2>
-    <CreneauGroup titre="📍 Tous les créneaux" creneaux={creneaux} />
-  </section>
-);
+      {/* 🏟️ Section 1: Créneaux ponctuels */}
+      <div className="section-wrapper">
+        <section>
+          <div className="section-title">🏟️ Ajout de créneaux ponctuels</div>
+          <CreneauFormSection terrains={terrains} onSubmit={handleAddCreneauPonctuel} />
+        </section>
+      </div>
+
+      {/* 📅 Section 2: Créneaux à venir */}
+      <div className="section-wrapper">
+        <section>
+          <h2 className="text-2xl font-bold mb-4">📅 Créneaux à venir</h2>
+          <CreneauGroup titre="📍 Tous les créneaux" creneaux={creneaux} />
+        </section>
+      </div>
+
+      {/* ♻️ Section 3: Créneaux récurrents */}
+      <div className="section-wrapper">
+        <section>
+          <div className="section-title">♻️ Ajout de créneaux récurrents</div>
+          <CreneauRecurrentFormSection terrains={terrains} onSubmit={handleAddCreneauxRecurrents} />
+        </section>
+      </div>
+
+    </div>
+  );
 
 };
 
