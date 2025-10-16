@@ -15,6 +15,14 @@
     padding: 0 24px;
 }
 
+/* Left part: logo + language */
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    /* spacing between logo and language */
+}
+
 .logo {
     display: flex;
     align-items: center;
@@ -27,12 +35,7 @@
     letter-spacing: -0.025em;
 }
 
-.header-right {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-}
-
+/* Language selector next to FieldZ */
 .language-selector {
     display: flex;
     align-items: center;
@@ -47,4 +50,27 @@
 
 .language-selector:hover {
     background-color: #f1f5f9;
+}
+
+/* Right side: logout button */
+.header-right {
+    display: flex;
+    align-items: center;
+}
+
+/* Red logout button */
+.logout-button {
+    background-color: #dc2626;
+    color: white;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.logout-button:hover {
+    background-color: #b91c1c;
+    transform: translateY(-1px);
 }
