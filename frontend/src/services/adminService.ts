@@ -33,6 +33,8 @@ export type AdminStats = {
   totalClubs: number;
   totalJoueurs: number;
   reservationsHebdomadaires: number;
+  croissanceClubs: number;      
+  croissanceJoueurs: number; 
 };
 
 export type ClubAdmin = {
@@ -68,6 +70,12 @@ export type CreateClubRequest = {
   emailResponsable: string;
   telephoneResponsable: string;
 };
+export type RegisterRequest = {
+  nom: string;
+  email: string;
+  motDePasse: string;
+  role: string; // "JOUEUR"
+};
 
 export const adminService = {
   // Dashboard
@@ -87,4 +95,6 @@ export const adminService = {
   getJoueurDetails: (id: number) => http.get<JoueurAdmin>("/api/admin/joueurs/" + id),
   toggleJoueurStatus: (id: number) =>
     http.patch<JoueurAdmin>("/api/admin/joueurs/" + id + "/toggle-status", {}),
+  createJoueur: (payload: RegisterRequest) =>
+    http.post<JoueurAdmin>("/api/admin/joueurs", payload),
 };

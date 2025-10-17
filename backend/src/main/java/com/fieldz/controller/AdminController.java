@@ -1,5 +1,6 @@
 package com.fieldz.controller;
 
+import com.fieldz.auth.RegisterRequest;
 import com.fieldz.dto.*;
 import com.fieldz.service.AdminService;
 import org.springframework.http.ResponseEntity;
@@ -65,5 +66,9 @@ public class AdminController {
     @PatchMapping("/joueurs/{id}/toggle-status")
     public ResponseEntity<JoueurAdminDto> toggleJoueurStatus(@PathVariable Long id) {
         return ResponseEntity.ok(adminService.toggleJoueurStatus(id));
+    }
+    @PostMapping("/joueurs")
+    public ResponseEntity<JoueurAdminDto> createJoueur(@RequestBody RegisterRequest request) {  
+    return ResponseEntity.ok(adminService.createJoueur(request));
     }
 }
