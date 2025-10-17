@@ -86,7 +86,18 @@ export default function AppRouter() {
           <NavigationProvider>
             <Club />
           </NavigationProvider>
+        } />
+
+
+      <Route
+        path="/TestPage"
+        element={
+          <NavigationProvider>
+            <Club />
+          </NavigationProvider>
         }
+
+
       />
       {/* Dashboards protégés */}
       <Route
@@ -108,14 +119,14 @@ export default function AppRouter() {
       />
 
 
-        <Route
-          path="/club/:id"
-           element=
-           {
-            <ProtectedRoute requiredRole="JOUEUR">
-               <ClubDetailsJoueur />
-            </ProtectedRoute>
-            }
+      <Route
+        path="/club/:id"
+        element=
+        {
+          <ProtectedRoute requiredRole="JOUEUR">
+            <ClubDetailsJoueur />
+          </ProtectedRoute>
+        }
       />
 
       <Route
@@ -137,8 +148,8 @@ export default function AppRouter() {
       <Route path="/admin/login" element={<AdminLogin />} />
 
       {/* Routes Admin - Protégées */}
-      <Route 
-        path="/admin" 
+      <Route
+        path="/admin"
         element={
           <ProtectedRoute requiredRole="ADMIN">
             <AdminLayout />

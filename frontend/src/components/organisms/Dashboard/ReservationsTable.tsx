@@ -1,32 +1,88 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import '../style/Reservations.css';
+import { getReservations, ReservationSummary } from '../../../services/ClubService';
 
 const ReservationsTable = () => {
-    const reservations = [
-        { name: 'Pauline', date: '18 avril 2024, 14h', status: 'Confirmée', statusColor: '#059669' },
-        { name: 'Antoine', date: '16 avril 2024, 16h', status: 'En attente', statusColor: '#d97706' },
-        { name: 'Lucas', date: '17 avril 2024, 20h', status: 'Annulée', statusColor: '#dc2626' },
-    ];
+    const [todayReservations, setTodayReservations] = useState<ReservationSummary[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchTodayReservations = async () => {
+            try {
+                const data = await getReservations();
+
+                // 🔹 Get today's date (YYYY-MM-DD)
+                const today = new Date().toISOString().split('T')[0];
+
+                // 🔹 Filter only today's reservations
+                const todayData = data.filter(r => r.date?.startsWith(today));
+
+                setTodayReservations(todayData);
+            } catch (error) {
+                console.error("Erreur lors du chargement des réservations :", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchTodayReservations();
+    }, []);
+
+    // 🔹 Color mapping for status
+    const getStatusColor = (status: string) => {
+        switch (status) {
+            case 'CONFIRMEE': return '#059669';
+            case 'RESERVE': return '#d97706';
+            case 'ANNULE':
+            case 'ANNULE_PAR_CLUB':
+            case 'ANNULE_PAR_JOUEUR':
+                return '#dc2626';
+            default: return '#6b7280';
+        }
+    };
+
+    // 🔹 Label translation
+    const translateStatus = (status: string) => {
+        switch (status) {
+            case 'CONFIRMEE': return 'Confirmée';
+            case 'RESERVE': return 'Réservé';
+            case 'ANNULE': return 'Annulée';
+            case 'ANNULE_PAR_CLUB': return 'Absent';
+            case 'ANNULE_PAR_JOUEUR': return 'Annulée (joueur)';
+            default: return status;
+        }
+    };
 
     return (
         <div className="reservations-section">
-            <h3>Réservations</h3>
-            <div className="reservations-list">
-                {reservations.map((reservation, index) => (
-                    <div key={index} className="reservation-item">
-                        <div className="reservation-info">
-                            <div className="reservation-name">{reservation.name}</div>
-                            <div className="reservation-date">{reservation.date}</div>
+            <h3>Réservations d’aujourd’hui</h3>
+
+            {loading ? (
+                <p>Chargement...</p>
+            ) : todayReservations.length === 0 ? (
+                <p>Aucune réservation pour aujourd’hui.</p>
+            ) : (
+                <div className="reservations-list">
+                    {todayReservations.map((reservation, index) => (
+                        <div key={index} className="reservation-item">
+                            <div className="reservation-info">
+                                <div className="reservation-name">
+                                    {reservation.nom} {reservation.prenom}
+                                </div>
+                                <div className="reservation-date">
+                                    {reservation.heureDebut} - {reservation.heureFin}
+                                </div>
+                            </div>
+                            <div
+                                className="reservation-status"
+                                style={{ color: getStatusColor(reservation.status) }}
+                            >
+                                {translateStatus(reservation.status)}
+                            </div>
                         </div>
-                        <div
-                            className="reservation-status"
-                            style={{ color: reservation.statusColor }}
-                        >
-                            {reservation.status}
-                        </div>
-                    </div>
-                ))}
-            </div>
+                    ))}
+                </div>
+            )}
         </div>
     );
 };

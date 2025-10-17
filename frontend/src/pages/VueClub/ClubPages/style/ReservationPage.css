@@ -220,6 +220,34 @@
     color: #374151;
 }
 
+.calendar-filter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.calendar-filter input[type="date"] {
+    padding: 6px 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.calendar-filter .btn2-clear {
+    background: #f3f3f3;
+    border: none;
+    color: #333;
+    padding: 5px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.calendar-filter .btn2-clear:hover {
+    background: #e0e0e0;
+}
+
+
 @media (max-width: 768px) {
     .reservations-page {
         padding: 16px;

@@ -334,6 +334,53 @@ export async function getReservations(): Promise<ReservationSummary[]> {
     }
 }
 
+export async function getReservationsByDate(date: string): Promise<ReservationSummary[]> {
+    try {
+        // ✅ Check date format (YYYY-MM-DD)
+        const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+        if (!dateRegex.test(date)) {
+            throw new Error(`Invalid date format: ${date}. Expected YYYY-MM-DD.`);
+        }
+
+        // ✅ Correct endpoint — query parameter, not path param
+        const res = await fetch(`${UrlService}/reservations/reservations/date?date=${date}`, {
+            method: "GET",
+            headers: {
+                Accept: "*/*",
+                ...getAuthHeaders(),
+            },
+        });
+
+        if (!res.ok) {
+            throw new Error(`Failed to fetch reservations: ${res.status}`);
+        }
+
+        const data = await res.json();
+
+        // ✅ Map API response to ReservationSummary[]
+        const reservations: ReservationSummary[] = data.map((item: any) => ({
+            id: item.id,
+            nom: item.joueur?.nom ?? "",
+            prenom: item.joueur?.prenom ?? "",
+            date: item.creneau?.date ?? "",
+            status: item.statut ?? "",
+            prix: item.creneau?.prix ?? 0,
+            telephone: item.joueur?.telephone ?? "",
+            photoProfilUrl: item.joueur?.photoProfilUrl ?? "",
+            terrain: item.creneau?.terrain?.nom ?? "",
+            heureDebut: item.creneau?.heureDebut ?? "",
+            heureFin: item.creneau?.heureFin ?? "",
+        }));
+
+        return reservations;
+    } catch (error) {
+        console.error("Error fetching reservations:", error);
+        return [];
+    }
+}
+
+
+
 /* =======================
  * Endpoints protégés
  * =======================

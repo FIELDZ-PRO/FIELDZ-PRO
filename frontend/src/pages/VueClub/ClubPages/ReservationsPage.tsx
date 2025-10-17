@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, Clock, User, MapPin, Filter, Search } from 'lucide-react';
+import { Calendar, Clock, User, MapPin, Filter, Search, X } from 'lucide-react';
 import './style/ReservationPage.css';
 import {
     ReservationSummary,
     getReservations,
+    getReservationsByDate,
     confirmReservations,
     cancelReservationByClub,
 } from '../../../services/ClubService';
@@ -13,29 +14,34 @@ const ReservationsPage = () => {
     const [filterStatus, setFilterStatus] = useState('Toutes');
     const [searchTerm, setSearchTerm] = useState('');
     const [loadingId, setLoadingId] = useState<number | null>(null);
+    const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
-    // 🔹 Fetch reservations on mount
+    // 🔹 Fetch reservations (daily or all)
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const data = await getReservations();
+                let data;
+                if (selectedDate) {
+                    data = await getReservationsByDate(selectedDate);
+                } else {
+                    data = await getReservations();
+                }
                 setReservations(data);
             } catch (error) {
                 console.error('Erreur lors du chargement des réservations :', error);
             }
         };
         fetchData();
-    }, []);
+    }, [selectedDate]);
 
     // 🔹 Translate backend status → display text
     const translateStatus = (status: string) => {
         switch (status) {
-            case 'LIBRE': return 'Libre';
             case 'RESERVE': return 'Réservé';
             case 'ANNULE': return 'Annulée';
             case 'ANNULE_PAR_JOUEUR': return 'Annulée par le joueur';
-            case 'ANNULE_PAR_CLUB': return 'Annulée par le club';
-            case 'CONFIRMEE': return 'Confirmée';
+            case 'ANNULE_PAR_CLUB': return 'Absent';
+            case 'CONFIRMEE': return 'Présent';
             default: return status;
         }
     };
@@ -43,11 +49,10 @@ const ReservationsPage = () => {
     // 🔹 Colors for statuses
     const getStatusColor = (status: string) => {
         switch (status) {
-            case 'LIBRE': return '#07ca00ff';
             case 'RESERVE': return '#005ca8ff';
             case 'ANNULE_PAR_CLUB': return '#c23400ff';
             case 'ANNULE_PAR_JOUEUR': return '#d80f00ff';
-            case 'CONFIRMEE': return '#059669';
+            case 'CONFIRMEE': return '#059622ff';
             case 'ANNULE': return '#dc2626';
             default: return '#64748b';
         }
@@ -66,7 +71,7 @@ const ReservationsPage = () => {
             setLoadingId(id);
 
             if (action === 'confirm') {
-                const data = await confirmReservations(id);
+                await confirmReservations(id);
                 updateReservationStatus(id, 'CONFIRMEE');
             } else if (action === 'cancel') {
                 const motif = prompt("Entrez le motif d'annulation :") || 'Annulé par le club';
@@ -82,10 +87,14 @@ const ReservationsPage = () => {
         }
     };
 
-    // 🔹 Filters
+    // 🔹 Filters (updated for new statuses)
     const filteredReservations = reservations.filter(reservation => {
         const matchesStatus =
-            filterStatus === 'Toutes' || reservation.status === filterStatus;
+            filterStatus === 'Toutes' ||
+            reservation.status === filterStatus ||
+            (filterStatus === 'Annulées' &&
+                ['ANNULE', 'ANNULE_PAR_JOUEUR', 'ANNULE_PAR_CLUB'].includes(reservation.status));
+
         const matchesSearch =
             (reservation.nom?.toLowerCase() ?? '').includes(searchTerm.toLowerCase()) ||
             (reservation.terrain?.toLowerCase() ?? '').includes(searchTerm.toLowerCase());
@@ -110,16 +119,14 @@ const ReservationsPage = () => {
                         <span className="stat-value">
                             {reservations.filter(r => r.status === 'CONFIRMEE').length}
                         </span>
-                        <span className="stat-label">Confirmées</span>
+                        <span className="stat-label">Présent</span>
                     </div>
-                    <div className="stat-item">
-                        <span className="stat-value">{totalRevenue}</span>
-                        <span className="stat-label">Revenus (DZD)</span>
-                    </div>
+
                 </div>
             </div>
 
             <div className="filters-section">
+                {/* 🔍 Search */}
                 <div className="search-box">
                     <Search size={16} />
                     <input
@@ -130,6 +137,7 @@ const ReservationsPage = () => {
                     />
                 </div>
 
+                {/* 🔹 Status filter */}
                 <div className="filter-group">
                     <Filter size={16} />
                     <select
@@ -137,14 +145,35 @@ const ReservationsPage = () => {
                         onChange={(e) => setFilterStatus(e.target.value)}
                     >
                         <option value="Toutes">Toutes les réservations</option>
-                        <option value="CONFIRMEE">Confirmées</option>
+                        <option value="CONFIRMEE">Présent</option>
                         <option value="RESERVE">Réservées</option>
-                        <option value="ANNULE">Annulées</option>
-                        <option value="LIBRE">Libres</option>
+                        <option value="Annulées">Annulées</option>
+                        <option value="ANNULE_PAR_JOUEUR">Annulées par joueur</option>
+                        <option value="ANNULE_PAR_CLUB">Absent</option>
                     </select>
+                </div>
+
+                {/* 📅 Calendar filter */}
+                <div className="filter-group calendar-filter">
+                    <Calendar size={16} />
+                    <input
+                        type="date"
+                        value={selectedDate || ''}
+                        onChange={(e) => setSelectedDate(e.target.value || null)}
+                    />
+                    {selectedDate && (
+                        <button
+                            className="btn2 btn2-clear"
+                            onClick={() => setSelectedDate(null)}
+                            title="Afficher toutes les réservations"
+                        >
+                            <X size={14} />
+                        </button>
+                    )}
                 </div>
             </div>
 
+            {/* 🧾 Reservations list */}
             <div className="reservations-list">
                 {filteredReservations.map((reservation) => (
                     <div key={reservation.id} className="reservation-card">
@@ -202,16 +231,6 @@ const ReservationsPage = () => {
                                             {loadingId === reservation.id ? '...' : 'Absent'}
                                         </button>
                                     </>
-                                )}
-
-                                {reservation.status === 'CONFIRMEE' && (
-                                    <button
-                                        className="btn2 btn2-danger"
-                                        disabled={loadingId === reservation.id}
-                                        onClick={() => handleReservationAction(reservation.id, 'cancel')}
-                                    >
-                                        {loadingId === reservation.id ? '...' : 'Annuler'}
-                                    </button>
                                 )}
                             </div>
                         </div>
