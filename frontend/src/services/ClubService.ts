@@ -198,6 +198,28 @@ async function getTerrains(): Promise<Terrain[]> {
         throw error
     }
 }
+
+export async function modifyInfoClub(ClubInfo: Omit<ClubDto, 'id'>) {
+    try {
+        const res = await fetch(`${UrlService}/utilisateur/update`, {
+            method: "PUT",
+            headers: {
+                Accept: "*/*",
+                "Content-Type": "application/json",
+                ...getAuthHeaders()
+            },
+            body: JSON.stringify({
+                nom: ClubInfo.nom,
+                telephone: ClubInfo.telephone,
+                ville: ClubInfo.ville,
+                adresse: ClubInfo.adresse
+            }),
+        })
+    } catch (error) {
+        throw error
+    }
+}
+
 async function getCreneaux(terrains: Terrain[]): Promise<ReservationSummary[]> {
     try {
 
@@ -294,4 +316,5 @@ export const ClubService = {
     DeleteTerrain,
     loginWithGoogle,
     ModifyTerrain,
+    modifyInfoClub
 };

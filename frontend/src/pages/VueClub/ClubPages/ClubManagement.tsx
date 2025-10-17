@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Settings, User, MapPin, Mail, Phone, CreditCard, Bell, FileText } from 'lucide-react';
 import './style/ClubManagement.css';
-import { getClubMe } from '../../../services/ClubService'
+import { getClubMe, modifyInfoClub } from '../../../services/ClubService'
 import { ClubDto } from '../../../services/ClubService';
+
 const ClubManagementPage = () => {
     const [clubInfo, setClubInfo] = useState<Omit<ClubDto, 'id'>>({
         nom: '',
@@ -35,10 +36,15 @@ const ClubManagementPage = () => {
 
     const [isEditing, setIsEditing] = useState(false);
 
-    const handleSave = () => {
-        setIsEditing(false);
-        // Here you would typically save to a backend
-        console.log('Saving club info:', clubInfo);
+    const handleSave = async () => {
+        try {
+            await modifyInfoClub(clubInfo);
+            console.log('Saving club info:', clubInfo);
+            setIsEditing(false)
+        }
+        catch (error) {
+            alert("the modification didnt work")
+        }
     };
 
     const handleNotificationChange = (key: string, value: boolean) => {
@@ -111,7 +117,7 @@ const ClubManagementPage = () => {
                             </label>
                             <input
                                 type="tel"
-                                value={clubInfo.telephone}
+                                value={clubInfo.telephone ?? ''}
                                 onChange={(e) => setClubInfo({ ...clubInfo, telephone: e.target.value })}
                                 disabled={!isEditing}
                             />
