@@ -16,7 +16,6 @@ const ReservationsPage = () => {
     const [loadingId, setLoadingId] = useState<number | null>(null);
     const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
-    // 🔹 Fetch reservations (daily or all)
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -34,7 +33,6 @@ const ReservationsPage = () => {
         fetchData();
     }, [selectedDate]);
 
-    // 🔹 Translate backend status → display text
     const translateStatus = (status: string) => {
         switch (status) {
             case 'RESERVE': return 'Réservé';
@@ -46,7 +44,6 @@ const ReservationsPage = () => {
         }
     };
 
-    // 🔹 Colors for statuses
     const getStatusColor = (status: string) => {
         switch (status) {
             case 'RESERVE': return '#005ca8ff';
@@ -58,14 +55,12 @@ const ReservationsPage = () => {
         }
     };
 
-    // 🔹 Local state update helper
     const updateReservationStatus = (id: number, newStatus: string) => {
         setReservations(prev =>
             prev.map(r => (r.id === id ? { ...r, status: newStatus } : r))
         );
     };
 
-    // 🔹 Backend action handler
     const handleReservationAction = async (id: number, action: 'confirm' | 'cancel') => {
         try {
             setLoadingId(id);
@@ -75,8 +70,8 @@ const ReservationsPage = () => {
                 updateReservationStatus(id, 'CONFIRMEE');
             } else if (action === 'cancel') {
                 const motif = prompt("Entrez le motif d'annulation :") || 'Annulé par le club';
-                const data = await cancelReservationByClub(id, motif);
-                updateReservationStatus(id, data.status ?? 'ANNULE_PAR_CLUB');
+                await cancelReservationByClub(id, motif);
+                updateReservationStatus(id, 'ANNULE_PAR_CLUB');
             }
 
         } catch (error) {
@@ -87,7 +82,6 @@ const ReservationsPage = () => {
         }
     };
 
-    // 🔹 Filters (updated for new statuses)
     const filteredReservations = reservations.filter(reservation => {
         const matchesStatus =
             filterStatus === 'Toutes' ||
@@ -101,7 +95,6 @@ const ReservationsPage = () => {
         return matchesStatus && matchesSearch;
     });
 
-    // 🔹 Revenue summary
     const totalRevenue = reservations
         .filter(r => r.status === 'CONFIRMEE')
         .reduce((sum, r) => sum + (r.prix || 0), 0);
@@ -121,12 +114,10 @@ const ReservationsPage = () => {
                         </span>
                         <span className="stat-label">Présent</span>
                     </div>
-
                 </div>
             </div>
 
             <div className="filters-section">
-                {/* 🔍 Search */}
                 <div className="search-box">
                     <Search size={16} />
                     <input
@@ -137,7 +128,6 @@ const ReservationsPage = () => {
                     />
                 </div>
 
-                {/* 🔹 Status filter */}
                 <div className="filter-group">
                     <Filter size={16} />
                     <select
@@ -153,7 +143,6 @@ const ReservationsPage = () => {
                     </select>
                 </div>
 
-                {/* 📅 Calendar filter */}
                 <div className="filter-group calendar-filter">
                     <Calendar size={16} />
                     <input
@@ -173,7 +162,6 @@ const ReservationsPage = () => {
                 </div>
             </div>
 
-            {/* 🧾 Reservations list */}
             <div className="reservations-list">
                 {filteredReservations.map((reservation) => (
                     <div key={reservation.id} className="reservation-card">
@@ -220,7 +208,13 @@ const ReservationsPage = () => {
                                             disabled={loadingId === reservation.id}
                                             onClick={() => handleReservationAction(reservation.id, 'confirm')}
                                         >
-                                            {loadingId === reservation.id ? '...' : 'Présent'}
+                                            {loadingId === reservation.id ? (
+                                                <span className="btn2-loading">
+                                                    <span className="spinner"></span> Envoi...
+                                                </span>
+                                            ) : (
+                                                'Présent'
+                                            )}
                                         </button>
 
                                         <button
@@ -228,7 +222,13 @@ const ReservationsPage = () => {
                                             disabled={loadingId === reservation.id}
                                             onClick={() => handleReservationAction(reservation.id, 'cancel')}
                                         >
-                                            {loadingId === reservation.id ? '...' : 'Absent'}
+                                            {loadingId === reservation.id ? (
+                                                <span className="btn2-loading">
+                                                    <span className="spinner"></span> Envoi...
+                                                </span>
+                                            ) : (
+                                                'Absent'
+                                            )}
                                         </button>
                                     </>
                                 )}

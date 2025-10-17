@@ -272,7 +272,7 @@ export async function cancelReservationByClub(id: number, motif: string) {
             throw new Error(`Erreur ${res.status}: ${errorText}`);
         }
 
-        return await res.json();
+        return res;
     } catch (error) {
         console.error("Erreur lors de l’annulation :", error);
         throw error;
@@ -288,10 +288,11 @@ export async function confirmReservations(id: number) {
                 ...getAuthHeaders(),
             },
         });
-        const data = await res.json()
-        console.log(data)
+        //const data = await res.json()
+        console.log(res)
     }
     catch (error) {
+        console.log("error is : " + error)
         throw error
     }
 }
