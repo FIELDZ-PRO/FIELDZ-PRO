@@ -14,13 +14,18 @@ export type LoginResponse = {
 };
 
 export interface ReservationSummary {
-    clientName: string;
-    terrain: string;
-    data: string;
-    time: string;
+    id: number;
+    nom: string;
+    prenom: string;
+    date: string;
     status: string;
-    price: number;
-    phone: string;
+    prix: number;
+    telephone: string;
+    photoProfilUrl: string;
+    terrain: string;
+    heureDebut: string;
+    heureFin: string;
+
 }
 
 interface TokenPayload {
@@ -250,6 +255,84 @@ async function GetCreneauSummary(): Promise<ReservationSummary[]> {
     }
 }
 
+export async function cancelReservationByClub(id: number, motif: string) {
+    try {
+        const res = await fetch(`${UrlService}/reservations/${id}/annuler`, {
+            method: "PUT",
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+                ...getAuthHeaders(),
+            },
+            body: JSON.stringify({ motif }), // ✅ send motif
+        });
+
+        if (!res.ok) {
+            const errorText = await res.text();
+            throw new Error(`Erreur ${res.status}: ${errorText}`);
+        }
+
+        return await res.json();
+    } catch (error) {
+        console.error("Erreur lors de l’annulation :", error);
+        throw error;
+    }
+}
+
+export async function confirmReservations(id: number) {
+    try {
+        const res = await fetch(`${UrlService}/reservations/${id}/confirmer`, {
+            method: "PATCH",
+            headers: {
+                Accept: "*/*",
+                ...getAuthHeaders(),
+            },
+        });
+        const data = await res.json()
+        console.log(data)
+    }
+    catch (error) {
+        throw error
+    }
+}
+
+export async function getReservations(): Promise<ReservationSummary[]> {
+    try {
+        const res = await fetch(`${UrlService}/reservations/reservations`, {
+            method: "GET",
+            headers: {
+                Accept: "*/*",
+                ...getAuthHeaders(),
+            },
+        });
+
+        if (!res.ok) {
+            throw new Error(`Failed to fetch reservations: ${res.status}`);
+        }
+
+        const data = await res.json();
+
+        // ✅ Map API response to ReservationSummary[]
+        const reservations: ReservationSummary[] = data.map((item: any) => ({
+            id: item.id,
+            nom: item.joueur?.nom ?? "",
+            prenom: item.joueur?.prenom ?? "",
+            date: item.creneau?.date ?? "",
+            status: item.statut ?? "",
+            prix: item.creneau?.prix ?? 0,
+            telephone: item.joueur?.telephone ?? "",
+            photoProfilUrl: item.joueur?.photoProfilUrl ?? "",
+            terrain: item.creneau?.terrain?.nom ?? "",
+            heureDebut: item.creneau?.heureDebut ?? "",
+            heureFin: item.creneau?.heureFin ?? "",
+        }));
+
+        return reservations;
+    } catch (error) {
+        console.error("Error fetching reservations:", error);
+        return [];
+    }
+}
 
 /* =======================
  * Endpoints protégés

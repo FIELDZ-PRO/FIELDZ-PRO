@@ -1,93 +1,101 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Calendar, Clock, User, MapPin, Filter, Search } from 'lucide-react';
 import './style/ReservationPage.css';
+import {
+    ReservationSummary,
+    getReservations,
+    confirmReservations,
+    cancelReservationByClub,
+} from '../../../services/ClubService';
 
 const ReservationsPage = () => {
-    const [reservations, setReservations] = useState([
-        {
-            id: 1,
-            clientName: 'Pauline Dubois',
-            terrain: 'Court 1',
-            date: '2024-04-18',
-            time: '14:00-15:00',
-            status: 'Confirmée',
-            price: 40,
-            phone: '06 12 34 56 78'
-        },
-        {
-            id: 2,
-            clientName: 'Antoine Martin',
-            terrain: 'Field 8',
-            date: '2024-04-16',
-            time: '16:00-17:00',
-            status: 'En attente',
-            price: 70,
-            phone: '06 98 76 54 32'
-        },
-        {
-            id: 3,
-            clientName: 'Lucas Bernard',
-            terrain: 'Court 3',
-            date: '2024-04-17',
-            time: '20:00-21:00',
-            status: 'Annulée',
-            price: 80,
-            phone: '06 11 22 33 44'
-        },
-        {
-            id: 4,
-            clientName: 'Marie Leroy',
-            terrain: 'Court 1',
-            date: '2024-04-19',
-            time: '10:00-11:00',
-            status: 'Confirmée',
-            price: 40,
-            phone: '06 55 66 77 88'
-        },
-        {
-            id: 5,
-            clientName: 'Thomas Petit',
-            terrain: 'Field 8',
-            date: '2024-04-20',
-            time: '18:00-19:00',
-            status: 'En attente',
-            price: 70,
-            phone: '06 99 88 77 66'
-        }
-    ]);
-
+    const [reservations, setReservations] = useState<ReservationSummary[]>([]);
     const [filterStatus, setFilterStatus] = useState('Toutes');
     const [searchTerm, setSearchTerm] = useState('');
+    const [loadingId, setLoadingId] = useState<number | null>(null);
 
+    // 🔹 Fetch reservations on mount
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const data = await getReservations();
+                setReservations(data);
+            } catch (error) {
+                console.error('Erreur lors du chargement des réservations :', error);
+            }
+        };
+        fetchData();
+    }, []);
+
+    // 🔹 Translate backend status → display text
+    const translateStatus = (status: string) => {
+        switch (status) {
+            case 'LIBRE': return 'Libre';
+            case 'RESERVE': return 'Réservé';
+            case 'ANNULE': return 'Annulée';
+            case 'ANNULE_PAR_JOUEUR': return 'Annulée par le joueur';
+            case 'ANNULE_PAR_CLUB': return 'Annulée par le club';
+            case 'CONFIRMEE': return 'Confirmée';
+            default: return status;
+        }
+    };
+
+    // 🔹 Colors for statuses
     const getStatusColor = (status: string) => {
         switch (status) {
-            case 'Libre': return '#07ca00ff';
-            case 'Réservé': return '#005ca8ff';
-            case 'Annulée par le club': return '#c23400ff';
-            case 'Annulée par le joeuer': return '#d80f00ff';
-            case 'Confirmée': return '#059669';
-            case 'En attente': return '#d97706';
-            case 'Annulée': return '#dc2626';
+            case 'LIBRE': return '#07ca00ff';
+            case 'RESERVE': return '#005ca8ff';
+            case 'ANNULE_PAR_CLUB': return '#c23400ff';
+            case 'ANNULE_PAR_JOUEUR': return '#d80f00ff';
+            case 'CONFIRMEE': return '#059669';
+            case 'ANNULE': return '#dc2626';
             default: return '#64748b';
         }
     };
 
+    // 🔹 Local state update helper
     const updateReservationStatus = (id: number, newStatus: string) => {
-        setReservations(reservations.map(reservation =>
-            reservation.id === id ? { ...reservation, status: newStatus } : reservation
-        ));
+        setReservations(prev =>
+            prev.map(r => (r.id === id ? { ...r, status: newStatus } : r))
+        );
     };
 
+    // 🔹 Backend action handler
+    const handleReservationAction = async (id: number, action: 'confirm' | 'cancel') => {
+        try {
+            setLoadingId(id);
+
+            if (action === 'confirm') {
+                const data = await confirmReservations(id);
+                updateReservationStatus(id, 'CONFIRMEE');
+            } else if (action === 'cancel') {
+                const motif = prompt("Entrez le motif d'annulation :") || 'Annulé par le club';
+                const data = await cancelReservationByClub(id, motif);
+                updateReservationStatus(id, data.status ?? 'ANNULE_PAR_CLUB');
+            }
+
+        } catch (error) {
+            console.error('Erreur lors de la mise à jour de la réservation :', error);
+            alert('Une erreur est survenue. Veuillez réessayer.');
+        } finally {
+            setLoadingId(null);
+        }
+    };
+
+    // 🔹 Filters
     const filteredReservations = reservations.filter(reservation => {
-        const matchesStatus = filterStatus === 'Toutes' || reservation.status === filterStatus;
-        const matchesSearch = reservation.clientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            reservation.terrain.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesStatus =
+            filterStatus === 'Toutes' || reservation.status === filterStatus;
+        const matchesSearch =
+            (reservation.nom?.toLowerCase() ?? '').includes(searchTerm.toLowerCase()) ||
+            (reservation.terrain?.toLowerCase() ?? '').includes(searchTerm.toLowerCase());
         return matchesStatus && matchesSearch;
     });
 
+    // 🔹 Revenue summary
     const totalRevenue = reservations
-        .filter(r => r.status === 'Confirmée')
-        .reduce((sum, r) => sum + r.price, 0);
+        .filter(r => r.status === 'CONFIRMEE')
+        .reduce((sum, r) => sum + (r.prix || 0), 0);
 
     return (
         <div className="reservations-page">
@@ -99,12 +107,14 @@ const ReservationsPage = () => {
                         <span className="stat-label">Total</span>
                     </div>
                     <div className="stat-item">
-                        <span className="stat-value">{reservations.filter(r => r.status === 'Confirmée').length}</span>
+                        <span className="stat-value">
+                            {reservations.filter(r => r.status === 'CONFIRMEE').length}
+                        </span>
                         <span className="stat-label">Confirmées</span>
                     </div>
                     <div className="stat-item">
-                        <span className="stat-value">€{totalRevenue}</span>
-                        <span className="stat-label">Revenus</span>
+                        <span className="stat-value">{totalRevenue}</span>
+                        <span className="stat-label">Revenus (DZD)</span>
                     </div>
                 </div>
             </div>
@@ -127,9 +137,10 @@ const ReservationsPage = () => {
                         onChange={(e) => setFilterStatus(e.target.value)}
                     >
                         <option value="Toutes">Toutes les réservations</option>
-                        <option value="Confirmée">Confirmées</option>
-                        <option value="En attente">En attente</option>
-                        <option value="Annulée">Annulées</option>
+                        <option value="CONFIRMEE">Confirmées</option>
+                        <option value="RESERVE">Réservées</option>
+                        <option value="ANNULE">Annulées</option>
+                        <option value="LIBRE">Libres</option>
                     </select>
                 </div>
             </div>
@@ -141,9 +152,9 @@ const ReservationsPage = () => {
                             <div className="client-info">
                                 <div className="client-name">
                                     <User size={16} />
-                                    {reservation.clientName}
+                                    {reservation.nom} {reservation.prenom}
                                 </div>
-                                <div className="client-phone">{reservation.phone}</div>
+                                <div className="client-phone">{reservation.telephone}</div>
                             </div>
 
                             <div className="reservation-details">
@@ -157,13 +168,11 @@ const ReservationsPage = () => {
                                 </div>
                                 <div className="detail-item">
                                     <Clock size={16} />
-                                    {reservation.time}
+                                    {reservation.heureDebut} - {reservation.heureFin}
                                 </div>
                             </div>
 
-                            <div className="reservation-price">
-                                €{reservation.price}
-                            </div>
+                            <div className="reservation-price">{reservation.prix} Dzd</div>
                         </div>
 
                         <div className="reservation-actions">
@@ -171,32 +180,37 @@ const ReservationsPage = () => {
                                 className="status-badge"
                                 style={{ backgroundColor: getStatusColor(reservation.status) }}
                             >
-                                {reservation.status}
+                                {translateStatus(reservation.status)}
                             </div>
 
                             <div className="action-buttons">
-                                {reservation.status === 'En attente' && (
+                                {reservation.status === 'RESERVE' && (
                                     <>
                                         <button
                                             className="btn2 btn2-success"
-                                            onClick={() => updateReservationStatus(reservation.id, 'Confirmée')}
+                                            disabled={loadingId === reservation.id}
+                                            onClick={() => handleReservationAction(reservation.id, 'confirm')}
                                         >
-                                            Confirmer
+                                            {loadingId === reservation.id ? '...' : 'Présent'}
                                         </button>
+
                                         <button
                                             className="btn2 btn2-danger"
-                                            onClick={() => updateReservationStatus(reservation.id, 'Annulée')}
+                                            disabled={loadingId === reservation.id}
+                                            onClick={() => handleReservationAction(reservation.id, 'cancel')}
                                         >
-                                            Annuler
+                                            {loadingId === reservation.id ? '...' : 'Absent'}
                                         </button>
                                     </>
                                 )}
-                                {reservation.status === 'Confirmée' && (
+
+                                {reservation.status === 'CONFIRMEE' && (
                                     <button
                                         className="btn2 btn2-danger"
-                                        onClick={() => updateReservationStatus(reservation.id, 'Annulée')}
+                                        disabled={loadingId === reservation.id}
+                                        onClick={() => handleReservationAction(reservation.id, 'cancel')}
                                     >
-                                        Annuler
+                                        {loadingId === reservation.id ? '...' : 'Annuler'}
                                     </button>
                                 )}
                             </div>
