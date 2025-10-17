@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { adminService, AdminStats } from '../../services/adminService';
-import { Users, Building2, Calendar } from 'lucide-react';
+import { Users, Building2, Calendar, TrendingUp } from 'lucide-react';
+import '../../components/admin/style/AdminLayout.css';
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     loadStats();
@@ -16,44 +18,145 @@ export default function AdminDashboard() {
       setStats(response.data);
     } catch (error) {
       console.error('Erreur lors du chargement des stats', error);
+      setError('Impossible de charger les statistiques');
     } finally {
       setLoading(false);
     }
   };
 
-  if (loading) return <div>Chargement...</div>;
+  // Fonction pour formater le pourcentage
+  const formatCroissance = (valeur: number | undefined) => {
+    if (valeur === undefined || valeur === null) return '0%';
+    const signe = valeur >= 0 ? '+' : '';
+    return `${signe}${valeur.toFixed(1)}%`;
+  };
+
+  if (loading) {
+    return (
+      <div className="loading-spinner">
+        <div className="spinner"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div style={{ backgroundColor: '#fef3c7', border: '1px solid #fde047', borderRadius: '0.75rem', padding: '1.5rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <div style={{ width: '2rem', height: '2rem', backgroundColor: '#fef9c3', borderRadius: '9999px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span style={{ fontSize: '0.875rem' }}>⚠</span>
+          </div>
+          <div>
+            <h3 style={{ color: '#854d0e', fontWeight: 600 }}>Erreur de chargement</h3>
+            <p style={{ color: '#a16207' }}>{error}</p>
+          </div>
+        </div>
+        <button
+          onClick={loadStats}
+          style={{ marginTop: '1rem', backgroundColor: '#ca8a04', color: 'white', padding: '0.5rem 1rem', borderRadius: '0.5rem', border: 'none', cursor: 'pointer' }}
+        >
+          Réessayer
+        </button>
+      </div>
+    );
+  }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div className="bg-white rounded-lg shadow p-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-gray-600 text-sm">Total Clubs</p>
-            <p className="text-3xl font-bold text-green-600">{stats?.totalClubs || 0}</p>
+    <div>
+      {/* Welcome Banner */}
+      <div className="dashboard-welcome">
+        <h1>Bienvenue sur votre Dashboard</h1>
+        <p>Gérez votre plateforme Fieldz en toute simplicité</p>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="stats-grid">
+        {/* Total Clubs */}
+        <div className="stat-card blue">
+          <div className="stat-card-header">
+            <div className="stat-icon blue">
+              <Building2 size={24} />
+            </div>
+            <div className="stat-value">{stats?.totalClubs || 0}</div>
           </div>
-          <Building2 size={40} className="text-green-600 opacity-20" />
+          <h3 className="stat-title">Total Clubs</h3>
+          {stats?.croissanceClubs !== undefined && (
+            <p className="stat-growth">{formatCroissance(stats.croissanceClubs)} ce mois</p>
+          )}
+        </div>
+
+        {/* Total Joueurs */}
+        <div className="stat-card green">
+          <div className="stat-card-header">
+            <div className="stat-icon green">
+              <Users size={24} />
+            </div>
+            <div className="stat-value">{stats?.totalJoueurs || 0}</div>
+          </div>
+          <h3 className="stat-title">Total Joueurs</h3>
+          {stats?.croissanceJoueurs !== undefined && (
+            <p className="stat-growth">{formatCroissance(stats.croissanceJoueurs)} ce mois</p>
+          )}
+        </div>
+
+        {/* Réservations Hebdomadaires */}
+        <div className="stat-card purple">
+          <div className="stat-card-header">
+            <div className="stat-icon purple">
+              <Calendar size={24} />
+            </div>
+            <div className="stat-value">{stats?.reservationsHebdomadaires || 0}</div>
+          </div>
+          <h3 className="stat-title">Réservations Hebdomadaires</h3>
+        </div>
+
+        {/* Croissance Clubs */}
+        <div className="stat-card orange">
+          <div className="stat-card-header">
+            <div className="stat-icon orange">
+              <TrendingUp size={24} />
+            </div>
+            <div className="stat-value">
+              {formatCroissance(stats?.croissanceClubs)}
+            </div>
+          </div>
+          <h3 className="stat-title">Croissance Clubs</h3>
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow p-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-gray-600 text-sm">Total Joueurs</p>
-            <p className="text-3xl font-bold text-blue-600">{stats?.totalJoueurs || 0}</p>
+      {/* Activity Section */}
+      <div className="activity-section">
+        <h2>Activité Récente</h2>
+        <div className="activity-list">
+          <div className="activity-item">
+            <div className="activity-icon green">
+              <Building2 size={20} />
+            </div>
+            <div className="activity-content">
+              <p className="activity-title">Nouveau club inscrit</p>
+              <p className="activity-time">Il y a 2 heures</p>
+            </div>
           </div>
-          <Users size={40} className="text-blue-600 opacity-20" />
-        </div>
-      </div>
 
-      <div className="bg-white rounded-lg shadow p-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-gray-600 text-sm">Réservations hebdo</p>
-            <p className="text-3xl font-bold text-purple-600">
-              {stats?.reservationsHebdomadaires || 0}
-            </p>
+          <div className="activity-item">
+            <div className="activity-icon blue">
+              <Users size={20} />
+            </div>
+            <div className="activity-content">
+              <p className="activity-title">5 nouveaux joueurs inscrits</p>
+              <p className="activity-time">Aujourd'hui</p>
+            </div>
           </div>
-          <Calendar size={40} className="text-purple-600 opacity-20" />
+
+          <div className="activity-item">
+            <div className="activity-icon purple">
+              <Calendar size={20} />
+            </div>
+            <div className="activity-content">
+              <p className="activity-title">Pic de réservations cette semaine</p>
+              <p className="activity-time">+25% par rapport à la semaine dernière</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>

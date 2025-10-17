@@ -1,5 +1,6 @@
 package com.fieldz.service;
 
+import com.fieldz.auth.RegisterRequest;
 import com.fieldz.dto.AdminStatsDto;
 import com.fieldz.dto.ClubAdminDto;
 import com.fieldz.dto.CreateClubRequest;
@@ -40,25 +41,60 @@ public class AdminServiceImpl implements AdminService {
 
     // ================== STATS ==================
     @Override
-    public AdminStatsDto getStats() {
-        long totalClubs = utilisateurRepository.findAll().stream()
-                .filter(u -> u.getTypeRole() == Role.CLUB)
-                .count();
+public AdminStatsDto getStats() {
+    // Total actuel
+    long totalClubs = utilisateurRepository.findAll().stream()
+            .filter(u -> u.getTypeRole() == Role.CLUB)
+            .count();
 
-        long totalJoueurs = utilisateurRepository.findAll().stream()
-                .filter(u -> u.getTypeRole() == Role.JOUEUR)
-                .count();
+    long totalJoueurs = utilisateurRepository.findAll().stream()
+            .filter(u -> u.getTypeRole() == Role.JOUEUR)
+            .count();
 
-        LocalDateTime debutSemaine = LocalDateTime.now()
-                .truncatedTo(ChronoUnit.DAYS)
-                .minusDays(7);
+    // Réservations de la semaine
+    LocalDateTime debutSemaine = LocalDateTime.now()
+            .truncatedTo(ChronoUnit.DAYS)
+            .minusDays(7);
 
-        long reservationsHebdo = reservationRepository.findAll().stream()
-                .filter(r -> r.getDateReservation() != null && r.getDateReservation().isAfter(debutSemaine))
-                .count();
+    long reservationsHebdo = reservationRepository.findAll().stream()
+            .filter(r -> r.getDateReservation() != null && r.getDateReservation().isAfter(debutSemaine))
+            .count();
 
-        return new AdminStatsDto(totalClubs, totalJoueurs, reservationsHebdo);
-    }
+    // ========== NOUVEAU : CALCUL DE CROISSANCE ==========
+    
+    // Début du mois en cours
+    LocalDateTime debutMoisActuel = LocalDateTime.now()
+            .withDayOfMonth(1)
+            .withHour(0)
+            .withMinute(0)
+            .withSecond(0)
+            .withNano(0);
+
+    // Clubs créés ce mois
+    long clubsCeMois = utilisateurRepository.findAll().stream()
+            .filter(u -> u.getTypeRole() == Role.CLUB)
+            .filter(u -> u.getDateInscription() != null && u.getDateInscription().isAfter(debutMoisActuel))
+            .count();
+
+    // Joueurs inscrits ce mois
+    long joueursCeMois = utilisateurRepository.findAll().stream()
+            .filter(u -> u.getTypeRole() == Role.JOUEUR)
+            .filter(u -> u.getDateInscription() != null && u.getDateInscription().isAfter(debutMoisActuel))
+            .count();
+
+    // Calcul des pourcentages
+    double croissanceClubs = calculerPourcentageCroissance(totalClubs, clubsCeMois);
+    double croissanceJoueurs = calculerPourcentageCroissance(totalJoueurs, joueursCeMois);
+
+    // ⬇️ MODIFIER CE RETURN POUR INCLURE LES 2 NOUVELLES VALEURS
+    return new AdminStatsDto(
+            totalClubs, 
+            totalJoueurs, 
+            reservationsHebdo,
+            croissanceClubs,      // NOUVEAU
+            croissanceJoueurs     // NOUVEAU
+    );
+}
 
     // ================== CLUBS ==================
     @Override
@@ -198,4 +234,49 @@ public class AdminServiceImpl implements AdminService {
                 .replaceAll("[^a-z0-9]", "");
         return clean + "2025";
     }
-}
+    /**
+    * Calcule le pourcentage de croissance
+    */
+    private double calculerPourcentageCroissance(long total, long nouveaux) {
+    if (total == 0 || nouveaux == 0) return 0.0;
+    return Math.round((nouveaux * 100.0 / total) * 10.0) / 10.0;
+    }
+    @Override
+    @Transactional
+    public JoueurAdminDto createJoueur(RegisterRequest request) {
+        // Validation
+        if (request.getEmail() == null || request.getEmail().isBlank()) {
+            throw new RuntimeException("Email requis");
+        }
+        if (utilisateurRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new RuntimeException("Un utilisateur avec cet email existe déjà");
+        }
+        if (request.getNom() == null || request.getNom().isBlank()) {
+            throw new RuntimeException("Le nom est requis");
+        }
+        if (request.getMotDePasse() == null || request.getMotDePasse().isBlank()) {
+            throw new RuntimeException("Le mot de passe est requis");
+        }
+    
+        // Séparer le nom complet en prénom et nom
+        String nomComplet = request.getNom().trim();
+        String[] parts = nomComplet.split(" ", 2); // Split au premier espace
+        String prenom = parts.length > 1 ? parts[0] : nomComplet;
+        String nom = parts.length > 1 ? parts[1] : "";
+    
+        // Créer le joueur
+        Joueur joueur = new Joueur();
+        joueur.setNom(nom);
+        joueur.setPrenom(prenom);
+        joueur.setEmail(request.getEmail());
+        joueur.setMotDePasse(passwordEncoder.encode(request.getMotDePasse()));
+        joueur.setTypeRole(Role.JOUEUR);
+        joueur.setDateInscription(LocalDateTime.now());
+        joueur.setProfilComplet(false);
+        joueur.setFailedLoginAttempts(0);
+    
+        Joueur saved = utilisateurRepository.save(joueur);
+    
+        return AdminMapper.toJoueurAdminDto(saved);
+    }
+}   

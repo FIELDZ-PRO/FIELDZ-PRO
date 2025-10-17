@@ -675,3 +675,9 @@
    opacity: 0.5;
    cursor: not-allowed;
  }
+ .stat-growth {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+}

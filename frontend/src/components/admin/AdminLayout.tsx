@@ -1,70 +1,80 @@
+import './style/AdminLayout.css';
 import React from 'react';
-import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { LayoutDashboard, Building2, Users, LogOut } from 'lucide-react';
 
-export default function AdminLayout() {
+const AdminLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
+
+  const menuItems = [
+    { path: '/admin', icon: LayoutDashboard, label: 'Dashboard' },
+    { path: '/admin/clubs', icon: Building2, label: 'Clubs' },
+    { path: '/admin/joueurs', icon: Users, label: 'Joueurs' }
+  ];
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     navigate('/login');
   };
 
-  const isActive = (path: string) => location.pathname === path;
+  const getPageTitle = () => {
+    switch (location.pathname) {
+      case '/admin':
+        return 'Dashboard';
+      case '/admin/clubs':
+        return 'Gestion des Clubs';
+      case '/admin/joueurs':
+        return 'Gestion des Joueurs';
+      default:
+        return 'Administration';
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-green-600">Admin Fieldz</h1>
-          <button
-            onClick={handleLogout}
-            className="px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg"
-          >
-            Déconnexion
-          </button>
+    <div className="admin-layout">
+      {/* Sidebar */}
+      <div className="admin-sidebar">
+        <div className="admin-sidebar-header">
+          <div className="admin-logo">F</div>
+          <h1 className="admin-title">Admin Fieldz</h1>
         </div>
-      </header>
-
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        {/* Navigation */}
-        <nav className="flex gap-4 mb-6">
-          <Link
-            to="/admin"
-            className={`px-4 py-2 rounded-lg font-medium ${
-              isActive('/admin')
-                ? 'bg-green-600 text-white'
-                : 'bg-white text-gray-700 hover:bg-gray-100'
-            }`}
-          >
-            Dashboard
-          </Link>
-          <Link
-            to="/admin/clubs"
-            className={`px-4 py-2 rounded-lg font-medium ${
-              isActive('/admin/clubs')
-                ? 'bg-green-600 text-white'
-                : 'bg-white text-gray-700 hover:bg-gray-100'
-            }`}
-          >
-            Clubs
-          </Link>
-          <Link
-            to="/admin/joueurs"
-            className={`px-4 py-2 rounded-lg font-medium ${
-              isActive('/admin/joueurs')
-                ? 'bg-green-600 text-white'
-                : 'bg-white text-gray-700 hover:bg-gray-100'
-            }`}
-          >
-            Joueurs
-          </Link>
+        
+        <nav className="admin-nav">
+          {menuItems.map((item) => (
+            <button
+              key={item.path}
+              onClick={() => navigate(item.path)}
+              className={`admin-nav-item ${location.pathname === item.path ? 'active' : ''}`}
+            >
+              <item.icon size={20} />
+              <span>{item.label}</span>
+            </button>
+          ))}
         </nav>
 
-        {/* Contenu */}
-        <Outlet />
+        <div className="admin-logout">
+          <button onClick={handleLogout} className="admin-logout-btn">
+            <LogOut size={20} />
+            <span>Déconnexion</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="admin-content">
+        <header className="admin-header">
+          <div className="admin-header-inner">
+            <h2 className="admin-page-title">{getPageTitle()}</h2>
+          </div>
+        </header>
+
+        <main className="admin-main">
+          <Outlet />
+        </main>
       </div>
     </div>
   );
-}
+};
+
+export default AdminLayout;

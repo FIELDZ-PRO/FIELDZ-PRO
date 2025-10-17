@@ -1,5 +1,6 @@
 package com.fieldz.service;
 
+import com.fieldz.auth.RegisterRequest;
 import com.fieldz.dto.*;
 
 import java.util.List;
@@ -20,4 +21,5 @@ public interface AdminService {
     List<JoueurAdminDto> searchJoueurs(String query);
     JoueurAdminDto getJoueurDetails(Long joueurId);
     JoueurAdminDto toggleJoueurStatus(Long joueurId);
+    JoueurAdminDto createJoueur(RegisterRequest request);
 }
