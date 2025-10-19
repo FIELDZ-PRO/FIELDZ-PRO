@@ -53,7 +53,6 @@ export default function AppRouter() {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/oauth-success" element={<OAuthSuccess />} />
       <Route path="/complete-profile" element={<CompleteProfile />} />
-      <Route path="/profil-club" element={<ProfilClub />} />
       <Route path="/profil-joueur" element={<ProfilJoueur />} />
 
 

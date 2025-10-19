@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ClubService } from '../../services/ClubService';
 import './LoginClub.css';
@@ -27,53 +28,55 @@ export const LoginClub = () => {
     }
   };
 
-  const handleLoginGoogle = () => {
-    // Logique OAuth Google pour clubs si nécessaire
-    alert("Connexion Google pour clubs à venir");
-  };
-
   return (
-    <>
+    <div className="login-club-page">
       <button 
-        className="back-to-home"
+        className="back-btn"
         onClick={() => navigate('/')}
       >
         ← Retour
       </button>
-      
-      <div className="auth-page">
-        <div className="auth-card">
-          <div className="avatar" aria-hidden />
-          <h1 className="title">Espace Club</h1>
-          <p className="subtitle">Connectez-vous à votre compte club</p>
 
-          <form className="form" onSubmit={handleSubmit} noValidate>
-            {message && <div className="api-error">{message}</div>}
+      <div className="login-club-container">
+        {/* Section gauche - Branding */}
+        <div className="branding-section">
+          <div className="branding-logo">F</div>
+          <h1 className="branding-title">FIELDZ</h1>
+          <p className="branding-subtitle">
+            Gérez votre club de football simplement et efficacement
+          </p>
+        </div>
 
-            <div className="field">
-              <label className="label">Email du club</label>
-              <div className="input-wrap">
-                <span className="icon email" aria-hidden />
-                <input
-                  className="input"
-                  type="email"
-                  placeholder="club@exemple.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  autoComplete="username"
-                  required
-                />
-              </div>
+        {/* Section droite - Formulaire */}
+        <div className="form-section">
+          <div className="form-header">
+            <h2 className="form-title">Connexion Club</h2>
+            <p className="form-subtitle">Connectez-vous à votre espace club</p>
+          </div>
+
+          <form className="login-club-form" onSubmit={handleSubmit} noValidate>
+            {message && <div className="login-club-error">{message}</div>}
+
+            <div className="form-group">
+              <label className="form-label">Email du club</label>
+              <input
+                className="form-input"
+                type="email"
+                placeholder="club@exemple.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="username"
+                required
+              />
             </div>
 
-            <div className="field">
-              <label className="label">Mot de passe</label>
-              <div className="input-wrap">
-                <span className="icon lock" aria-hidden />
+            <div className="form-group">
+              <label className="form-label">Mot de passe</label>
+              <div className="input-wrapper">
                 <input
-                  className="input"
+                  className="form-input password-input"
                   type={showPwd ? "text" : "password"}
-                  placeholder="Votre mot de passe"
+                  placeholder="Mot de passe"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   autoComplete="current-password"
@@ -81,43 +84,48 @@ export const LoginClub = () => {
                 />
                 <button
                   type="button"
-                  className="eye"
+                  className="eye-btn"
                   onClick={() => setShowPwd((s) => !s)}
-                  aria-label={showPwd ? "Masquer le mot de passe" : "Afficher le mot de passe"}
-                />
+                  aria-label={showPwd ? "Masquer" : "Afficher"}
+                >
+                  <svg 
+                    width="18" 
+                    height="18" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    strokeWidth="2"
+                  >
+                    {showPwd ? (
+                      <>
+                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                        <line x1="1" y1="1" x2="23" y2="23"/>
+                      </>
+                    ) : (
+                      <>
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                      </>
+                    )}
+                  </svg>
+                </button>
               </div>
             </div>
 
-            <button className="primary" type="submit" disabled={isLoading}>
-              {isLoading ? "Connexion..." : "Se connecter"}
-            </button>
-
             <a 
-              className="forgot" 
+              className="forgot-link" 
               onClick={() => navigate("/ForgotPasswordClub")}
               style={{ cursor: 'pointer' }}
             >
               Mot de passe oublié ?
             </a>
 
-            <div className="divider" />
-            <p className="continue">Ou continuer avec</p>
-
-            <div className="oauth-row">
-              <button 
-                type="button" 
-                className="oauth google" 
-                onClick={handleLoginGoogle}
-              >
-                <span className="g">G</span> Google
-              </button>
-              <button type="button" className="oauth facebook" disabled>
-                <span className="f">f</span> Facebook
-              </button>
-            </div>
+            <button className="submit-btn" type="submit" disabled={isLoading}>
+              {isLoading ? "Connexion..." : "Se connecter"}
+            </button>
           </form>
         </div>
       </div>
-    </>
+    </div>
   );
 };

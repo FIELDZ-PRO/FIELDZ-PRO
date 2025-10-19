@@ -1,5 +1,6 @@
 import "./ForgotPasswordClub.css"
 import { useNavigate } from "react-router-dom"
+import React from "react"
 export const ForgotPasswordPageCLub = () => {
 
     const onNavigate = useNavigate()

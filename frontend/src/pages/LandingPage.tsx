@@ -11,10 +11,16 @@ const LandingPage = ({ onNavigate }) => (
   <>
     <Navbar />
     <HeroSection onNavigate={onNavigate} />
-    <HowItWorks />
-    <WhyFIELdZ />
+    <div id="comment-ca-marche">
+      <HowItWorks />
+    </div>
+    <div id="pourquoi-fieldz">
+      <WhyFIELdZ />
+    </div>
     <PWAInstall />
-    <ClubsPartnership />
+    <div id="pour-les-clubs">
+      <ClubsPartnership />
+    </div>
     <Footer />
   </>
 )

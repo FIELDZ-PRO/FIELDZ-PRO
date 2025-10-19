@@ -222,4 +222,9 @@
   .navbar__menu {
     top: 52px;
   }
+  /* Dans Navbar.css ou votre fichier CSS principal */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 80px; /* Ajustez selon la hauteur de votre navbar */
+}
 }

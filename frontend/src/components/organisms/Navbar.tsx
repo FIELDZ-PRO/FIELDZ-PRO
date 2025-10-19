@@ -10,6 +10,16 @@ const Navbar: React.FC = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  // Fonction pour le smooth scroll
+  const handleScrollTo = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    e.preventDefault();
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setIsMenuOpen(false); // Fermer le menu mobile après le clic
+    }
+  };
+
   return (
     <nav className="navbar">
       <div className="navbar__container">
@@ -20,9 +30,30 @@ const Navbar: React.FC = () => {
 
         {/* Menu Desktop */}
         <ul className={`navbar__menu ${isMenuOpen ? 'active' : ''}`}>
-          <li><a href="#comment-ca-marche">Comment ça marche</a></li>
-          <li><a href="#pourquoi-fieldz">Pourquoi FIELdZ</a></li>
-          <li><a href="#pour-les-clubs">Pour les clubs</a></li>
+          <li>
+            <a 
+              href="#comment-ca-marche" 
+              onClick={(e) => handleScrollTo(e, 'comment-ca-marche')}
+            >
+              Comment ça marche
+            </a>
+          </li>
+          <li>
+            <a 
+              href="#pourquoi-fieldz" 
+              onClick={(e) => handleScrollTo(e, 'pourquoi-fieldz')}
+            >
+              Pourquoi FIELdZ
+            </a>
+          </li>
+          <li>
+            <a 
+              href="#pour-les-clubs" 
+              onClick={(e) => handleScrollTo(e, 'pour-les-clubs')}
+            >
+              Pour les clubs
+            </a>
+          </li>
           
           {/* Liens de connexion DANS le menu burger sur mobile */}
           <li className="navbar__menu-actions">

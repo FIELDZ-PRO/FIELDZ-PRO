@@ -55,53 +55,55 @@ export default function Login() {
   };
 
   return (
-    <>
+    <div className="login-page">
       <button 
-        className="back-to-home"
+        className="back-btn"
         onClick={() => navigate('/')}
       >
         ← Retour
       </button>
-      
-      <div className="auth-page">
-        <div className="auth-card">
-          <div className="avatar" aria-hidden />
-          <h1 className="title">Bienvenue</h1>
-          <p className="subtitle">Connectez-vous ou créer un compte</p>
 
-          <div className="tabs login">
-            <Link to="/login" className="tab">Connexion</Link>
-            <Link to="/register" className="tab">Inscription</Link>
-            <span className="indicator" />
+      <div className="login-container">
+        {/* Section gauche - Branding */}
+        <div className="branding-section">
+          <div className="branding-logo">F</div>
+          <h1 className="branding-title">FIELDZ</h1>
+          <p className="branding-motto">Cliki Tiri Marki</p>
+          <p className="branding-subtitle">
+            Rejoins ta communauté de sport et trouve ton prochain défis !
+          </p>
+        </div>
+
+        {/* Section droite - Formulaire */}
+        <div className="form-section">
+          <div className="form-header">
+            <h2 className="form-title">Connexion</h2>
+            <p className="form-subtitle">Connecte-toi à ton compte joueur</p>
           </div>
 
-          <form className="form" onSubmit={handleSubmit} noValidate>
-            {message && <div className="api-error">{message}</div>}
+          <form className="login-form" onSubmit={handleSubmit} noValidate>
+            {message && <div className="login-error">{message}</div>}
 
-            <div className="field">
-              <label className="label">Email</label>
-              <div className="input-wrap">
-                <span className="icon email" aria-hidden />
-                <input
-                  className="input"
-                  type="email"
-                  placeholder="Votre email : example@gmail.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  autoComplete="username"
-                  required
-                />
-              </div>
+            <div className="form-group">
+              <label className="form-label">Email</label>
+              <input
+                className="form-input"
+                type="email"
+                placeholder="exemple@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="username"
+                required
+              />
             </div>
 
-            <div className="field">
-              <label className="label">Mot de passe</label>
-              <div className="input-wrap">
-                <span className="icon lock" aria-hidden />
+            <div className="form-group">
+              <label className="form-label">Mot de passe</label>
+              <div className="input-wrapper">
                 <input
-                  className="input"
+                  className="form-input password-input"
                   type={showPwd ? "text" : "password"}
-                  placeholder="Votre mot de passe"
+                  placeholder="Mot de passe"
                   value={motDePasse}
                   onChange={(e) => setMotDePasse(e.target.value)}
                   autoComplete="current-password"
@@ -109,33 +111,68 @@ export default function Login() {
                 />
                 <button
                   type="button"
-                  className="eye"
+                  className="eye-btn"
                   onClick={() => setShowPwd((s) => !s)}
-                  aria-label={showPwd ? "Masquer le mot de passe" : "Afficher le mot de passe"}
-                />
+                  aria-label={showPwd ? "Masquer" : "Afficher"}
+                >
+                  <svg 
+                    width="18" 
+                    height="18" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    strokeWidth="2"
+                  >
+                    {showPwd ? (
+                      <>
+                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                        <line x1="1" y1="1" x2="23" y2="23"/>
+                      </>
+                    ) : (
+                      <>
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                      </>
+                    )}
+                  </svg>
+                </button>
               </div>
             </div>
 
-            <button className="primary" disabled={isLoading}>
+            <Link className="forgot-link" to="/forgot-password">
+              Mot de passe oublié ?
+            </Link>
+
+            <button className="submit-btn" type="submit" disabled={isLoading}>
               {isLoading ? "Connexion..." : "Se connecter"}
             </button>
 
-            <Link className="forgot" to="/forgot-password">Mot de passe oublié ?</Link>
+            <div className="divider-line">
+              <span>Ou continuer avec</span>
+            </div>
 
-            <div className="divider" />
-            <p className="continue">Ou continuer avec</p>
-
-            <div className="oauth-row">
-              <button type="button" className="oauth google" onClick={loginWithGoogle}>
-                <span className="g">G</span> Google
+            <div className="oauth-btns">
+              <button type="button" className="oauth-btn google-btn" onClick={loginWithGoogle}>
+                <span className="oauth-logo">G</span>
+                Google
               </button>
-              <button type="button" className="oauth facebook" disabled>
-                <span className="f">f</span> Facebook
+              <button type="button" className="oauth-btn facebook-btn" disabled>
+                <span className="oauth-logo">f</span>
+                Facebook
               </button>
             </div>
           </form>
+
+          <div className="login-footer">
+            <p>
+              Pas encore de compte ?{" "}
+              <Link to="/register" className="register-link">
+                Inscris-toi
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
