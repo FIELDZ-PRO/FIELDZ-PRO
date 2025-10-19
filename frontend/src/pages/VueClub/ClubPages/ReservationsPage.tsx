@@ -35,11 +35,11 @@ const ReservationsPage = () => {
 
     const translateStatus = (status: string) => {
         switch (status) {
-            case 'RESERVE': return 'Réservé';
-            case 'ANNULE': return 'Annulée';
-            case 'ANNULE_PAR_JOUEUR': return 'Annulée par le joueur';
-            case 'ANNULE_PAR_CLUB': return 'Absent';
-            case 'CONFIRMEE': return 'Présent';
+            case 'RESERVE': return 'Réservé'; // Arslan : réservé -> à venir
+            case 'ANNULE': return 'Annulée'; 
+            case 'ANNULE_PAR_JOUEUR': return 'Annulée par le joueur'; 
+            case 'ANNULE_PAR_CLUB': return 'Absent'; // Arslan : absent -> annulée par le club
+            case 'CONFIRMEE': return 'Présent'; // Arslan : présent -> confirmée
             default: return status;
         }
     };

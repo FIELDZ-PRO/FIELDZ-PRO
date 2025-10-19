@@ -1,31 +1,21 @@
 package com.fieldz.service;
 
-import com.fieldz.model.*;
 import com.fieldz.dto.CreneauRecurrentDto;
+import com.fieldz.dto.UpdateCreneauRequest;
+import com.fieldz.exception.CreneauHasActiveReservationsException;
+import com.fieldz.mapper.CreneauMapper;
+import com.fieldz.model.*;
 import com.fieldz.repository.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-import com.fieldz.service.NotificationService;
-import java.time.DayOfWeek;
-import java.util.ArrayList;
 import org.springframework.transaction.annotation.Transactional;
 
-
-
+import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.LocalDateTime;
-import com.fieldz.mapper.CreneauMapper;
-
-import java.util.List;
-import lombok.extern.slf4j.Slf4j;
-
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Arrays;
-import com.fieldz.exception.CreneauHasActiveReservationsException;
-
+import java.util.*;
 
 @Slf4j
 @Service
@@ -37,8 +27,6 @@ public class CreneauService {
     private final UtilisateurRepository utilisateurRepository;
     private final ReservationRepository reservationRepository;
     private final NotificationService notificationService;
-
-
 
     public Creneau ajouterCreneau(Long terrainId, Creneau creneau, Authentication authentication) {
         String email = authentication.getName();
@@ -59,17 +47,13 @@ public class CreneauService {
         if (creneau.getDateDebut() == null || creneau.getDateFin() == null) {
             throw new RuntimeException("Les dates de début et de fin sont obligatoires.");
         }
-
         if (creneau.getDateDebut().isAfter(creneau.getDateFin())) {
             throw new RuntimeException("L'heure de fin doit être après l'heure de début.");
         }
 
         List<Creneau> chevauchants = creneauRepository.findCreneauxChevauchants(
-                terrainId,
-                creneau.getDateDebut(),
-                creneau.getDateFin()
+                terrainId, creneau.getDateDebut(), creneau.getDateFin()
         );
-
         if (!chevauchants.isEmpty()) {
             throw new RuntimeException("Un créneau existant chevauche les horaires proposés.");
         }
@@ -83,27 +67,30 @@ public class CreneauService {
         return saved;
     }
 
-
+    @Transactional(readOnly = true)
     public List<Creneau> getCreneauxDuTerrain(Long terrainId, Authentication authentication) {
         String email = authentication.getName();
         Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
+
         if (!(utilisateur instanceof Club club)) {
             throw new RuntimeException("L'utilisateur n'est pas un club.");
         }
 
         Terrain terrain = terrainRepository.findById(terrainId)
                 .orElseThrow(() -> new RuntimeException("Terrain introuvable"));
+
         if (!terrain.getClub().getId().equals(club.getId())) {
             throw new RuntimeException("Ce terrain ne vous appartient pas.");
         }
 
-        log.info("Club {} a consulté les créneaux du terrain id={}", club.getNom(), terrainId);
-        return terrain.getCreneaux();
+        // ✅ Fetch terrain + club pour le mapper
+        return creneauRepository.findByTerrainIdFetchTerrainAndClub(terrainId);
     }
 
     public List<Creneau> getCreneauxDisponibles() {
-        List<Creneau> dispo = creneauRepository.findByStatut(Statut.LIBRE);
+        // ancien: findByStatut(Statut.LIBRE) -> on tient compte aussi de disponible=true
+        List<Creneau> dispo = creneauRepository.findByStatutAndDisponibleTrue(Statut.LIBRE);
         log.info("Nombre de créneaux disponibles renvoyés à un joueur : {}", dispo.size());
         return dispo;
     }
@@ -112,7 +99,6 @@ public class CreneauService {
         String email = authentication.getName();
         Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
-
         if (!(utilisateur instanceof Club club)) {
             throw new RuntimeException("L'utilisateur n'est pas un club.");
         }
@@ -120,13 +106,13 @@ public class CreneauService {
         Creneau creneau = creneauRepository.findById(creneauId)
                 .orElseThrow(() -> new RuntimeException("Créneau introuvable"));
 
-        if (!creneau.getTerrain().getClub().getId().equals(club.getId())) {
+        if (!Objects.equals(creneau.getTerrain().getClub().getId(), club.getId())) {
             log.warn("Club {} tente d’annuler un créneau qui ne lui appartient pas : creneauId={}", club.getNom(), creneauId);
             throw new RuntimeException("Ce créneau ne vous appartient pas.");
         }
 
         if (creneau.getStatut() == Statut.ANNULE) {
-            log.info("Club {} a tenté d’annuler un créneau déjà annulé : creneauId={}", club.getNom(), creneauId);
+            log.info("Club {} tente d’annuler un créneau déjà annulé : creneauId={}", club.getNom(), creneauId);
             throw new RuntimeException("Ce créneau est déjà annulé.");
         }
 
@@ -134,21 +120,26 @@ public class CreneauService {
         creneau.setDisponible(false);
         creneauRepository.save(creneau);
 
-        log.info("Club {} a annulé le créneau id={} sur le terrain {}", club.getNom(), creneauId, creneau.getTerrain().getNomTerrain());
-
-        // ✅ Marquer les réservations comme ANNULE_PAR_CLUB
+        // Marquer les réservations actives comme ANNULE_PAR_CLUB + notifier
         List<Reservation> reservations = reservationRepository.findByCreneauId(creneauId);
         for (Reservation reservation : reservations) {
             reservation.setStatut(Statut.ANNULE_PAR_CLUB);
+            reservation.setDateAnnulation(LocalDateTime.now());
+            reservation.setMotifAnnulation("Créneau annulé par le club");
             reservationRepository.save(reservation);
 
-            // 📨 Notification possible ici
-            notificationService.envoyerEmailAnnulationCreneau(
-                    reservation.getJoueur().getEmail(), creneau
-            );
+            try {
+                if (reservation.getJoueur() != null) {
+                    notificationService.envoyerEmailAnnulationCreneau(
+                            reservation.getJoueur().getEmail(), creneau
+                    );
+                }
+            } catch (Exception ex) {
+                log.warn("Erreur envoi email annulation (resa {}): {}", reservation.getId(), ex.getMessage());
+            }
         }
+        log.info("Club {} a annulé le créneau id={} sur {}", club.getNom(), creneauId, creneau.getTerrain().getNomTerrain());
     }
-
 
     public Map<String, Object> creerCreneauxRecurrents(CreneauRecurrentDto dto) {
         DayOfWeek jourTarget = DayOfWeek.valueOf(dto.getJourDeSemaine().toUpperCase());
@@ -158,7 +149,7 @@ public class CreneauService {
         Terrain terrain = terrainRepository.findById(dto.getTerrainId())
                 .orElseThrow(() -> new RuntimeException("Terrain introuvable"));
 
-        List<Creneau> creneaux = new ArrayList<>();
+        List<Creneau> aCreer = new ArrayList<>();
         int totalDemandes = 0;
 
         while (!current.isAfter(end)) {
@@ -180,13 +171,13 @@ public class CreneauService {
                     c.setTerrain(terrain);
                     c.setStatut(Statut.LIBRE);
                     c.setDisponible(true);
-                    creneaux.add(c);
+                    aCreer.add(c);
                 }
             }
             current = current.plusDays(1);
         }
 
-        List<Creneau> saved = creneauRepository.saveAll(creneaux);  // ✅ Maintenant on a la variable saved
+        List<Creneau> saved = aCreer.isEmpty() ? List.of() : creneauRepository.saveAll(aCreer);
 
         Map<String, Object> response = new HashMap<>();
         if (saved.isEmpty()) {
@@ -200,9 +191,7 @@ public class CreneauService {
         response.put("totalDemandes", totalDemandes);
         response.put("totalCrees", saved.size());
         response.put("dejaExistants", totalDemandes - saved.size());
-        response.put("creneaux", saved.stream()
-                .map(CreneauMapper::toDto)
-                .toList());
+        response.put("creneaux", saved.stream().map(CreneauMapper::toDto).toList());
 
         return response;
     }
@@ -247,15 +236,18 @@ public class CreneauService {
             reservationRepository.saveAll(actives);
             annulees = actives.size();
 
-            // (Optionnel) notifications
             for (Reservation r : actives) {
-                if (r.getJoueur() != null) {
-                    notificationService.envoyerEmailAnnulationCreneau(r.getJoueur().getEmail(), creneau);
+                try {
+                    if (r.getJoueur() != null) {
+                        notificationService.envoyerEmailAnnulationCreneau(r.getJoueur().getEmail(), creneau);
+                    }
+                } catch (Exception ex) {
+                    log.warn("Notification suppression: resa {}: {}", r.getId(), ex.getMessage());
                 }
             }
         }
 
-        // 🔓 DÉRÉFÉRENCER TOUTES les réservations (actives + historiques) avant suppression
+        // Déréférencer toutes les réservations (historique inclus) avant suppression
         var toutes = reservationRepository.findByCreneauId(creneauId);
         if (!toutes.isEmpty()) {
             for (Reservation r : toutes) {
@@ -264,35 +256,30 @@ public class CreneauService {
             reservationRepository.saveAll(toutes);
         }
 
-        // 🗑️ Supprimer le créneau
         creneauRepository.delete(creneau);
         log.info("Créneau {} supprimé par le club {} (réservations annulées: {}).", creneauId, club.getNom(), annulees);
         return annulees;
     }
 
-    @org.springframework.transaction.annotation.Transactional
-    public com.fieldz.model.Creneau updateCreneau(
-            Long creneauId,
-            com.fieldz.dto.UpdateCreneauRequest req,
-            org.springframework.security.core.Authentication authentication) {
-
+    @Transactional
+    public Creneau updateCreneau(Long creneauId, UpdateCreneauRequest req, Authentication authentication) {
         String email = authentication.getName();
-        com.fieldz.model.Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
+        Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
-        if (!(utilisateur instanceof com.fieldz.model.Club club)) {
+        if (!(utilisateur instanceof Club club)) {
             throw new RuntimeException("L'utilisateur n'est pas un club.");
         }
 
-        com.fieldz.model.Creneau c = creneauRepository.findById(creneauId)
+        Creneau c = creneauRepository.findById(creneauId)
                 .orElseThrow(() -> new RuntimeException("Créneau introuvable"));
 
         if (!c.getTerrain().getClub().getId().equals(club.getId())) {
             throw new RuntimeException("Ce créneau ne vous appartient pas.");
         }
 
-        // Déplacement de terrain optionnel
+        // Déplacement éventuel de terrain
         if (req.getTerrainId() != null && !req.getTerrainId().equals(c.getTerrain().getId())) {
-            com.fieldz.model.Terrain nouveauTerrain = terrainRepository.findById(req.getTerrainId())
+            Terrain nouveauTerrain = terrainRepository.findById(req.getTerrainId())
                     .orElseThrow(() -> new RuntimeException("Terrain cible introuvable"));
             if (!nouveauTerrain.getClub().getId().equals(club.getId())) {
                 throw new RuntimeException("Le terrain cible n'appartient pas à votre club.");
@@ -300,9 +287,9 @@ public class CreneauService {
             c.setTerrain(nouveauTerrain);
         }
 
-        java.time.LocalDateTime oldDebut = c.getDateDebut();
-        java.time.LocalDateTime oldFin   = c.getDateFin();
-        Double oldPrix                   = c.getPrix();
+        LocalDateTime oldDebut = c.getDateDebut();
+        LocalDateTime oldFin   = c.getDateFin();
+        Double oldPrix         = c.getPrix();
 
         if (req.getDateDebut() != null) c.setDateDebut(req.getDateDebut());
         if (req.getDateFin() != null)   c.setDateFin(req.getDateFin());
@@ -316,60 +303,55 @@ public class CreneauService {
         }
 
         // Chevauchements (en excluant le créneau courant)
-        java.util.List<com.fieldz.model.Creneau> chevauchants = creneauRepository.findCreneauxChevauchants(
+        List<Creneau> chevauchants = creneauRepository.findCreneauxChevauchants(
                 c.getTerrain().getId(), c.getDateDebut(), c.getDateFin()
         ).stream().filter(x -> !x.getId().equals(c.getId())).toList();
-
         if (!chevauchants.isEmpty()) {
             throw new RuntimeException("Un créneau existant chevauche les horaires proposés.");
         }
 
-        com.fieldz.model.Creneau saved = creneauRepository.save(c);
-        log.info("Club {} a modifié le créneau id={} (terrain={}, {} -> {}, prix {} -> {}).",
+        Creneau saved = creneauRepository.save(c);
+        log.info("Club {} modifie créneau id={} (terrain={}, {}->{}, prix {}->{}).",
                 club.getNom(), saved.getId(), saved.getTerrain().getNomTerrain(),
                 oldDebut, saved.getDateDebut(), oldPrix, saved.getPrix());
 
-        // Notifications simples si modif temps/prix (tu as déjà une méthode d’email d’annulation)
+        // Notification simple si modification temps/prix
         boolean changedTime = (oldDebut != null && !oldDebut.equals(saved.getDateDebut()))
                 || (oldFin != null && !oldFin.equals(saved.getDateFin()));
         boolean changedPrix = (oldPrix != null && !oldPrix.equals(saved.getPrix()));
 
         if (changedTime || changedPrix) {
             var actives = reservationRepository.findByCreneauIdAndStatutIn(
-                    saved.getId(), java.util.Arrays.asList(com.fieldz.model.Statut.RESERVE, com.fieldz.model.Statut.CONFIRMEE));
-
-            for (com.fieldz.model.Reservation r : actives) {
+                    saved.getId(), Arrays.asList(Statut.RESERVE, Statut.CONFIRMEE));
+            for (Reservation r : actives) {
                 try {
                     if (r.getJoueur() != null) {
                         notificationService.envoyerEmailAnnulationCreneau(r.getJoueur().getEmail(), saved);
                     }
                 } catch (Exception ex) {
-                    log.warn("Notification de changement de créneau échouée pour réservation {}: {}", r.getId(), ex.getMessage());
+                    log.warn("Notification changement créneau échouée (resa {}): {}", r.getId(), ex.getMessage());
                 }
             }
         }
         return saved;
     }
-    @Transactional(readOnly = true)
-public List<Creneau> getCreneauxDisponiblesParClub(Long clubId, String dateStr) {
-    if (dateStr == null || dateStr.isBlank()) {
-        // Si pas de date, retourner tous les créneaux disponibles du club
-        return creneauRepository.findByTerrainClubIdAndDisponibleTrue(clubId);
-    }
-    
-    try {
-        LocalDate date = LocalDate.parse(dateStr);
-        LocalDateTime startOfDay = date.atStartOfDay();
-        LocalDateTime endOfDay = date.atTime(23, 59, 59);
-        
-        return creneauRepository.findByTerrainClubIdAndDisponibleTrueAndDateDebutBetween(
-            clubId, startOfDay, endOfDay
-        );
-    } catch (Exception e) {
-        throw new RuntimeException("Format de date invalide. Utilisez YYYY-MM-DD");
-    }
-    
 
-}
+    @Transactional(readOnly = true)
+    public List<Creneau> getCreneauxDisponiblesParClub(Long clubId, String dateStr) {
+        if (dateStr == null || dateStr.isBlank()) {
+            return creneauRepository.findByTerrainClubIdAndDisponibleTrue(clubId);
+        }
+        try {
+            LocalDate date = LocalDate.parse(dateStr);
+            LocalDateTime startOfDay = date.atStartOfDay();
+            LocalDateTime endOfDay = date.atTime(23, 59, 59);
+            return creneauRepository.findByTerrainClubIdAndDisponibleTrueAndDateDebutBetween(
+                    clubId, startOfDay, endOfDay
+            );
+        } catch (Exception e) {
+            throw new RuntimeException("Format de date invalide. Utilisez YYYY-MM-DD");
+        }
+    }
+
 
 }

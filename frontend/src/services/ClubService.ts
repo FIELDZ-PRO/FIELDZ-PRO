@@ -51,6 +51,74 @@ export type ClubDto = {
  * =======================
  */
 
+// Arslan 
+
+function toDatePart(iso?: string): string {
+  if (!iso) return "";
+  // iso attendu: "2025-10-20T18:00:00"
+  const i = iso.indexOf("T");
+  return i > 0 ? iso.slice(0, i) : iso; // "2025-10-20"
+}
+
+function toTimePart(iso?: string): string {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "";
+  return d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false });
+}
+
+function normalizeReservationRaw(item: any): ReservationSummary {
+  const c = item?.creneau ?? item;
+
+  // Nouvelles sources
+  const dateDebutISO = c?.dateDebut ?? null;
+  const dateFinISO   = c?.dateFin ?? null;
+  const terrainNom   = c?.terrain?.nomTerrain ?? c?.terrain?.nom ?? item?.terrain ?? "";
+
+  // Anciennes sources (fallback)
+  const legacyDate       = item?.date ?? "";
+  const legacyHeureDebut = item?.heureDebut ?? "";
+  const legacyHeureFin   = item?.heureFin ?? "";
+
+  // Sorties "anciennes" attendues par AccueilClub
+  const date =
+    dateDebutISO ? toDatePart(dateDebutISO)
+    : legacyDate;
+
+  const heureDebut =
+    dateDebutISO ? toTimePart(dateDebutISO)
+    : legacyHeureDebut;
+
+  const heureFin =
+    dateFinISO ? toTimePart(dateFinISO)
+    : legacyHeureFin;
+
+  const terrain = terrainNom;
+
+  const prix =
+    typeof c?.prix === "number" ? c.prix
+    : typeof item?.prix === "number" ? item.prix
+    : 0;
+
+  // statut peut s’appeler "statut" côté back ; on garde item.status si déjà normalisé
+  const status = item?.status ?? item?.statut ?? "";
+
+  return {
+    id: item.id,
+    nom: item.joueur?.nom ?? item.nom ?? "",
+    prenom: item.joueur?.prenom ?? item.prenom ?? "",
+    date,
+    status,
+    prix,
+    telephone: item.joueur?.telephone ?? item.telephone ?? "",
+    photoProfilUrl: item.joueur?.photoProfilUrl ?? item.photoProfilUrl ?? "",
+    terrain,
+    heureDebut,
+    heureFin,
+  };
+}
+// Arslan
+
 
 export function isTokenValid(token: string | null) {
     if (!token) return false;
@@ -298,87 +366,61 @@ export async function confirmReservations(id: number) {
 }
 
 export async function getReservations(): Promise<ReservationSummary[]> {
-    try {
-        const res = await fetch(`${UrlService}/reservations/reservations`, {
-            method: "GET",
-            headers: {
-                Accept: "*/*",
-                ...getAuthHeaders(),
-            },
-        });
+  try {
+    const res = await fetch(`${UrlService}/reservations/reservations`, {
+      method: "GET",
+      headers: {
+        Accept: "*/*",
+        ...getAuthHeaders(),
+      },
+    });
 
-        if (!res.ok) {
-            throw new Error(`Failed to fetch reservations: ${res.status}`);
-        }
-
-        const data = await res.json();
-
-        // ✅ Map API response to ReservationSummary[]
-        const reservations: ReservationSummary[] = data.map((item: any) => ({
-            id: item.id,
-            nom: item.joueur?.nom ?? "",
-            prenom: item.joueur?.prenom ?? "",
-            date: item.creneau?.date ?? "",
-            status: item.statut ?? "",
-            prix: item.creneau?.prix ?? 0,
-            telephone: item.joueur?.telephone ?? "",
-            photoProfilUrl: item.joueur?.photoProfilUrl ?? "",
-            terrain: item.creneau?.terrain?.nom ?? "",
-            heureDebut: item.creneau?.heureDebut ?? "",
-            heureFin: item.creneau?.heureFin ?? "",
-        }));
-
-        return reservations;
-    } catch (error) {
-        console.error("Error fetching reservations:", error);
-        return [];
+    if (!res.ok) {
+      throw new Error(`Failed to fetch reservations: ${res.status}`);
     }
+
+    const data = await res.json();
+
+    // ✅ Normalisation vers l'ancien format attendu par AccueilClub
+    const reservations: ReservationSummary[] = (Array.isArray(data) ? data : []).map(normalizeReservationRaw);
+    return reservations;
+  } catch (error) {
+    console.error("Error fetching reservations:", error);
+    return [];
+  }
 }
+
 
 export async function getReservationsByDate(date: string): Promise<ReservationSummary[]> {
-    try {
-        // ✅ Check date format (YYYY-MM-DD)
-        const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-        if (!dateRegex.test(date)) {
-            throw new Error(`Invalid date format: ${date}. Expected YYYY-MM-DD.`);
-        }
-
-        // ✅ Correct endpoint — query parameter, not path param
-        const res = await fetch(`${UrlService}/reservations/reservations/date?date=${date}`, {
-            method: "GET",
-            headers: {
-                Accept: "*/*",
-                ...getAuthHeaders(),
-            },
-        });
-
-        if (!res.ok) {
-            throw new Error(`Failed to fetch reservations: ${res.status}`);
-        }
-
-        const data = await res.json();
-
-        // ✅ Map API response to ReservationSummary[]
-        const reservations: ReservationSummary[] = data.map((item: any) => ({
-            id: item.id,
-            nom: item.joueur?.nom ?? "",
-            prenom: item.joueur?.prenom ?? "",
-            date: item.creneau?.date ?? "",
-            status: item.statut ?? "",
-            prix: item.creneau?.prix ?? 0,
-            telephone: item.joueur?.telephone ?? "",
-            photoProfilUrl: item.joueur?.photoProfilUrl ?? "",
-            terrain: item.creneau?.terrain?.nom ?? "",
-            heureDebut: item.creneau?.heureDebut ?? "",
-            heureFin: item.creneau?.heureFin ?? "",
-        }));
-
-        return reservations;
-    } catch (error) {
-        console.error("Error fetching reservations:", error);
-        return [];
+  try {
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!dateRegex.test(date)) {
+      throw new Error(`Invalid date format: ${date}. Expected YYYY-MM-DD.`);
     }
+
+    const res = await fetch(`${UrlService}/reservations/reservations/date?date=${date}`, {
+      method: "GET",
+      headers: {
+        Accept: "*/*",
+        ...getAuthHeaders(),
+      },
+    });
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch reservations: ${res.status}`);
+    }
+
+    const data = await res.json();
+
+    // ✅ Normalisation vers l'ancien format attendu par AccueilClub
+    const reservations: ReservationSummary[] = (Array.isArray(data) ? data : []).map(normalizeReservationRaw);
+    return reservations;
+  } catch (error) {
+    console.error("Error fetching reservations:", error);
+    return [];
+  }
 }
+
 
 
 
