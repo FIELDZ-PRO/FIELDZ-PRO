@@ -1,9 +1,14 @@
 package com.fieldz.service;
 
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+
+import jakarta.mail.internet.MimeMessage;
+
 
 @Service
 @RequiredArgsConstructor
@@ -15,7 +20,7 @@ public class EmailService {
         // Pour test en local sur PC
         // String resetLink = "http://localhost:5173/reset-password?token=" + token;
         // Pour tester en local sur le réseaux
-        String resetLink = "http://10.188.124.180:5173//reset-password?token=" + token;
+        String resetLink = "http://10.188.124.180:5173/reset-password?token=" + token;
 
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("contact.fieldz@gmail.com");
@@ -52,4 +57,26 @@ public class EmailService {
         mailSender.send(message);
     }
 
+    /** ✅ Envoi HTML (utilisé par ContactRequestService) */
+    public void sendHtml(String toEmail, String subject, String html) {
+        sendHtml(toEmail, subject, html, null);
+    }
+
+    /** Envoi HTML avec Reply-To (utile pour répondre directement au responsable) */
+    public void sendHtml(String toEmail, String subject, String html, String replyTo) {
+        try {
+            MimeMessage mime = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mime, "UTF-8");
+            helper.setFrom("contact.fieldz@gmail.com");
+            helper.setTo(toEmail);
+            helper.setSubject(subject);
+            helper.setText(html, true); // HTML
+            if (replyTo != null && !replyTo.isBlank()) {
+                helper.setReplyTo(replyTo);
+            }
+            mailSender.send(mime);
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur d'envoi d'email HTML : " + e.getMessage(), e);
+        }
+    }
 }

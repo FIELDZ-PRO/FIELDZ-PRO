@@ -60,6 +60,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/auth/**",
                                 "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html",
+                                "/api/contact", // formulaire de partenariat
                                 "/h2-console/**"
                         ).permitAll()
 
@@ -95,7 +96,7 @@ public class SecurityConfig {
                         .requestMatchers("/oauth2/**", "/login/**").permitAll()
                         .anyRequest().permitAll()
                 )
-                // Ici tu gardes l’OAuth2 pour le site
+                // Garder l’OAuth2 pour le site
                 .oauth2Login(oauth -> oauth
                         .defaultSuccessUrl("http://localhost:5173/oauth-success", true)
                         .userInfoEndpoint(userInfo -> userInfo.userService(oauth2UserService))
