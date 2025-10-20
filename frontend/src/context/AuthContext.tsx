@@ -1,75 +1,110 @@
-import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react'; // 1. Importer useCallback
-import { jwtDecode } from 'jwt-decode';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useMemo,
+  useCallback,
+  useEffect,
+  ReactNode,
+} from "react";
+import { jwtDecode } from "jwt-decode";
 
-// L'interface pour le payload du token (ne change pas)
+/** ===== Types ===== */
 interface JwtPayloadWithRole {
-  role: 'JOUEUR' | 'CLUB' | 'ADMIN';
+  role?: "JOUEUR" | "CLUB" | "ADMIN";
+  exp?: number; // seconds since epoch
   [key: string]: any;
 }
 
-// L'interface du contexte (ne change pas)
 interface AuthContextType {
   token: string | null;
-  role: string | null;
+  role: "JOUEUR" | "CLUB" | "ADMIN" | null;
   isAuthenticated: boolean;
   login: (newToken: string) => void;
   logout: () => void;
 }
 
+/** ===== Helpers ===== */
+const decodeRole = (t: string | null): AuthContextType["role"] => {
+  if (!t) return null;
+  try {
+    const payload = jwtDecode<JwtPayloadWithRole>(t);
+    return (payload.role as AuthContextType["role"]) ?? null;
+  } catch {
+    return null;
+  }
+};
+
+const hasValidToken = (t: string | null): boolean => {
+  if (!t) return false;
+  if (t.split(".").length !== 3) return false;
+  try {
+    const payload = jwtDecode<JwtPayloadWithRole>(t);
+    if (typeof payload.exp !== "number") return true; // pas d'exp => on considère valide selon ton back
+    return payload.exp > Math.floor(Date.now() / 1000);
+  } catch {
+    return false;
+  }
+};
+
+/** ===== Contexte ===== */
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-interface AuthProviderProps {
-  children: ReactNode;
-}
+interface AuthProviderProps { children: ReactNode; }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [token, setToken] = useState<string | null>(() => localStorage.getItem('token'));
-  const [role, setRole] = useState<string | null>(() => {
-    const savedToken = localStorage.getItem('token');
-    try {
-      return savedToken ? (jwtDecode(savedToken) as JwtPayloadWithRole).role : null;
-    } catch {
-      return null;
-    }
+  // Lecture synchrone du token dès le 1er render
+  const [token, setTokenState] = useState<string | null>(() => {
+    try { return localStorage.getItem("token"); } catch { return null; }
   });
 
-  const isAuthenticated = !!token;
+  const [role, setRole] = useState<AuthContextType["role"]>(() =>
+    decodeRole(
+      (() => {
+        try { return localStorage.getItem("token"); } catch { return null; }
+      })()
+    )
+  );
 
-  // 2. Envelopper les fonctions dans useCallback
-  // Cela garantit que les fonctions login et logout ne sont pas recréées à chaque rendu.
+  const isAuthenticated = useMemo<boolean>(() => hasValidToken(token), [token]);
+
   const login = useCallback((newToken: string) => {
-    localStorage.setItem('token', newToken);
-    setToken(newToken);
-    try {
-      const decoded = jwtDecode(newToken) as JwtPayloadWithRole;
-      setRole(decoded.role);
-    } catch (error) {
-      console.error("Failed to decode token:", error);
-      setRole(null);
-    }
-  }, []); // Le tableau de dépendances est vide car la fonction n'utilise aucune variable externe
+    try { localStorage.setItem("token", newToken); } catch {}
+    setTokenState(newToken);
+    setRole(decodeRole(newToken));
+  }, []);
 
   const logout = useCallback(() => {
-    localStorage.removeItem('token');
-    setToken(null);
+    try { localStorage.removeItem("token"); } catch {}
+    setTokenState(null);
     setRole(null);
-  }, []); // Le tableau de dépendances est vide
+  }, []);
 
-  // La valeur fournie au contexte est maintenant stable
-  const value = { token, role, isAuthenticated, login, logout };
+  // Synchronise si le token change dans un autre onglet
+  useEffect(() => {
+    const onStorage = (e: StorageEvent) => {
+      if (e.key !== "token") return;
+      const newVal = e.newValue ?? null;
+      setTokenState(newVal);
+      setRole(decodeRole(newVal));
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, []);
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
+  const value = useMemo(
+    () => ({ token, role, isAuthenticated, login, logout }),
+    [token, role, isAuthenticated, login, logout]
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-// Le hook personnalisé ne change pas
 export const useAuth = (): AuthContextType => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error("useAuth must be used within an AuthProvider");
+  return ctx;
 };
+
+// Utils réutilisables (si besoin dans les pages)
+export const authUtils = { hasValidToken };

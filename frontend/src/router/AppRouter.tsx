@@ -1,52 +1,49 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Login from '../pages/Log-auth/Login';
-import Register from '../pages/Log-auth/Register';
-import AdminLogin from '../components/admin/AdminLogin';
+import React from "react";
+import { Routes, Route } from "react-router-dom";
+import Login from "../pages/Log-auth/Login";
+import Register from "../pages/Log-auth/Register";
+import AdminLogin from "../components/admin/AdminLogin";
 
-import ClubDashboard from '../pages/ClubDashboard';
-import ClubDashboard2 from '../pages/ClubDashboard2';
+import ClubDashboard from "../pages/ClubDashboard";
+import ClubDashboard2 from "../pages/ClubDashboard2";
 
 import JoueurDashboard from "../pages/JoueurDashboard";
-
 import JoueurDashboard2 from "../pages/JoueurDashboard2";
 
-import ProtectedRoute from '../components/ProtectedRoute';
-import LandingPage from '../pages/LandingPage';
-import NotFound from '../pages/NotFound';
+import ProtectedRoute from "../components/ProtectedRoute";
+import LandingPage from "../pages/LandingPage";
+import NotFound from "../pages/NotFound";
 import ResetPassword from "../pages/Log-auth/ResetPassword";
-import ForgotPassword from '../pages/ForgotPassword';
-import OAuthSuccess from '../pages/Log-auth/oauth-success';
-import CompleteProfile from '../pages/CompleteProfile';
-import ProfilJoueur from '../pages/ProfilJoueur';
-import ProfilClub from '../pages/ProfilClub';
+import ForgotPassword from "../pages/ForgotPassword";
+import OAuthSuccess from "../pages/Log-auth/oauth-success";
+import CompleteProfile from "../pages/CompleteProfile";
+import ProfilJoueur from "../pages/ProfilJoueur";
+import ProfilClub from "../pages/ProfilClub";
 
-import AccueilClub from '../pages/VueClub/AccueilClub';
-import Club from '../pages/Club';
-import { NavigationProvider } from '../pages/VueClub/Context/NavigationContext';
-import { LoginClub } from '../pages/VueClub/LoginClub';
-import { MailSent } from '../pages/VueClub/MailSent';
-import { ForgotPasswordPageCLub } from '../pages/VueClub/ForgotPasswordClub';
+import AccueilClub from "../pages/VueClub/AccueilClub";
+import Club from "../pages/Club";
+import { NavigationProvider } from "../pages/VueClub/Context/NavigationContext";
+import { LoginClub } from "../pages/VueClub/LoginClub";
+import { MailSent } from "../pages/VueClub/MailSent";
+import { ForgotPasswordPageCLub } from "../pages/VueClub/ForgotPasswordClub";
 
-// Import des composants Admin
-import AdminLayout from '../components/admin/AdminLayout';
-import AdminDashboard from '../pages/admin/AdminDashboard';
-import AdminClubs from '../pages/admin/AdminClubs';
-import AdminJoueurs from '../pages/admin/AdminJoueurs';
+// Admin
+import AdminLayout from "../components/admin/AdminLayout";
+import AdminDashboard from "../pages/admin/AdminDashboard";
+import AdminClubs from "../pages/admin/AdminClubs";
+import AdminJoueurs from "../pages/admin/AdminJoueurs";
 
-
-import ClubDetailsJoueur from '../pages/ClubDetailsJoueur';
+import ClubDetailsJoueur from "../pages/ClubDetailsJoueur";
 
 export default function AppRouter() {
   return (
     <Routes>
-
-      {/* Landing page publique */}
+      {/* Public */}
       <Route path="/home" element={<LandingPage onNavigate={undefined} />} />
       <Route path="/" element={<LandingPage onNavigate={undefined} />} />
       <Route path="*" element={<NotFound />} />
 
-      {/* Authentification */}
+      {/* Auth */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/reset-password" element={<ResetPassword />} />
@@ -54,22 +51,11 @@ export default function AppRouter() {
       <Route path="/oauth-success" element={<OAuthSuccess />} />
       <Route path="/complete-profile" element={<CompleteProfile />} />
       <Route path="/profil-joueur" element={<ProfilJoueur />} />
+      <Route path="/profil-club" element={<ProfilClub />} />
 
-
-
-      {/*Club Pages*/}
-      <Route path="/MailSent"
-        element={
-          <MailSent />
-        }
-      />
-
-      <Route path="/ForgotPasswordClub"
-        element={
-          <ForgotPasswordPageCLub />
-        }
-      />
-
+      {/* Club pages (publique) */}
+      <Route path="/MailSent" element={<MailSent />} />
+      <Route path="/ForgotPasswordClub" element={<ForgotPasswordPageCLub />} />
       <Route
         path="/LoginClub"
         element={
@@ -79,55 +65,53 @@ export default function AppRouter() {
         }
       />
 
+      {/* Club pages (protégées CLUB) */}
       <Route
         path="/AccueilClub"
         element={
-          <NavigationProvider>
-            <Club />
-          </NavigationProvider>
-        } />
-
-
+          <ProtectedRoute requiredRole="CLUB">
+            <NavigationProvider>
+              <Club />
+            </NavigationProvider>
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/TestPage"
         element={
-          <NavigationProvider>
-            <Club />
-          </NavigationProvider>
-        }
-
-
-      />
-      {/* Dashboards protégés */}
-      <Route
-        path="/club"
-        element={
-
-          <ClubDashboard />
-
-        }
-      />
-
-      <Route
-        path="/club2"
-        element={
-          <ProtectedRoute>
-            <ClubDashboard2 />
+          <ProtectedRoute requiredRole="CLUB">
+            <NavigationProvider>
+              <Club />
+            </NavigationProvider>
           </ProtectedRoute>
         }
       />
 
-
+      {/* Dashboards protégés */}
+      <Route
+        path="/club"
+        element={
+          <ProtectedRoute requiredRole="CLUB">
+            <ClubDashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/club2"
+        element={
+          <ProtectedRoute requiredRole="CLUB">
+            <ClubDashboard2 />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/club/:id"
-        element=
-        {
+        element={
           <ProtectedRoute requiredRole="JOUEUR">
             <ClubDetailsJoueur />
           </ProtectedRoute>
         }
       />
-
       <Route
         path="/joueur"
         element={
@@ -139,14 +123,14 @@ export default function AppRouter() {
       <Route
         path="/joueur2"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute requiredRole="JOUEUR">
             <JoueurDashboard2 />
           </ProtectedRoute>
         }
       />
-      <Route path="/admin/login" element={<AdminLogin />} />
 
-      {/* Routes Admin - Protégées */}
+      {/* Admin */}
+      <Route path="/admin/login" element={<AdminLogin />} />
       <Route
         path="/admin"
         element={
@@ -160,8 +144,5 @@ export default function AppRouter() {
         <Route path="joueurs" element={<AdminJoueurs />} />
       </Route>
     </Routes>
-
-
-
   );
 }

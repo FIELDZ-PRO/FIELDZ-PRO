@@ -1,8 +1,11 @@
-import { useState } from 'react';
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
+import { useAuth } from '../../context/AuthContext';
 import { ClubService } from '../../services/ClubService';
 import './LoginClub.css';
+
+type JwtPayload = { role?: 'CLUB' | 'JOUEUR' | 'ADMIN' };
 
 export const LoginClub = () => {
   const [email, setEmail] = useState('');
@@ -11,6 +14,14 @@ export const LoginClub = () => {
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth(); // ✅ on récupère la fonction login du contexte
+
+  const extractToken = (raw: any): string | null => {
+    if (!raw) return null;
+    if (typeof raw === 'string') return raw;
+    // supporte plusieurs shapes: {token}, {access_token}, {jwt}, etc.
+    return raw.token ?? raw.access_token ?? raw.jwt ?? null;
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -19,10 +30,37 @@ export const LoginClub = () => {
 
     try {
       const data = await ClubService.Login(email, password);
-      console.log("Token:", data.token);
-      navigate("/AccueilClub");
+
+      const token = extractToken(data);
+      if (!token) {
+        setMessage("Réponse inattendue du serveur (token manquant).");
+        return;
+      }
+
+      // ✅ 1) Enregistrer le token via le contexte (met aussi localStorage)
+      login(token);
+
+      // ✅ 2) Router selon le rôle décodé
+      let role: JwtPayload['role'] = undefined;
+      try {
+        const payload = jwtDecode<JwtPayload>(token);
+        role = payload?.role;
+      } catch {
+        // si pas de rôle lisible, on envoie quand même sur l’espace club
+      }
+
+      if (role === 'CLUB') {
+        navigate('/AccueilClub', { replace: true });
+      } else if (role === 'ADMIN') {
+        navigate('/admin', { replace: true });
+      } else if (role === 'JOUEUR') {
+        navigate('/joueur', { replace: true });
+      } else {
+        // par défaut pour ce formulaire spécifique Club
+        navigate('/AccueilClub', { replace: true });
+      }
     } catch (error) {
-      setMessage("Email ou mot de passe incorrect.");
+      setMessage('Email ou mot de passe incorrect.');
     } finally {
       setIsLoading(false);
     }
@@ -30,7 +68,7 @@ export const LoginClub = () => {
 
   return (
     <div className="login-club-page">
-      <button 
+      <button
         className="back-btn"
         onClick={() => navigate('/')}
       >
@@ -75,7 +113,7 @@ export const LoginClub = () => {
               <div className="input-wrapper">
                 <input
                   className="form-input password-input"
-                  type={showPwd ? "text" : "password"}
+                  type={showPwd ? 'text' : 'password'}
                   placeholder="Mot de passe"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -86,14 +124,14 @@ export const LoginClub = () => {
                   type="button"
                   className="eye-btn"
                   onClick={() => setShowPwd((s) => !s)}
-                  aria-label={showPwd ? "Masquer" : "Afficher"}
+                  aria-label={showPwd ? 'Masquer' : 'Afficher'}
                 >
-                  <svg 
-                    width="18" 
-                    height="18" 
-                    viewBox="0 0 24 24" 
-                    fill="none" 
-                    stroke="currentColor" 
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
                     strokeWidth="2"
                   >
                     {showPwd ? (
@@ -112,16 +150,16 @@ export const LoginClub = () => {
               </div>
             </div>
 
-            <a 
-              className="forgot-link" 
-              onClick={() => navigate("/ForgotPasswordClub")}
+            <a
+              className="forgot-link"
+              onClick={() => navigate('/ForgotPasswordClub')}
               style={{ cursor: 'pointer' }}
             >
               Mot de passe oublié ?
             </a>
 
             <button className="submit-btn" type="submit" disabled={isLoading}>
-              {isLoading ? "Connexion..." : "Se connecter"}
+              {isLoading ? 'Connexion...' : 'Se connecter'}
             </button>
           </form>
         </div>
