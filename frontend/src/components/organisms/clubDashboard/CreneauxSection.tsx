@@ -8,7 +8,7 @@ import { useAuth } from '../../../context/AuthContext';
 import { Creneau } from '../../../types';
 import CreneauGroup from './CreneauGroup';
 import './CreneauxSection.css'
-
+import { fetchCreneaux } from '../../../services/ClubService';
 type Props = {
   terrains: Terrain[];
   reservations: Reservation[];
@@ -19,38 +19,20 @@ const CreneauxSection: React.FC<Props> = ({ terrains, reservations, setReservati
   const { token } = useAuth();
   const [creneaux, setCreneaux] = useState<Creneau[]>([]);
 
+
+  const waitCreneaux = async () => {
+    try {
+      const data: Creneau[] = await fetchCreneaux(terrains)
+      setCreneaux(data)
+    }
+    catch (error) {
+      console.error('Erreur lors du chargement des créneaux', error);
+    }
+  }
   // 🟡 CHARGER LES CRENEAUX PAR TERRAIN
   useEffect(() => {
-    const fetchCreneaux = async () => {
-      try {
-        if (!terrains.length) return;
-
-        const allCreneaux: Creneau[] = [];
-
-        for (const terrain of terrains) {
-          const res = await fetch(`http://localhost:8080/api/creneaux/terrains/${terrain.id}/creneaux`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-
-          if (!res.ok) {
-            console.error(`Erreur sur le terrain ${terrain.id}`);
-            continue;
-          }
-
-          const data = await res.json();
-          allCreneaux.push(...data);
-        }
-
-        setCreneaux(allCreneaux);
-      } catch (err) {
-        console.error('Erreur lors du chargement des créneaux', err);
-      }
-    };
-
-    fetchCreneaux();
-  }, [terrains, token]);
+    waitCreneaux();
+  }, []);
 
   const handleAddCreneauPonctuel = async (data: any) => {
     try {
@@ -120,7 +102,7 @@ const CreneauxSection: React.FC<Props> = ({ terrains, reservations, setReservati
       <div className="section-wrapper">
         <section>
           <h2 className="text-2xl font-bold mb-4">Créneaux à venir</h2>
-          <CreneauGroup titre="Tous les créneaux" creneaux={creneaux} />
+          <CreneauGroup titre="Tous les créneaux" creneaux={creneaux} UpdateCreneaux={waitCreneaux} />
         </section>
       </div>
 

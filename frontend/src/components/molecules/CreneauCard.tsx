@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useState } from 'react';
 import { Creneau } from "../../types";
 import { toast } from "react-toastify";
 import { useAuth } from "../../context/AuthContext";
-
+import { fetchCreneaux } from "../../services/ClubService";
 type Props = {
   creneau: Creneau;
   onReserver?: () => void;
@@ -12,7 +12,6 @@ type Props = {
 
 const CreneauCard: React.FC<Props> = ({ creneau, onReserver, onUpdate, role }) => {
   const { token } = useAuth();
-
   const handleAnnulerCreneau = async () => {
     if (!window.confirm("Voulez-vous vraiment annuler ce créneau ?")) return;
 
@@ -34,7 +33,7 @@ const CreneauCard: React.FC<Props> = ({ creneau, onReserver, onUpdate, role }) =
       console.error(err);
     }
   };
-
+  console.log(creneau)
   return (
     <div className="creneau-card">
       <div className="card-title">
@@ -56,17 +55,17 @@ const CreneauCard: React.FC<Props> = ({ creneau, onReserver, onUpdate, role }) =
           ? new Date(creneau.dateDebut).toLocaleDateString("fr-FR")
           : "Date inconnue"}
       </div>
-      
+
       <div className="card-info">
         ⏰{" "}
         {creneau.dateDebut && creneau.dateFin
           ? `${new Date(creneau.dateDebut).toLocaleTimeString("fr-FR", {
-              hour: "2-digit",
-              minute: "2-digit",
-            })} – ${new Date(creneau.dateFin).toLocaleTimeString("fr-FR", {
-              hour: "2-digit",
-              minute: "2-digit",
-            })}`
+            hour: "2-digit",
+            minute: "2-digit",
+          })} – ${new Date(creneau.dateFin).toLocaleTimeString("fr-FR", {
+            hour: "2-digit",
+            minute: "2-digit",
+          })}`
           : "Heure inconnue"}
       </div>
 

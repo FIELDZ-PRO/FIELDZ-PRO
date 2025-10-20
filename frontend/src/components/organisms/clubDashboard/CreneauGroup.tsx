@@ -7,9 +7,10 @@ import './CreneauGroup.css'; // Import the CSS file
 interface Props {
   titre: string;
   creneaux: Creneau[];
+  UpdateCreneaux?: () => void;
 }
 
-const CreneauGroup: React.FC<Props> = ({ titre, creneaux }) => {
+const CreneauGroup: React.FC<Props> = ({ titre, creneaux, UpdateCreneaux }) => {
   const [visible, setVisible] = useState(false);
 
   return (
@@ -31,7 +32,7 @@ const CreneauGroup: React.FC<Props> = ({ titre, creneaux }) => {
                 key={c.id}
                 creneau={c}
                 role="club"
-                onUpdate={() => window.location.reload()}
+                onUpdate={UpdateCreneaux}
               />
             ))}
           </div>

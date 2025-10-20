@@ -10,11 +10,21 @@ const StatsCards = () => {
     const CallReservations = async () => {
         try {
             const data = await getReservations();
-            setReservations(data);
 
-            // ✅ Compute statistics
-            const confirmed = data.filter(r => r.status?.toLowerCase() === "confirmee").length;
-            const total = data.length;
+            const today = new Date();
+            const todayString = today.toISOString().split("T")[0];
+
+            // ✅ Filter only today's reservations
+            const todayReservations = data.filter(r => {
+                const resDate = new Date(r.date).toISOString().split("T")[0];
+                return resDate === todayString;
+            });
+
+            setReservations(todayReservations);
+
+            // ✅ Compute statistics for today
+            const confirmed = todayReservations.filter(r => r.status?.toLowerCase() === "confirmee").length;
+            const total = todayReservations.length;
 
             setConfirmee(confirmed);
             setReservationCount(total);

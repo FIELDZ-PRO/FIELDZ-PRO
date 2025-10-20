@@ -1,13 +1,14 @@
 // src/services/ClubService.ts
 import { InvalidTokenError, jwtDecode } from "jwt-decode";
 import { Terrain } from "../types";
+import { Creneau } from "../types";
 
 const UrlService = "http://localhost:8080/api";
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
 
 /* =======================
  * Types
- * =======================
+ * ====================
  */
 export type LoginResponse = {
     token: string;
@@ -54,68 +55,68 @@ export type ClubDto = {
 // Arslan 
 
 function toDatePart(iso?: string): string {
-  if (!iso) return "";
-  // iso attendu: "2025-10-20T18:00:00"
-  const i = iso.indexOf("T");
-  return i > 0 ? iso.slice(0, i) : iso; // "2025-10-20"
+    if (!iso) return "";
+    // iso attendu: "2025-10-20T18:00:00"
+    const i = iso.indexOf("T");
+    return i > 0 ? iso.slice(0, i) : iso; // "2025-10-20"
 }
 
 function toTimePart(iso?: string): string {
-  if (!iso) return "";
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return "";
-  return d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false });
+    if (!iso) return "";
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return "";
+    return d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false });
 }
 
 function normalizeReservationRaw(item: any): ReservationSummary {
-  const c = item?.creneau ?? item;
+    const c = item?.creneau ?? item;
 
-  // Nouvelles sources
-  const dateDebutISO = c?.dateDebut ?? null;
-  const dateFinISO   = c?.dateFin ?? null;
-  const terrainNom   = c?.terrain?.nomTerrain ?? c?.terrain?.nom ?? item?.terrain ?? "";
+    // Nouvelles sources
+    const dateDebutISO = c?.dateDebut ?? null;
+    const dateFinISO = c?.dateFin ?? null;
+    const terrainNom = c?.terrain?.nomTerrain ?? c?.terrain?.nom ?? item?.terrain ?? "";
 
-  // Anciennes sources (fallback)
-  const legacyDate       = item?.date ?? "";
-  const legacyHeureDebut = item?.heureDebut ?? "";
-  const legacyHeureFin   = item?.heureFin ?? "";
+    // Anciennes sources (fallback)
+    const legacyDate = item?.date ?? "";
+    const legacyHeureDebut = item?.heureDebut ?? "";
+    const legacyHeureFin = item?.heureFin ?? "";
 
-  // Sorties "anciennes" attendues par AccueilClub
-  const date =
-    dateDebutISO ? toDatePart(dateDebutISO)
-    : legacyDate;
+    // Sorties "anciennes" attendues par AccueilClub
+    const date =
+        dateDebutISO ? toDatePart(dateDebutISO)
+            : legacyDate;
 
-  const heureDebut =
-    dateDebutISO ? toTimePart(dateDebutISO)
-    : legacyHeureDebut;
+    const heureDebut =
+        dateDebutISO ? toTimePart(dateDebutISO)
+            : legacyHeureDebut;
 
-  const heureFin =
-    dateFinISO ? toTimePart(dateFinISO)
-    : legacyHeureFin;
+    const heureFin =
+        dateFinISO ? toTimePart(dateFinISO)
+            : legacyHeureFin;
 
-  const terrain = terrainNom;
+    const terrain = terrainNom;
 
-  const prix =
-    typeof c?.prix === "number" ? c.prix
-    : typeof item?.prix === "number" ? item.prix
-    : 0;
+    const prix =
+        typeof c?.prix === "number" ? c.prix
+            : typeof item?.prix === "number" ? item.prix
+                : 0;
 
-  // statut peut s’appeler "statut" côté back ; on garde item.status si déjà normalisé
-  const status = item?.status ?? item?.statut ?? "";
+    // statut peut s’appeler "statut" côté back ; on garde item.status si déjà normalisé
+    const status = item?.status ?? item?.statut ?? "";
 
-  return {
-    id: item.id,
-    nom: item.joueur?.nom ?? item.nom ?? "",
-    prenom: item.joueur?.prenom ?? item.prenom ?? "",
-    date,
-    status,
-    prix,
-    telephone: item.joueur?.telephone ?? item.telephone ?? "",
-    photoProfilUrl: item.joueur?.photoProfilUrl ?? item.photoProfilUrl ?? "",
-    terrain,
-    heureDebut,
-    heureFin,
-  };
+    return {
+        id: item.id,
+        nom: item.joueur?.nom ?? item.nom ?? "",
+        prenom: item.joueur?.prenom ?? item.prenom ?? "",
+        date,
+        status,
+        prix,
+        telephone: item.joueur?.telephone ?? item.telephone ?? "",
+        photoProfilUrl: item.joueur?.photoProfilUrl ?? item.photoProfilUrl ?? "",
+        terrain,
+        heureDebut,
+        heureFin,
+    };
 }
 // Arslan
 
@@ -292,7 +293,38 @@ export async function modifyInfoClub(ClubInfo: Omit<ClubDto, 'id'>) {
         throw error
     }
 }
+export async function fetchCreneaux(terrains: Terrain[]): Promise<Creneau[]> {
+    const token = localStorage.getItem("token")
+    try {
+        if (!terrains.length) return [];
 
+        const allCreneaux: Creneau[] = [];
+
+        for (const terrain of terrains) {
+            const res = await fetch(`http://localhost:8080/api/creneaux/terrains/${terrain.id}/creneaux`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (!res.ok) {
+                console.error(`Erreur sur le terrain ${terrain.id}`);
+                continue;
+            }
+
+            const data = await res.json();
+
+            const validCreneaux = data.filter(
+                (c: Creneau) => c.statut?.toUpperCase() !== 'ANNULE'
+            ); // On prend que les créneaux qui ne sont pas annulées
+
+            allCreneaux.push(...validCreneaux);
+        }
+        return allCreneaux
+    } catch (err) {
+        throw err
+    }
+};
 async function getCreneaux(terrains: Terrain[]): Promise<ReservationSummary[]> {
     try {
 
@@ -312,6 +344,8 @@ async function getCreneaux(terrains: Terrain[]): Promise<ReservationSummary[]> {
         throw error
     }
 }
+
+
 async function GetCreneauSummary(): Promise<ReservationSummary[]> {
     try {
         const terrains = await getTerrains()
@@ -366,59 +400,59 @@ export async function confirmReservations(id: number) {
 }
 
 export async function getReservations(): Promise<ReservationSummary[]> {
-  try {
-    const res = await fetch(`${UrlService}/reservations/reservations`, {
-      method: "GET",
-      headers: {
-        Accept: "*/*",
-        ...getAuthHeaders(),
-      },
-    });
+    try {
+        const res = await fetch(`${UrlService}/reservations/reservations`, {
+            method: "GET",
+            headers: {
+                Accept: "*/*",
+                ...getAuthHeaders(),
+            },
+        });
 
-    if (!res.ok) {
-      throw new Error(`Failed to fetch reservations: ${res.status}`);
+        if (!res.ok) {
+            throw new Error(`Failed to fetch reservations: ${res.status}`);
+        }
+
+        const data = await res.json();
+
+        // ✅ Normalisation vers l'ancien format attendu par AccueilClub
+        const reservations: ReservationSummary[] = (Array.isArray(data) ? data : []).map(normalizeReservationRaw);
+        return reservations;
+    } catch (error) {
+        console.error("Error fetching reservations:", error);
+        return [];
     }
-
-    const data = await res.json();
-
-    // ✅ Normalisation vers l'ancien format attendu par AccueilClub
-    const reservations: ReservationSummary[] = (Array.isArray(data) ? data : []).map(normalizeReservationRaw);
-    return reservations;
-  } catch (error) {
-    console.error("Error fetching reservations:", error);
-    return [];
-  }
 }
 
 
 export async function getReservationsByDate(date: string): Promise<ReservationSummary[]> {
-  try {
-    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-    if (!dateRegex.test(date)) {
-      throw new Error(`Invalid date format: ${date}. Expected YYYY-MM-DD.`);
+    try {
+        const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+        if (!dateRegex.test(date)) {
+            throw new Error(`Invalid date format: ${date}. Expected YYYY-MM-DD.`);
+        }
+
+        const res = await fetch(`${UrlService}/reservations/reservations/date?date=${date}`, {
+            method: "GET",
+            headers: {
+                Accept: "*/*",
+                ...getAuthHeaders(),
+            },
+        });
+
+        if (!res.ok) {
+            throw new Error(`Failed to fetch reservations: ${res.status}`);
+        }
+
+        const data = await res.json();
+
+        // ✅ Normalisation vers l'ancien format attendu par AccueilClub
+        const reservations: ReservationSummary[] = (Array.isArray(data) ? data : []).map(normalizeReservationRaw);
+        return reservations;
+    } catch (error) {
+        console.error("Error fetching reservations:", error);
+        return [];
     }
-
-    const res = await fetch(`${UrlService}/reservations/reservations/date?date=${date}`, {
-      method: "GET",
-      headers: {
-        Accept: "*/*",
-        ...getAuthHeaders(),
-      },
-    });
-
-    if (!res.ok) {
-      throw new Error(`Failed to fetch reservations: ${res.status}`);
-    }
-
-    const data = await res.json();
-
-    // ✅ Normalisation vers l'ancien format attendu par AccueilClub
-    const reservations: ReservationSummary[] = (Array.isArray(data) ? data : []).map(normalizeReservationRaw);
-    return reservations;
-  } catch (error) {
-    console.error("Error fetching reservations:", error);
-    return [];
-  }
 }
 
 

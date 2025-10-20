@@ -35,11 +35,11 @@ const ReservationsPage = () => {
 
     const translateStatus = (status: string) => {
         switch (status) {
-            case 'RESERVE': return 'Réservé'; // Arslan : réservé -> à venir
-            case 'ANNULE': return 'Annulée'; 
-            case 'ANNULE_PAR_JOUEUR': return 'Annulée par le joueur'; 
-            case 'ANNULE_PAR_CLUB': return 'Absent'; // Arslan : absent -> annulée par le club
-            case 'CONFIRMEE': return 'Présent'; // Arslan : présent -> confirmée
+            case 'RESERVE': return 'À venir'; // Arslan : réservé -> à venir
+            case 'ANNULE': return 'Annulée';
+            case 'ANNULE_PAR_JOUEUR': return 'Annulée par le joueur';
+            case 'ANNULE_PAR_CLUB': return 'Annulé par le club'; // Arslan : absent -> annulée par le club
+            case 'CONFIRMEE': return 'Confirmée'; // Arslan : présent -> confirmée
             default: return status;
         }
     };
@@ -105,14 +105,14 @@ const ReservationsPage = () => {
                 <h1>Gestion des réservations</h1>
                 <div className="header-stats">
                     <div className="stat-item">
-                        <span className="stat-value">{reservations.length}</span>
-                        <span className="stat-label">Total</span>
+                        <span className="stat-value2">{reservations.length}</span>
+                        <span className="stat-label2">Total</span>
                     </div>
                     <div className="stat-item">
-                        <span className="stat-value">
+                        <span className="stat-value2">
                             {reservations.filter(r => r.status === 'CONFIRMEE').length}
                         </span>
-                        <span className="stat-label">Présent</span>
+                        <span className="stat-label2">Présent</span>
                     </div>
                 </div>
             </div>
@@ -135,11 +135,11 @@ const ReservationsPage = () => {
                         onChange={(e) => setFilterStatus(e.target.value)}
                     >
                         <option value="Toutes">Toutes les réservations</option>
-                        <option value="CONFIRMEE">Présent</option>
-                        <option value="RESERVE">Réservées</option>
+                        <option value="CONFIRMEE">Confirmée</option>
+                        <option value="RESERVE">À venir</option>
                         <option value="Annulées">Annulées</option>
                         <option value="ANNULE_PAR_JOUEUR">Annulées par joueur</option>
-                        <option value="ANNULE_PAR_CLUB">Absent</option>
+                        <option value="ANNULE_PAR_CLUB">Annulées par le club</option>
                     </select>
                 </div>
 
@@ -210,7 +210,7 @@ const ReservationsPage = () => {
                                         >
                                             {loadingId === reservation.id ? (
                                                 <span className="btn2-loading">
-                                                    <span className="spinner"></span> Envoi...
+                                                    <span className="spinner-club"></span> Envoi...
                                                 </span>
                                             ) : (
                                                 'Présent'
@@ -224,7 +224,7 @@ const ReservationsPage = () => {
                                         >
                                             {loadingId === reservation.id ? (
                                                 <span className="btn2-loading">
-                                                    <span className="spinner"></span> Envoi...
+                                                    <span className="spinner-club"></span> Envoi...
                                                 </span>
                                             ) : (
                                                 'Absent'
