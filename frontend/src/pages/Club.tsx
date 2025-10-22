@@ -12,8 +12,11 @@ function Club() {
     const navigate = useNavigate();
 
     useEffect(() => {
+        console.log("Checkin the token for the club")
         if (!isTokenValid(token)) {
-            navigate('/LoginClub')
+            console.log("Navigatin")
+
+            navigate('/')
         }
     }, [token])
 
