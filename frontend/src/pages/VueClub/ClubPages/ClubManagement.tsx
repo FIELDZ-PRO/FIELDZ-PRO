@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Settings, User, MapPin, Mail, Phone, Image as ImageIcon } from 'lucide-react';
 import './style/ClubManagement.css';
-import { getClubMe, modifyInfoClub } from '../../../services/ClubService';
+import { getClubMe, modifyInfoClub, uploadClubImage } from '../../../services/ClubService';
 import { ClubDto } from '../../../services/ClubService';
 
 const ClubManagementPage = () => {
@@ -10,24 +10,26 @@ const ClubManagementPage = () => {
         ville: '',
         adresse: '',
         telephone: '',
+        banniereUrl: '', // 🆕 using banniereUrl instead of imageUrl
         sports: [],
     });
 
     const token = localStorage.getItem("token");
     const [isEditing, setIsEditing] = useState(false);
-
-    const [previewImage, setPreviewImage] = useState<string | null>(null);
     const [dragActive, setDragActive] = useState(false);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
 
     const fetchClubInfo = async () => {
         try {
             const data = await getClubMe();
+            console.log("Club data Info here :")
             setClubInfo(data);
-            if ((data as any).imageUrl) {
-                setPreviewImage((data as any).imageUrl);
-            }
+            console.log(clubInfo)
+
+            if (data.banniereUrl) setPreviewUrl(data.banniereUrl); // 🧠 use banniereUrl here
         } catch (error) {
-            alert("The Recup process for the club's information didn't work");
+            alert("Erreur lors de la récupération des informations du club.");
         }
     };
 
@@ -41,36 +43,47 @@ const ClubManagementPage = () => {
             console.log('Saving club info:', clubInfo);
             setIsEditing(false);
         } catch (error) {
-            alert("The modification didn't work");
+            alert("Erreur lors de la sauvegarde des modifications.");
         }
     };
 
-    const handleDrag = (e: React.DragEvent<HTMLDivElement>) => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (!isEditing) return;
-        if (e.type === "dragenter" || e.type === "dragover") setDragActive(true);
-        else if (e.type === "dragleave") setDragActive(false);
+    const handleFile = async (file: File) => {
+        try {
+            // 1️⃣ Upload the image
+            const uploadedUrl = await uploadClubImage(file);
+            console.log("URL of the image : " + uploadedUrl)
+            // 2️⃣ Update the club info with the Cloudinary URL
+            const updatedClubInfo = { ...clubInfo, banniereUrl: uploadedUrl };
+            setClubInfo(updatedClubInfo);
+            setPreviewUrl(uploadedUrl);
+
+            // 3️⃣ Save to DB
+            await modifyInfoClub(updatedClubInfo);
+            console.log("✅ Image uploaded and saved:", uploadedUrl);
+        } catch (error) {
+            alert("Erreur lors du téléchargement de l'image");
+            console.error("Upload failed:", error);
+        }
     };
 
-    const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+
+    const handleDrop = (e: React.DragEvent) => {
         e.preventDefault();
-        e.stopPropagation();
-        if (!isEditing) return;
         setDragActive(false);
-        const file = e.dataTransfer.files[0];
-        if (file && file.type.startsWith("image/")) {
-            const url = URL.createObjectURL(file);
-            setPreviewImage(url);
-        }
+        const file = e.dataTransfer.files?.[0];
+        if (file && file.type.startsWith('image/')) handleFile(file);
     };
+
+    const handleDragOver = (e: React.DragEvent) => {
+        e.preventDefault();
+        setDragActive(true);
+    };
+
+    const handleDragLeave = () => setDragActive(false);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
-        if (file && file.type.startsWith("image/")) {
-            const url = URL.createObjectURL(file);
-            setPreviewImage(url);
-        }
+        if (file && file.type.startsWith('image/')) handleFile(file);
     };
 
     return (
@@ -86,39 +99,44 @@ const ClubManagementPage = () => {
                 </button>
             </div>
 
-            <div
-                className={`image-section ${dragActive ? "drag-active" : ""} ${isEditing ? "editing" : ""}`}
-                onDragEnter={handleDrag}
-                onDragOver={handleDrag}
-                onDragLeave={handleDrag}
-                onDrop={handleDrop}
-            >
-                <h2><ImageIcon size={18} /> Image du club</h2>
+            {/* 🖼️ Section image du club */}
+            <div className={`image-section ${isEditing ? 'editing' : ''} ${dragActive ? 'drag-active' : ''}`}>
+                <h2><ImageIcon size={18} /> Bannière du club</h2>
 
-                {previewImage ? (
+                {previewUrl ? (
                     <div className="image-preview-container">
-                        <img src={previewImage} alt="Club" className="image-preview" />
+                        <img src={previewUrl} alt="Bannière du club" className="image-preview" />
                     </div>
                 ) : (
-                    <p className="no-image">Aucune image</p>
+                    <p className="no-image">Aucune bannière disponible</p>
                 )}
 
                 {isEditing && (
-                    <div className="dropzone">
-                        <p>Glissez-déposez une image ici ou</p>
-                        <label className="upload-label">
-                            <input
-                                type="file"
-                                accept="image/*"
-                                onChange={handleFileChange}
-                                style={{ display: "none" }}
-                            />
-                            <span className="upload-button">Choisissez une image</span>
+                    <div
+                        className="dropzone"
+                        onDrop={handleDrop}
+                        onDragOver={handleDragOver}
+                        onDragLeave={handleDragLeave}
+                    >
+                        <p>Glissez une image ici ou cliquez pour en choisir une</p>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            ref={fileInputRef}
+                            style={{ display: 'none' }}
+                            onChange={handleFileChange}
+                        />
+                        <label
+                            className="upload-label"
+                            onClick={() => fileInputRef.current?.click()}
+                        >
+                            <span className="upload-button">Choisir une image</span>
                         </label>
                     </div>
                 )}
             </div>
 
+            {/* 🧾 Informations du club */}
             <div className="management-content">
                 <div className="club-info-section2">
                     <div className="info-form">
@@ -161,6 +179,22 @@ const ClubManagementPage = () => {
                                 disabled={!isEditing}
                             />
                         </div>
+
+                        {/* 🆕 URL de la bannière (modifiable en mode édition) */}
+                        {isEditing && (
+                            <div className="form-group">
+                                <label><ImageIcon size={16} /> URL de la bannière</label>
+                                <input
+                                    type="text"
+                                    value={clubInfo.banniereUrl ?? ''}
+                                    onChange={(e) => {
+                                        setClubInfo({ ...clubInfo, banniereUrl: e.target.value });
+                                        setPreviewUrl(e.target.value);
+                                    }}
+                                    placeholder="https://exemple.com/banniere.jpg"
+                                />
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

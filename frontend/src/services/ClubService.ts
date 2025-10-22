@@ -286,7 +286,8 @@ export async function modifyInfoClub(ClubInfo: Omit<ClubDto, 'id'>) {
                 nom: ClubInfo.nom,
                 telephone: ClubInfo.telephone,
                 ville: ClubInfo.ville,
-                adresse: ClubInfo.adresse
+                adresse: ClubInfo.adresse,
+                banniereUrl: ClubInfo.banniereUrl
             }),
         })
     } catch (error) {
@@ -344,7 +345,29 @@ async function getCreneaux(terrains: Terrain[]): Promise<ReservationSummary[]> {
         throw error
     }
 }
+export const uploadClubImage = async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append("file", file);
+    const token = localStorage.getItem("token")
+    try {
+        const res = await fetch(`${UrlService}/upload-cloud`, {
+            method: "POST",
+            headers: {
+                Accept: "*/*",
+                Authorization: `Bearer ${token}`,
+            },
+            body: formData,
+        });
 
+        if (!res.ok) throw new Error("Image upload failed");
+
+        const data = await res.json();
+        return data.url; // ✅ Cloudinary URL
+    } catch (error) {
+        console.error("❌ Upload failed:", error);
+        throw error;
+    }
+};
 
 async function GetCreneauSummary(): Promise<ReservationSummary[]> {
     try {

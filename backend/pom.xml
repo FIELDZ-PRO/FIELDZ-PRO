@@ -111,7 +111,11 @@
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
-
+		<dependency>
+			<groupId>com.cloudinary</groupId>
+			<artifactId>cloudinary-http44</artifactId>
+			<version>1.37.0</version>
+		</dependency>
 		<!-- ======================== -->
 		<!-- 🧪 Tests                 -->
 		<!-- ======================== -->
