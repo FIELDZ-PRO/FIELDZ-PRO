@@ -10,13 +10,12 @@ const Navbar: React.FC = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  // Fonction pour le smooth scroll
   const handleScrollTo = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     e.preventDefault();
     const element = document.getElementById(id);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      setIsMenuOpen(false); // Fermer le menu mobile après le clic
+      setIsMenuOpen(false);
     }
   };
 
@@ -25,7 +24,8 @@ const Navbar: React.FC = () => {
       <div className="navbar__container">
         {/* Logo */}
         <Link to="/" className="navbar__logo">
-          FIELDZ
+          <div className="navbar__logo-icon">Fz</div>
+          <span className="navbar__logo-text">FIELDZ</span>
         </Link>
 
         {/* Menu Desktop */}
@@ -34,6 +34,7 @@ const Navbar: React.FC = () => {
             <a 
               href="#comment-ca-marche" 
               onClick={(e) => handleScrollTo(e, 'comment-ca-marche')}
+              className="navbar__link"
             >
               Comment ça marche
             </a>
@@ -42,14 +43,16 @@ const Navbar: React.FC = () => {
             <a 
               href="#pourquoi-fieldz" 
               onClick={(e) => handleScrollTo(e, 'pourquoi-fieldz')}
+              className="navbar__link"
             >
-              Pourquoi FIELdZ
+              Pourquoi FIELDZ
             </a>
           </li>
           <li>
             <a 
               href="#pour-les-clubs" 
               onClick={(e) => handleScrollTo(e, 'pour-les-clubs')}
+              className="navbar__link"
             >
               Pour les clubs
             </a>
@@ -64,12 +67,12 @@ const Navbar: React.FC = () => {
               Inscription
             </Link>
             <Link to="/LoginClub" className="navbar-btn club-login">
-              Connexion Club
+              Espace Club
             </Link>
           </li>
         </ul>
 
-        {/* Actions Desktop (cachées sur mobile) */}
+        {/* Actions Desktop */}
         <div className="navbar__actions navbar__actions-desktop">
           <Link to="/login" className="navbar-btn login">
             Connexion
@@ -78,7 +81,7 @@ const Navbar: React.FC = () => {
             Inscription
           </Link>
           <Link to="/LoginClub" className="navbar-btn club-login">
-            Connexion Club
+            Espace Club
           </Link>
         </div>
 

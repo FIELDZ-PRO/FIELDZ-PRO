@@ -1,0 +1,215 @@
+/* DigitalizeSport.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&family=Inter:wght@400;500;600&display=swap');
+
+.digitalize-sport {
+  position: relative;
+  padding: 8rem 0;
+  background-color: #000000;
+  overflow: hidden;
+}
+
+.digitalize-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.digitalize-bg-shape-1 {
+  position: absolute;
+  top: 25%;
+  left: 25%;
+  width: 24rem;
+  height: 24rem;
+  background-color: rgba(5, 97, 43, 0.1);
+  border-radius: 50%;
+  filter: blur(80px);
+}
+
+.digitalize-bg-shape-2 {
+  position: absolute;
+  bottom: 25%;
+  right: 25%;
+  width: 24rem;
+  height: 24rem;
+  background-color: rgba(5, 97, 43, 0.1);
+  border-radius: 50%;
+  filter: blur(80px);
+}
+
+.container {
+  position: relative;
+  z-index: 10;
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.digitalize-header {
+  text-align: center;
+  margin-bottom: 5rem;
+}
+
+.digitalize-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  background-color: rgba(5, 97, 43, 0.2);
+  border: 1px solid rgba(5, 97, 43, 0.3);
+  margin-bottom: 1.5rem;
+}
+
+.digitalize-badge span {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #05612B;
+}
+
+.digitalize-title {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 800;
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  line-height: 1.2;
+  color: #FDFFFD;
+  margin-bottom: 1.5rem;
+}
+
+.digitalize-title-highlight {
+  color: #05612B;
+}
+
+.digitalize-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 1.25rem;
+  color: #84928D;
+  max-width: 48rem;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.digitalize-features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.digitalize-card {
+  position: relative;
+  height: 100%;
+  padding: 2rem;
+  background-color: #1a1a1a;
+  border: 1px solid rgba(132, 146, 141, 0.1);
+  border-radius: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.digitalize-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(5, 97, 43, 0.2);
+}
+
+.digitalize-icon {
+  width: 5rem;
+  height: 5rem;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.digitalize-icon-1 {
+  background: linear-gradient(135deg, #facc15 0%, #f97316 100%);
+}
+
+.digitalize-icon-2 {
+  background: linear-gradient(135deg, #ef4444 0%, #ec4899 100%);
+}
+
+.digitalize-icon-3 {
+  background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+}
+
+.digitalize-emoji {
+  font-size: 2.5rem;
+}
+
+.digitalize-card-title {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 1.875rem;
+  color: #FDFFFD;
+  margin-bottom: 1rem;
+}
+
+.digitalize-card-description {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 1.125rem;
+  color: #84928D;
+  line-height: 1.7;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .digitalize-sport {
+    padding: 5rem 0;
+  }
+
+  .digitalize-header {
+    margin-bottom: 3rem;
+  }
+
+  .digitalize-title {
+    font-size: 2.5rem;
+  }
+
+  .digitalize-subtitle {
+    font-size: 1.125rem;
+  }
+
+  .digitalize-features {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .digitalize-icon {
+    width: 4rem;
+    height: 4rem;
+  }
+
+  .digitalize-emoji {
+    font-size: 2rem;
+  }
+
+  .digitalize-card-title {
+    font-size: 1.5rem;
+  }
+
+  .digitalize-card-description {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .digitalize-sport {
+    padding: 4rem 0;
+  }
+
+  .digitalize-badge {
+    font-size: 0.75rem;
+    padding: 0.375rem 0.75rem;
+  }
+
+  .digitalize-title {
+    font-size: 2rem;
+  }
+
+  .digitalize-subtitle {
+    font-size: 1rem;
+  }
+}
