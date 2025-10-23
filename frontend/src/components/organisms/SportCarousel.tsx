@@ -60,7 +60,7 @@ const SportsCarousel = () => {
 
   return (
     <section className="sports-carousel">
-      <div className="container">
+      <div className="sports-container">
         <div className="carousel-wrapper">
           <div className="carousel-container">
             <div className="carousel-slides">

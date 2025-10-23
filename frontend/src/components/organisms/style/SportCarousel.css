@@ -2,19 +2,23 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&family=Inter:wght@400;500;600&display=swap');
 
 .sports-carousel {
-  padding: 5rem 0;
+  padding: 5rem 1rem;
   background-color: #FDFFFD;
+  width: 100%;
+  overflow: hidden;
 }
 
-.container {
+.sports-container {
   max-width: 80rem;
   margin: 0 auto;
   padding: 0 1rem;
+  width: 100%;
 }
 
 .carousel-wrapper {
   max-width: 75rem;
   margin: 0 auto;
+  width: 100%;
 }
 
 .carousel-container {
@@ -22,11 +26,13 @@
   border-radius: 1.5rem;
   overflow: hidden;
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+  width: 100%;
 }
 
 .carousel-slides {
   position: relative;
   height: 500px;
+  width: 100%;
 }
 
 .carousel-slide {
@@ -49,13 +55,14 @@
 .carousel-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.3) 50%, transparent 100%);
 }
 
 .carousel-content {
   position: absolute;
   bottom: 2rem;
   left: 2rem;
+  right: 2rem;
   color: #FDFFFD;
   z-index: 10;
 }
@@ -65,10 +72,12 @@
   align-items: center;
   gap: 0.5rem;
   margin-bottom: 0.75rem;
+  flex-wrap: nowrap;
 }
 
 .carousel-emoji {
   font-size: 2.5rem;
+  flex-shrink: 0;
 }
 
 .carousel-badge-text {
@@ -78,19 +87,22 @@
   padding: 0.375rem 0.75rem;
   background-color: rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border-radius: 9999px;
+  white-space: nowrap;
 }
 
 .carousel-sport {
   font-family: 'Poppins', sans-serif;
   font-weight: 800;
-  font-size: 2.5rem;
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
   margin-bottom: 0.5rem;
+  line-height: 1.2;
 }
 
 .carousel-info {
   font-family: 'Inter', sans-serif;
-  font-size: 1.25rem;
+  font-size: clamp(0.875rem, 2.5vw, 1.25rem);
   color: rgba(253, 255, 253, 0.9);
 }
 
@@ -102,6 +114,7 @@
   height: 3rem;
   background-color: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: none;
   border-radius: 50%;
   display: flex;
@@ -111,10 +124,18 @@
   transition: all 0.3s ease;
   color: #FDFFFD;
   z-index: 20;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .carousel-btn:hover {
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.carousel-btn:active {
+  transform: translateY(-50%) scale(0.95);
 }
 
 .carousel-btn-prev {
@@ -144,6 +165,7 @@
   cursor: pointer;
   transition: all 0.3s ease;
   padding: 0;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .carousel-dot.active {
@@ -151,43 +173,20 @@
   background-color: #FDFFFD;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
+/* Responsive - Tablet */
+@media (max-width: 1024px) {
   .sports-carousel {
-    padding: 3rem 0;
+    padding: 4rem 1rem;
   }
 
   .carousel-slides {
-    height: 400px;
+    height: 450px;
   }
 
   .carousel-content {
-    bottom: 1.5rem;
-    left: 1.5rem;
-  }
-
-  .carousel-sport {
-    font-size: 2rem;
-  }
-
-  .carousel-info {
-    font-size: 1rem;
-  }
-
-  .carousel-btn {
-    width: 2.5rem;
-    height: 2.5rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .carousel-slides {
-    height: 300px;
-  }
-
-  .carousel-content {
-    bottom: 1rem;
-    left: 1rem;
+    bottom: 1.75rem;
+    left: 1.75rem;
+    right: 1.75rem;
   }
 
   .carousel-emoji {
@@ -195,11 +194,119 @@
   }
 
   .carousel-sport {
-    font-size: 1.5rem;
+    font-size: clamp(1.375rem, 3.5vw, 2rem);
   }
 
   .carousel-info {
-    font-size: 0.875rem;
+    font-size: clamp(0.8125rem, 2.2vw, 1.125rem);
+  }
+}
+
+/* Responsive - Mobile */
+@media (max-width: 768px) {
+  .sports-carousel {
+    padding: 3rem 0.5rem;
+  }
+
+  .sports-container {
+    padding: 0 0.5rem;
+  }
+
+  .carousel-container {
+    border-radius: 1rem;
+  }
+
+  .carousel-slides {
+    height: 380px;
+  }
+
+  .carousel-content {
+    bottom: 1.5rem;
+    left: 1.5rem;
+    right: 1.5rem;
+  }
+
+  .carousel-badge {
+    margin-bottom: 0.5rem;
+  }
+
+  .carousel-emoji {
+    font-size: 1.75rem;
+  }
+
+  .carousel-badge-text {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.625rem;
+  }
+
+  .carousel-sport {
+    font-size: 1.5rem;
+    margin-bottom: 0.375rem;
+  }
+
+  .carousel-info {
+    font-size: 0.9375rem;
+  }
+
+  .carousel-btn {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .carousel-btn svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .carousel-btn-prev {
+    left: 0.75rem;
+  }
+
+  .carousel-btn-next {
+    right: 0.75rem;
+  }
+
+  .carousel-dots {
+    bottom: 1rem;
+  }
+}
+
+/* Responsive - Small Mobile */
+@media (max-width: 480px) {
+  .sports-carousel {
+    padding: 2.5rem 0.5rem;
+  }
+
+  .carousel-container {
+    border-radius: 0.75rem;
+  }
+
+  .carousel-slides {
+    height: 320px;
+  }
+
+  .carousel-content {
+    bottom: 1rem;
+    left: 1rem;
+    right: 1rem;
+  }
+
+  .carousel-emoji {
+    font-size: 1.5rem;
+  }
+
+  .carousel-badge-text {
+    font-size: 0.6875rem;
+    padding: 0.25rem 0.5rem;
+  }
+
+  .carousel-sport {
+    font-size: 1.25rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .carousel-info {
+    font-size: 0.8125rem;
   }
 
   .carousel-btn {
@@ -210,5 +317,62 @@
   .carousel-btn svg {
     width: 18px;
     height: 18px;
+  }
+
+  .carousel-btn-prev {
+    left: 0.5rem;
+  }
+
+  .carousel-btn-next {
+    right: 0.5rem;
+  }
+
+  .carousel-dots {
+    bottom: 0.75rem;
+    gap: 0.375rem;
+  }
+
+  .carousel-dot {
+    width: 0.375rem;
+    height: 0.375rem;
+  }
+
+  .carousel-dot.active {
+    width: 1.5rem;
+  }
+}
+
+/* Responsive - Very Small Mobile */
+@media (max-width: 360px) {
+  .carousel-slides {
+    height: 280px;
+  }
+
+  .carousel-content {
+    bottom: 0.875rem;
+    left: 0.875rem;
+    right: 0.875rem;
+  }
+
+  .carousel-emoji {
+    font-size: 1.25rem;
+  }
+
+  .carousel-sport {
+    font-size: 1.125rem;
+  }
+
+  .carousel-info {
+    font-size: 0.75rem;
+  }
+
+  .carousel-btn {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+
+  .carousel-btn svg {
+    width: 16px;
+    height: 16px;
   }
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import './style/HeroSection.css';
 
@@ -7,6 +7,11 @@ interface HeroProps {
 }
 
 const HeroSection = ({ onNavigate }: HeroProps) => {
+  const handleReserveClick = () => {
+    // Redirection vers la page de login
+    window.location.href = '/login';
+  };
+
   return (
     <section className="hero">
       {/* Background Elements */}
@@ -15,7 +20,7 @@ const HeroSection = ({ onNavigate }: HeroProps) => {
         <div className="hero-bg-shape-2"></div>
       </div>
 
-      <div className="container">
+      <div className="hero-container">
         <div className="hero-content">
           {/* Badge */}
           <div className="hero-badge">
@@ -37,7 +42,7 @@ const HeroSection = ({ onNavigate }: HeroProps) => {
           {/* CTA Button */}
           <div className="hero-cta">
             <button 
-              onClick={() => onNavigate('player')}
+              onClick={handleReserveClick}
               className="btn-primary"
             >
               <span>Réserver maintenant</span>
