@@ -11,6 +11,9 @@ public class UserDto {
     private LocalDateTime dateInscription;
     private boolean profilComplet;
     private String prenom;
+
+    // Nazim : Description = politique club
+    private String description;
     private String telephone;
     private String adresse;
 }

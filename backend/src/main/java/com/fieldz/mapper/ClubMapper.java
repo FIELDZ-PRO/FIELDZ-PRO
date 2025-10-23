@@ -6,7 +6,8 @@ import com.fieldz.model.Club;
 public class ClubMapper {
 
     public static ClubDto toDto(Club club) {
-        if (club == null) return null;
+        if (club == null)
+            return null;
 
         ClubDto dto = new ClubDto();
         dto.setId(club.getId());
@@ -15,6 +16,9 @@ public class ClubMapper {
         dto.setAdresse(club.getAdresse());
         dto.setTelephone(club.getTelephone());
         dto.setBanniereUrl(club.getBanniereUrl());
+
+        // Ajout du map pour la description
+        dto.setDescription(club.getDescription());
         dto.setSports(club.getSports());
         return dto;
     }

@@ -6,6 +6,11 @@ import ReservationsPage from './ClubPages/ReservationsPage';
 import FacturationPage from './ClubPages/FacturationPage';
 import ClubManagementPage from './ClubPages/ClubManagement';
 import { CreateReservationPage } from './ClubPages/CreateReservation';
+
+interface MainContentProps {
+    setIsBlurred: (value: boolean) => void;
+}
+
 const MainContent = () => {
     const { activeItem } = useNavigation();
 
@@ -20,7 +25,7 @@ const MainContent = () => {
             case 'club':
                 return <ClubManagementPage />;
             case 'createReservation':
-                return <CreateReservationPage />
+                return <CreateReservationPage />;
             default:
                 return <Dashboard />;
         }

@@ -12,6 +12,31 @@
     gap: 0;
 }
 
+
+/* === Header Blur Effect === */
+.header-wrapper {
+    position: relative;
+    z-index: 10;
+    transition: filter 0.3s ease, backdrop-filter 0.3s ease;
+}
+
+.header-wrapper.blurred {
+    filter: blur(6px);
+    backdrop-filter: blur(6px);
+    pointer-events: none;
+    /* disable clicks while blurred */
+    user-select: none;
+}
+
+.header-wrapper.blurred::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.15);
+    /* optional soft overlay */
+    border-radius: inherit;
+}
+
 @media (max-width: 1200px) {
     .app-content {
         grid-template-columns: 200px 1fr;

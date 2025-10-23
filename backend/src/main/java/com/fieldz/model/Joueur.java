@@ -9,15 +9,17 @@ import java.util.List;
 
 @Entity
 @DiscriminatorValue("JOUEUR")
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @SuperBuilder
 public class Joueur extends Utilisateur {
 
     private String prenom;
 
     private String telephone;
-
+    private String description;
     // URL de la photo de profil
     @Column(name = "photo_profil_url")
     private String photoProfilUrl;

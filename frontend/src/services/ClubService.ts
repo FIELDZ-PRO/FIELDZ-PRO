@@ -43,6 +43,7 @@ export type ClubDto = {
     adresse?: string;
     telephone?: string;
     banniereUrl?: string;
+    description?: string;
     sport?: string;
     sports?: string[];
 };
@@ -201,7 +202,7 @@ async function DeleteTerrain(terrainId: number): Promise<boolean> {
     }
 }
 
-async function ModifyTerrain(id: number, nomTerrain: string, typeSurface: string, ville: string, sport: string, politiqueClub: string): Promise<boolean> {
+async function ModifyTerrain(id: number, nomTerrain: string, typeSurface: string, ville: string, sport: string, politiqueClub?: string): Promise<boolean> {
     try {
         await fetch(`${UrlService}/terrains/${id}`, {
             method: "PUT",
@@ -287,7 +288,8 @@ export async function modifyInfoClub(ClubInfo: Omit<ClubDto, 'id'>) {
                 telephone: ClubInfo.telephone,
                 ville: ClubInfo.ville,
                 adresse: ClubInfo.adresse,
-                banniereUrl: ClubInfo.banniereUrl
+                banniereUrl: ClubInfo.banniereUrl,
+                description: ClubInfo.description,
             }),
         })
     } catch (error) {

@@ -10,6 +10,7 @@ import com.fieldz.model.Utilisateur;
 import com.fieldz.repository.UtilisateurRepository;
 
 import jakarta.annotation.security.RolesAllowed;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -134,7 +135,8 @@ public class UtilisateurController {
                 joueur.setTelephone(req.getTelephone());
             if (notBlank(req.getPhotoProfilUrl()))
                 joueur.setPhotoProfilUrl(req.getPhotoProfilUrl());
-
+            if (notBlank(req.getDescription()))
+                joueur.setDescription(req.getDescription());
             // (Optionnel) Revalider profilComplet si souhaité :
             if (!joueur.isProfilComplet() &&
                     notBlank(joueur.getNom()) && notBlank(joueur.getPrenom()) && notBlank(joueur.getTelephone())) {
@@ -146,16 +148,19 @@ public class UtilisateurController {
         }
 
         if (utilisateur instanceof Club club) {
-            if (notBlank(req.getNom()))
-                club.setNom(req.getNom());
-            if (notBlank(req.getVille()))
-                club.setVille(req.getVille());
-            if (notBlank(req.getAdresse()))
-                club.setAdresse(req.getAdresse());
-            if (notBlank(req.getTelephone()))
-                club.setTelephone(req.getTelephone());
-            if (notBlank(req.getBanniereUrl()))
-                club.setBanniereUrl(req.getBanniereUrl());
+            // ✅ 1. Re-fetch the managed entity from DB using its ID
+            Club managedClub = utilisateurRepository.findById(club.getId())
+                    .filter(Club.class::isInstance)
+                    .map(Club.class::cast)
+                    .orElseThrow(() -> new RuntimeException("Club introuvable"));
+            // Nazim : j'ai changé cette partie pour plus de clarification et pour permettre
+            // au club d'être libre sur leur modification
+            managedClub.setNom(req.getNom());
+            managedClub.setVille(req.getVille());
+            managedClub.setAdresse(req.getAdresse());
+            managedClub.setTelephone(req.getTelephone());
+            managedClub.setBanniereUrl(req.getBanniereUrl());
+            managedClub.setDescription(req.getDescription());
 
             Set<Sport> sports = req.getSports();
             if (sports != null) {
@@ -163,16 +168,18 @@ public class UtilisateurController {
                 // - si vide => on efface; si tu préfères "ne pas toucher si vide", remplace
                 // par:
                 // if (!sports.isEmpty()) club.setSports(sports);
-                club.setSports(sports);
+                managedClub.setSports(sports);
             }
 
             // (Optionnel) Revalider profilComplet si souhaité :
             if (!club.isProfilComplet() &&
                     notBlank(club.getNom()) && notBlank(club.getVille()) && notBlank(club.getTelephone())) {
-                club.setProfilComplet(true);
+                managedClub.setProfilComplet(true);
             }
 
-            utilisateurRepository.save(club);
+            // Nazim : Je comprenais pas pk mais ici la save ne persistait pas dans la
+            // database du coup j'ai mis le clubmanaged
+            utilisateurRepository.save(managedClub);
             return ResponseEntity.ok("Profil club mis à jour avec succès.");
         }
 

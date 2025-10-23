@@ -24,5 +24,8 @@ public class UpdateProfilRequest {
     private String ville;
     private String adresse;
     private String banniereUrl;
+
+    // Nazim : Champ de description
+    private String description;
     private Set<com.fieldz.model.Sport> sports;
 }

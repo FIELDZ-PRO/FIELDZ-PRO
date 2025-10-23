@@ -1,6 +1,7 @@
 package com.fieldz.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -10,8 +11,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 import lombok.experimental.SuperBuilder;
-
-
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -39,11 +38,13 @@ public abstract class Utilisateur implements UserDetails {
 
     private LocalDateTime dateInscription = LocalDateTime.now();
 
+    // Nazim : Description
+    private String description;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + typeRole.name()));
     }
-
 
     @Override
     public String getPassword() {
@@ -83,6 +84,5 @@ public abstract class Utilisateur implements UserDetails {
 
     @Column(name = "profil_complet")
     private boolean profilComplet = false;
-
 
 }

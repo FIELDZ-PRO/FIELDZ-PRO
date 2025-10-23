@@ -9,8 +9,10 @@ import java.util.Set;
 
 @Entity
 @DiscriminatorValue("CLUB")
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @SuperBuilder
 public class Club extends Utilisateur {
 
@@ -33,4 +35,8 @@ public class Club extends Utilisateur {
 
     @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Terrain> terrains;
+
+    // Ajout de la politique du club
+
+    private String description;
 }

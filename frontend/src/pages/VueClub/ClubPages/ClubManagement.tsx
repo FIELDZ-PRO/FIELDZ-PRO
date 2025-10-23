@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Settings, User, MapPin, Mail, Phone, Image as ImageIcon } from 'lucide-react';
+import { Settings, User, MapPin, Mail, Phone, Image as ImageIcon, Loader2 } from 'lucide-react'; // Loader2 for animation
 import './style/ClubManagement.css';
 import { getClubMe, modifyInfoClub, uploadClubImage } from '../../../services/ClubService';
 import { ClubDto } from '../../../services/ClubService';
@@ -10,7 +10,8 @@ const ClubManagementPage = () => {
         ville: '',
         adresse: '',
         telephone: '',
-        banniereUrl: '', // 🆕 using banniereUrl instead of imageUrl
+        banniereUrl: '',
+        description: '',
         sports: [],
     });
 
@@ -18,16 +19,14 @@ const ClubManagementPage = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [dragActive, setDragActive] = useState(false);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [isUploading, setIsUploading] = useState(false); // 🆕 new state
     const fileInputRef = useRef<HTMLInputElement | null>(null);
 
     const fetchClubInfo = async () => {
         try {
             const data = await getClubMe();
-            console.log("Club data Info here :")
             setClubInfo(data);
-            console.log(clubInfo)
-
-            if (data.banniereUrl) setPreviewUrl(data.banniereUrl); // 🧠 use banniereUrl here
+            if (data.banniereUrl) setPreviewUrl(data.banniereUrl);
         } catch (error) {
             alert("Erreur lors de la récupération des informations du club.");
         }
@@ -40,7 +39,6 @@ const ClubManagementPage = () => {
     const handleSave = async () => {
         try {
             await modifyInfoClub(clubInfo);
-            console.log('Saving club info:', clubInfo);
             setIsEditing(false);
         } catch (error) {
             alert("Erreur lors de la sauvegarde des modifications.");
@@ -48,24 +46,20 @@ const ClubManagementPage = () => {
     };
 
     const handleFile = async (file: File) => {
+        setIsUploading(true); // 🆕 start loader
         try {
-            // 1️⃣ Upload the image
             const uploadedUrl = await uploadClubImage(file);
-            console.log("URL of the image : " + uploadedUrl)
-            // 2️⃣ Update the club info with the Cloudinary URL
             const updatedClubInfo = { ...clubInfo, banniereUrl: uploadedUrl };
             setClubInfo(updatedClubInfo);
             setPreviewUrl(uploadedUrl);
-
-            // 3️⃣ Save to DB
             await modifyInfoClub(updatedClubInfo);
-            console.log("✅ Image uploaded and saved:", uploadedUrl);
         } catch (error) {
             alert("Erreur lors du téléchargement de l'image");
             console.error("Upload failed:", error);
+        } finally {
+            setIsUploading(false); // 🆕 stop loader
         }
     };
-
 
     const handleDrop = (e: React.DragEvent) => {
         e.preventDefault();
@@ -103,13 +97,23 @@ const ClubManagementPage = () => {
             <div className={`image-section ${isEditing ? 'editing' : ''} ${dragActive ? 'drag-active' : ''}`}>
                 <h2><ImageIcon size={18} /> Bannière du club</h2>
 
-                {previewUrl ? (
-                    <div className="image-preview-container">
-                        <img src={previewUrl} alt="Bannière du club" className="image-preview" />
-                    </div>
-                ) : (
-                    <p className="no-image">Aucune bannière disponible</p>
-                )}
+                <div className="image-container">
+                    {previewUrl ? (
+                        <div className="image-preview-container">
+                            <img src={previewUrl} alt="Bannière du club" className="image-preview" />
+                        </div>
+                    ) : (
+                        <p className="no-image">Aucune bannière disponible</p>
+                    )}
+
+                    {/* 🌀 Loader overlay */}
+                    {isUploading && (
+                        <div className="image-loader-overlay">
+                            <Loader2 className="image-loader" size={40} />
+                            <p>Upload en cours...</p>
+                        </div>
+                    )}
+                </div>
 
                 {isEditing && (
                     <div
@@ -180,21 +184,16 @@ const ClubManagementPage = () => {
                             />
                         </div>
 
-                        {/* 🆕 URL de la bannière (modifiable en mode édition) */}
-                        {isEditing && (
-                            <div className="form-group">
-                                <label><ImageIcon size={16} /> URL de la bannière</label>
-                                <input
-                                    type="text"
-                                    value={clubInfo.banniereUrl ?? ''}
-                                    onChange={(e) => {
-                                        setClubInfo({ ...clubInfo, banniereUrl: e.target.value });
-                                        setPreviewUrl(e.target.value);
-                                    }}
-                                    placeholder="https://exemple.com/banniere.jpg"
-                                />
-                            </div>
-                        )}
+                        <div className="form-group">
+                            <label><Phone size={16} /> Politique du club</label>
+                            <textarea
+                                name="politiqueClub"
+                                value={clubInfo.description ?? ''}
+                                onChange={(e) => setClubInfo({ ...clubInfo, description: e.target.value })}
+                                disabled={!isEditing}
+                            />
+                        </div>
+
                     </div>
                 </div>
             </div>

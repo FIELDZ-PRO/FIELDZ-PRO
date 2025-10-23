@@ -9,7 +9,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserMapper {
     public UserDto toDto(Utilisateur user) {
-        if (user == null) return null;
+        if (user == null)
+            return null;
 
         UserDto dto = new UserDto();
         dto.setId(user.getId());
@@ -18,6 +19,7 @@ public class UserMapper {
         dto.setDateInscription(user.getDateInscription());
         dto.setProfilComplet(user.isProfilComplet());
 
+        dto.setDescription(user.getDescription());
         if (user instanceof Joueur joueur) {
             dto.setPrenom(joueur.getPrenom());
             dto.setTelephone(joueur.getTelephone());
