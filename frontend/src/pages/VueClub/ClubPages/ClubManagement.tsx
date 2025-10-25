@@ -25,6 +25,8 @@ const ClubManagementPage = () => {
     const fetchClubInfo = async () => {
         try {
             const data = await getClubMe();
+            console.log("this is the data received : ")
+            console.log(data);
             setClubInfo(data);
             if (data.banniereUrl) setPreviewUrl(data.banniereUrl);
         } catch (error) {
@@ -34,6 +36,8 @@ const ClubManagementPage = () => {
 
     useEffect(() => {
         fetchClubInfo();
+        console.log("This is the club info : ")
+        console.log(clubInfo)
     }, [token]);
 
     const handleSave = async () => {
@@ -185,9 +189,9 @@ const ClubManagementPage = () => {
                         </div>
 
                         <div className="form-group">
-                            <label><Phone size={16} /> Politique du club</label>
+                            <label><Phone size={16} />Description du club</label>
                             <textarea
-                                name="politiqueClub"
+                                name="description"
                                 value={clubInfo.description ?? ''}
                                 onChange={(e) => setClubInfo({ ...clubInfo, description: e.target.value })}
                                 disabled={!isEditing}

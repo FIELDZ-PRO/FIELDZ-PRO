@@ -20,10 +20,6 @@ const Header = () => {
                         <span className="logo-text">FieldZ</span>
                     </div>
 
-                    <div className="language-selector">
-                        <span>Français</span>
-                        <ChevronDown size={16} />
-                    </div>
                 </div>
 
                 <div className="header-right">

@@ -38,9 +38,6 @@ public abstract class Utilisateur implements UserDetails {
 
     private LocalDateTime dateInscription = LocalDateTime.now();
 
-    // Nazim : Description
-    private String description;
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + typeRole.name()));
