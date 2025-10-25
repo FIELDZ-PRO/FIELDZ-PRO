@@ -1,0 +1,321 @@
+/* ReservationAVenir - Style moderne avec filtres */
+
+.reservations-a-venir {
+   width: 100%;
+ }
+ 
+ /* === FILTRES PAR STATUT === */
+ .status-filters {
+   display: flex;
+   gap: 0.75rem;
+   margin-bottom: 2rem;
+   flex-wrap: wrap;
+ }
+ 
+ .filter-btn {
+   display: inline-flex;
+   align-items: center;
+   gap: 0.5rem;
+   padding: 0.75rem 1.25rem;
+   font-family: 'Poppins', sans-serif;
+   font-weight: 600;
+   font-size: 0.9375rem;
+   background: var(--fieldz-white);
+   color: var(--fieldz-gray);
+   border: 2px solid var(--gray-200);
+   border-radius: 12px;
+   cursor: pointer;
+   transition: all 0.2s;
+ }
+ 
+ .filter-btn:hover {
+   border-color: var(--fieldz-green);
+   color: var(--fieldz-green);
+ }
+ 
+ .filter-btn.active {
+   background: var(--fieldz-green);
+   color: var(--fieldz-white);
+   border-color: var(--fieldz-green);
+ }
+ 
+ /* === LISTE DES RÉSERVATIONS === */
+ .reservations-list {
+   display: flex;
+   flex-direction: column;
+   gap: 1rem;
+ }
+ 
+ /* === CARTE RÉSERVATION === */
+ .reservation-card-avenir {
+   background: var(--fieldz-white);
+   border-radius: 12px;
+   overflow: hidden;
+   border: none;
+   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+   transition: all 0.3s;
+ }
+ 
+ .reservation-card-avenir:hover {
+   transform: translateY(-2px);
+   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+ }
+ 
+ /* Header avec dégradé */
+ .reservation-header-avenir {
+   padding: 1.5rem;
+   background: linear-gradient(to right, #dcfce7, #ffffff);
+   border-bottom: 1px solid var(--gray-200);
+   display: flex;
+   justify-content: space-between;
+   align-items: flex-start;
+   gap: 1rem;
+ }
+ 
+ .reservation-header-left {
+   flex: 1;
+ }
+ 
+ .reservation-terrain-name {
+   font-family: 'Poppins', sans-serif;
+   font-weight: 800;
+   font-size: 1.25rem;
+   color: var(--fieldz-black);
+   margin: 0 0 0.5rem;
+ }
+ 
+ .reservation-location {
+   display: flex;
+   align-items: center;
+   gap: 0.5rem;
+   font-family: 'Inter', sans-serif;
+   font-size: 0.875rem;
+   color: var(--fieldz-gray);
+ }
+ 
+ .reservation-header-right {
+   flex-shrink: 0;
+ }
+ 
+ /* Badge de statut */
+ .status-badge {
+   display: inline-flex;
+   align-items: center;
+   gap: 0.5rem;
+   padding: 0.5rem 1rem;
+   border-radius: 8px;
+   font-family: 'Poppins', sans-serif;
+   font-weight: 600;
+   font-size: 0.875rem;
+   border: 1px solid;
+ }
+ 
+ .status-badge-confirmed {
+   background: #dcfce7;
+   color: #166534;
+   border-color: #86efac;
+ }
+ 
+ .status-badge-pending {
+   background: #fef3c7;
+   color: #92400e;
+   border-color: #fde047;
+ }
+ 
+ /* Body */
+ .reservation-body-avenir {
+   padding: 1.5rem;
+ }
+ 
+ .reservation-info-row {
+   display: grid;
+   grid-template-columns: repeat(3, 1fr);
+   gap: 1.5rem;
+   margin-bottom: 1.5rem;
+ }
+ 
+ .info-item {
+   display: flex;
+   align-items: center;
+   gap: 0.875rem;
+ }
+ 
+ /* Icônes colorées */
+ .info-icon-box {
+   width: 48px;
+   height: 48px;
+   border-radius: 12px;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   flex-shrink: 0;
+ }
+ 
+ .info-icon-box.green {
+   background: #dcfce7;
+   color: var(--fieldz-green);
+ }
+ 
+ .info-icon-box.blue {
+   background: #dbeafe;
+   color: #2563eb;
+ }
+ 
+ .info-icon-box.purple {
+   background: #f3e8ff;
+   color: #9333ea;
+ }
+ 
+ .dzd-label {
+   font-family: 'Poppins', sans-serif;
+   font-weight: 800;
+   font-size: 0.875rem;
+ }
+ 
+ .info-text {
+   display: flex;
+   flex-direction: column;
+   gap: 0.25rem;
+ }
+ 
+ .info-label {
+   font-family: 'Inter', sans-serif;
+   font-size: 0.875rem;
+   color: var(--fieldz-gray);
+ }
+ 
+ .info-value {
+   font-family: 'Poppins', sans-serif;
+   font-weight: 600;
+   font-size: 1rem;
+   color: var(--fieldz-black);
+ }
+ 
+ .info-value.price {
+   color: var(--fieldz-green);
+ }
+ 
+ /* Actions */
+ .reservation-actions-avenir {
+   padding-top: 1rem;
+   border-top: 1px solid var(--gray-100);
+   display: flex;
+   justify-content: flex-end;
+ }
+ 
+ .btn-cancel {
+   font-family: 'Poppins', sans-serif;
+   font-weight: 600;
+   font-size: 0.875rem;
+   padding: 0.625rem 1.5rem;
+   background: var(--fieldz-white);
+   color: #dc2626;
+   border: 1.5px solid #dc2626;
+   border-radius: 8px;
+   cursor: pointer;
+   transition: all 0.2s;
+ }
+ 
+ .btn-cancel:hover:not(:disabled) {
+   background: #dc2626;
+   color: var(--fieldz-white);
+ }
+ 
+ .btn-cancel:disabled {
+   opacity: 0.5;
+   cursor: not-allowed;
+ }
+ 
+ /* État vide */
+ .empty-state-reservations {
+   text-align: center;
+   padding: 4rem 2rem;
+   background: var(--fieldz-white);
+   border-radius: 16px;
+   border: 2px dashed rgba(132, 146, 141, 0.3);
+ }
+ 
+ .empty-icon {
+   font-size: 4rem;
+   margin-bottom: 1rem;
+ }
+ 
+ .empty-state-reservations h3 {
+   font-family: 'Poppins', sans-serif;
+   font-weight: 800;
+   font-size: 1.5rem;
+   color: var(--fieldz-black);
+   margin: 0 0 0.5rem;
+ }
+ 
+ .empty-state-reservations p {
+   font-family: 'Inter', sans-serif;
+   font-weight: 400;
+   font-size: 1rem;
+   color: var(--fieldz-gray);
+   margin: 0;
+ }
+ 
+ /* === RESPONSIVE === */
+ 
+ @media (max-width: 1024px) {
+   .reservation-info-row {
+     grid-template-columns: 1fr;
+     gap: 1rem;
+   }
+ }
+ 
+ @media (max-width: 768px) {
+   .reservation-header-avenir {
+     flex-direction: column;
+     gap: 1rem;
+   }
+ 
+   .reservation-header-right {
+     align-self: flex-start;
+   }
+ 
+   .reservation-terrain-name {
+     font-size: 1.125rem;
+   }
+ 
+   .reservation-body-avenir {
+     padding: 1.25rem;
+   }
+ 
+   .reservation-info-row {
+     gap: 1rem;
+   }
+ 
+   .info-icon-box {
+     width: 40px;
+     height: 40px;
+   }
+ 
+   .btn-cancel {
+     width: 100%;
+   }
+ }
+ 
+ @media (max-width: 480px) {
+   .status-filters {
+     flex-direction: column;
+   }
+ 
+   .filter-btn {
+     width: 100%;
+     justify-content: center;
+   }
+ 
+   .reservation-header-avenir {
+     padding: 1rem;
+   }
+ 
+   .reservation-body-avenir {
+     padding: 1rem;
+   }
+ 
+   .info-value {
+     font-size: 0.9375rem;
+   }
+ }
