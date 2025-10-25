@@ -70,7 +70,7 @@ const CreneauCard: React.FC<Props> = ({ creneau, onReserver, onUpdate, role }) =
       </div>
 
       <div className="card-prix">
-        💶 {creneau.prix != null ? `${creneau.prix} Da` : "Prix non défini"}
+        {creneau.prix != null ? `${creneau.prix} Da` : "Prix non défini"}
       </div>
 
       <div className="card-actions">

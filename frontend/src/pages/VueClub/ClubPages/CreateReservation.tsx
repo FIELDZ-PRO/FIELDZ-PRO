@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import ReservationGroup from '../../../components/organisms/clubDashboard/ReservationGroup';
 import { useAuth } from '../../../context/AuthContext';
-import { Reservation } from '../../../types';
+import { Reservation, Terrain } from '../../../types';
 import HeaderClub from '../../../components/organisms/clubDashboard/HeaderClub';
 import TerrainsSection from '../../../components/organisms/clubDashboard/TerrainsSection';
 import CreneauFormSection from '../../../components/organisms/clubDashboard/CreneauFormSection';
 import CreneauRecurrentFormSection from '../../../components/organisms/clubDashboard/CreneauRecurrentFormSection';
 import CreneauxSection from '../../../components/organisms/clubDashboard/CreneauxSection';
-import { Terrain } from '../../../types';
 import ReservationParDateSection from '../../../components/organisms/clubDashboard/ReservationParDateSection';
 import ReservationGroupByStatut from '../../../components/organisms/clubDashboard/ReservationGroupByStatut';
 import './style/CreateReservation.css';
@@ -20,10 +19,11 @@ export const CreateReservationPage: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [club, setClub] = useState<{ nom: string } | null>(null);
 
-    const today = new Date().toISOString().slice(0, 10);
+    const today = new Date().toISOString().slice(0, 10); // format: YYYY-MM-DD
     const [date, setDate] = useState(today);
     const [showTodayReservations, setShowTodayReservations] = useState(false);
 
+    // 🔍 Fetch reservations for a given date
     const handleVoirReservationsDate = async () => {
         try {
             const res = await fetch(
@@ -42,6 +42,7 @@ export const CreateReservationPage: React.FC = () => {
         }
     };
 
+    // 📦 Fetch club info
     useEffect(() => {
         const fetchClub = async () => {
             try {
@@ -61,6 +62,7 @@ export const CreateReservationPage: React.FC = () => {
         fetchClub();
     }, [token]);
 
+    // 🏟️ Fetch terrains
     useEffect(() => {
         const fetchTerrains = async () => {
             try {
@@ -84,6 +86,7 @@ export const CreateReservationPage: React.FC = () => {
         fetchTerrains();
     }, [token]);
 
+    // 📅 Fetch all reservations
     useEffect(() => {
         const fetchReservations = async () => {
             try {
@@ -112,6 +115,17 @@ export const CreateReservationPage: React.FC = () => {
         );
     }
 
+    // 🧮 Filter only today's reservations
+    const todayReservations = reservations.filter(r => {
+        const resDate = new Date(r.creneau.dateDebut).toISOString().slice(0, 10);
+        return resDate === today;
+    });
+
+    // ✅ Filter today's confirmed reservations
+    const todayConfirmedReservations = todayReservations.filter(
+        r => r.statut === 'CONFIRMEE'
+    );
+
     return (
         <div className="club-dashboard">
             {/* Header */}
@@ -121,18 +135,14 @@ export const CreateReservationPage: React.FC = () => {
                 </h1>
             </div>
 
-            {/* Terrains Section */}
-
-
             {/* Créneaux Section */}
-            <div >
+            <div>
                 <CreneauxSection
                     terrains={terrains}
                     reservations={reservations}
                     setReservations={setReservations}
                 />
             </div>
-
 
             {/* Reservation par date Section */}
             <div className="card-section">
@@ -144,13 +154,14 @@ export const CreateReservationPage: React.FC = () => {
                 />
             </div>
 
-            {/* Dashboard Stats */}
+            {/* 📊 Dashboard Stats (only for today) */}
             <div className="card-section">
                 <h1 className="stats-title">
-                    Dashboard du club
+                    Dashboard du club — {new Date(today).toLocaleDateString('fr-FR')}
                 </h1>
 
                 <div className="stats-container">
+                    {/* Terrains */}
                     <div className="stat-card">
                         <div className="stat-value">
                             {terrains.length}
@@ -160,21 +171,23 @@ export const CreateReservationPage: React.FC = () => {
                         </div>
                     </div>
 
+                    {/* Today's Reservations */}
                     <div className="stat-card">
                         <div className="stat-value">
-                            {reservations.length}
+                            {todayReservations.length}
                         </div>
                         <div className="stat-label">
-                            Réservations
+                            Réservations du jour
                         </div>
                     </div>
 
+                    {/* Today's Confirmed Reservations */}
                     <div className="stat-card stat-card-success">
                         <div className="stat-value stat-value-success">
-                            {reservations.filter(r => r.statut === 'CONFIRMEE').length}
+                            {todayConfirmedReservations.length}
                         </div>
                         <div className="stat-label">
-                            Confirmées
+                            Confirmées aujourd'hui
                         </div>
                     </div>
                 </div>
