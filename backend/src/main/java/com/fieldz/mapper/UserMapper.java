@@ -19,7 +19,6 @@ public class UserMapper {
         dto.setDateInscription(user.getDateInscription());
         dto.setProfilComplet(user.isProfilComplet());
 
-        dto.setDescription(user.getDescription());
         if (user instanceof Joueur joueur) {
             dto.setPrenom(joueur.getPrenom());
             dto.setTelephone(joueur.getTelephone());

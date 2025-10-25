@@ -161,7 +161,9 @@ public class UtilisateurController {
             managedClub.setTelephone(req.getTelephone());
             managedClub.setBanniereUrl(req.getBanniereUrl());
             managedClub.setDescription(req.getDescription());
+            managedClub.setPolitique(req.getPolitique());
             System.out.println("The club's politics are : " + managedClub.getDescription());
+
             Set<Sport> sports = req.getSports();
             if (sports != null) {
                 // Choix d'update:

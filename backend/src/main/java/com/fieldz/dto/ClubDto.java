@@ -15,6 +15,7 @@ public class ClubDto {
 
     // Nazim : description
     private String description;
+    private String politique;
     private Set<com.fieldz.model.Sport> sports; // ou Set<String> si tu préfères décorréler
     // Pas de terrains ici pour éviter gros payloads (fait un DTO dédié si besoin)
 }

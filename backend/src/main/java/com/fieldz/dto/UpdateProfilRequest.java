@@ -27,5 +27,6 @@ public class UpdateProfilRequest {
 
     // Nazim : Champ de description
     private String description;
+    private String politique;
     private Set<com.fieldz.model.Sport> sports;
 }

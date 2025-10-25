@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Settings, User, MapPin, Mail, Phone, Image as ImageIcon, Loader2 } from 'lucide-react'; // Loader2 for animation
+import { Settings, User, MapPin, Mail, Phone, Image as ImageIcon, Loader2, Text, ShieldCheck } from 'lucide-react'; // Loader2 for animation
 import './style/ClubManagement.css';
 import { getClubMe, modifyInfoClub, uploadClubImage } from '../../../services/ClubService';
 import { ClubDto } from '../../../services/ClubService';
@@ -12,6 +12,7 @@ const ClubManagementPage = () => {
         telephone: '',
         banniereUrl: '',
         description: '',
+        politique: '',
         sports: [],
     });
 
@@ -189,11 +190,20 @@ const ClubManagementPage = () => {
                         </div>
 
                         <div className="form-group">
-                            <label><Phone size={16} />Description du club</label>
+                            <label><Text size={16} />Description du club</label>
                             <textarea
                                 name="description"
                                 value={clubInfo.description ?? ''}
                                 onChange={(e) => setClubInfo({ ...clubInfo, description: e.target.value })}
+                                disabled={!isEditing}
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label><ShieldCheck size={16} />Politique du club</label>
+                            <textarea
+                                name="description"
+                                value={clubInfo.politique ?? ''}
+                                onChange={(e) => setClubInfo({ ...clubInfo, politique: e.target.value })}
                                 disabled={!isEditing}
                             />
                         </div>

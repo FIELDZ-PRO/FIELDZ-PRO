@@ -38,5 +38,7 @@ public class Club extends Utilisateur {
 
     // Ajout de la politique du club
 
+    private String politique;
+
     private String description;
 }

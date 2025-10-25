@@ -19,6 +19,7 @@ public class ClubMapper {
 
         // Ajout du map pour la description
         dto.setDescription(club.getDescription());
+        dto.setPolitique(club.getPolitique());
         dto.setSports(club.getSports());
         return dto;
     }

@@ -44,6 +44,7 @@ export type ClubDto = {
     telephone?: string;
     banniereUrl?: string;
     description?: string;
+    politique?: string;
     sport?: string;
     sports?: string[];
 };
@@ -290,6 +291,7 @@ export async function modifyInfoClub(ClubInfo: Omit<ClubDto, 'id'>) {
                 adresse: ClubInfo.adresse,
                 banniereUrl: ClubInfo.banniereUrl,
                 description: ClubInfo.description,
+                politique: ClubInfo.politique,
             }),
         })
     } catch (error) {
