@@ -170,7 +170,7 @@ const ClubManagementPage = () => {
                         </div>
 
                         <div className="form-group">
-                            <label><Mail size={16} /> Ville</label>
+                            <label><Mail size={16} /> Wilaya</label>
                             <input
                                 type="text"
                                 value={clubInfo.ville}

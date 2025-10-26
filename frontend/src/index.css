@@ -6,13 +6,17 @@
 html.dark {
   background-color: #111827;
 }
-html, body {
+
+html,
+body {
   margin: 0;
   padding: 0;
   width: 100%;
   height: 100%;
-  background: #fff; /* ou ton vert si tu veux tout vert */
+  background: #fff;
+  /* ou ton vert si tu veux tout vert */
 }
+
 /* Fond général : blanc et vert très clair */
 body {
   min-height: 100vh;
@@ -31,7 +35,8 @@ body {
 h1 {
   font-size: 2.6rem;
   font-weight: bold;
-  color: #22c55e; /* vert principal */
+  color: #22c55e;
+  /* vert principal */
   letter-spacing: 1px;
   margin-bottom: 32px;
   display: flex;
@@ -43,7 +48,8 @@ h1 {
 .section-title {
   font-size: 1.7rem;
   font-weight: 700;
-  color: #15803d; /* vert foncé */
+  color: #15803d;
+  /* vert foncé */
   margin-bottom: 18px;
   display: flex;
   align-items: center;
@@ -62,7 +68,8 @@ h1 {
 .card {
   background: #fff;
   border-radius: 18px;
-  box-shadow: 0 2px 18px rgba(34,197,94,0.11); /* vert pâle */
+  box-shadow: 0 2px 18px rgba(34, 197, 94, 0.11);
+  /* vert pâle */
   padding: 28px 22px;
   flex: 1 1 330px;
   min-width: 300px;
@@ -75,7 +82,7 @@ h1 {
 
 .card:hover {
   transform: translateY(-4px) scale(1.03);
-  box-shadow: 0 6px 30px rgba(34,197,94,0.14);
+  box-shadow: 0 6px 30px rgba(34, 197, 94, 0.14);
 }
 
 .card-title {
@@ -94,7 +101,8 @@ h1 {
 }
 
 /* Boutons */
-.reserver-btn, .annuler-btn {
+.reserver-btn,
+.annuler-btn {
   border: none;
   border-radius: 24px;
   padding: 11px 28px;
@@ -110,6 +118,7 @@ h1 {
   background: linear-gradient(90deg, #22c55e, #15803d);
   color: #fff;
 }
+
 .reserver-btn:hover {
   background: linear-gradient(90deg, #15803d, #22c55e);
 }
@@ -119,6 +128,7 @@ h1 {
   color: #166534;
   border: 1.5px solid #22c55e;
 }
+
 .annuler-btn:hover {
   background: linear-gradient(90deg, #22c55e, #bbf7d0);
   color: #fff;
@@ -152,7 +162,8 @@ h1 {
   margin-bottom: 24px;
 }
 
-.input-field, select {
+.input-field,
+select {
   border: 1.6px solid #86efac;
   border-radius: 18px;
   padding: 12px 18px;
@@ -162,7 +173,8 @@ h1 {
   transition: box-shadow 0.13s, border-color 0.13s;
 }
 
-.input-field:focus, select:focus {
+.input-field:focus,
+select:focus {
   box-shadow: 0 2px 12px #bbf7d050;
   border-color: #22c55e;
 }
@@ -179,17 +191,49 @@ h1 {
   transition: background 0.16s, transform 0.1s;
 }
 
-.btn-add { background: linear-gradient(90deg, #22c55e, #bbf7d0); color: #166534; }
-.btn-add:hover { background: linear-gradient(90deg, #bbf7d0, #22c55e); color: #fff; transform: scale(1.04); }
+.btn-add {
+  background: linear-gradient(90deg, #22c55e, #bbf7d0);
+  color: #166534;
+}
 
-.btn-creneau { background: linear-gradient(90deg, #86efac, #22c55e); color: #15803d; }
-.btn-creneau:hover { background: linear-gradient(90deg, #22c55e, #86efac); color: #fff; transform: scale(1.04); }
+.btn-add:hover {
+  background: linear-gradient(90deg, #bbf7d0, #22c55e);
+  color: #fff;
+  transform: scale(1.04);
+}
 
-.btn-view { background: linear-gradient(90deg, #bbf7d0, #22c55e); color: #166534; }
-.btn-view:hover { background: linear-gradient(90deg, #22c55e, #bbf7d0); color: #fff; transform: scale(1.04); }
+.btn-creneau {
+  background: linear-gradient(90deg, #86efac, #22c55e);
+  color: #15803d;
+}
 
-.btn-logout { background: #f0fdf4; color: #22c55e; border-radius: 30px; }
-.btn-logout:hover { background: #22c55e; color: #fff; }
+.btn-creneau:hover {
+  background: linear-gradient(90deg, #22c55e, #86efac);
+  color: #fff;
+  transform: scale(1.04);
+}
+
+.btn-view {
+  background: linear-gradient(90deg, #bbf7d0, #22c55e);
+  color: #166534;
+}
+
+.btn-view:hover {
+  background: linear-gradient(90deg, #22c55e, #bbf7d0);
+  color: #fff;
+  transform: scale(1.04);
+}
+
+.btn-logout {
+  background: #f0fdf4;
+  color: #22c55e;
+  border-radius: 30px;
+}
+
+.btn-logout:hover {
+  background: #22c55e;
+  color: #fff;
+}
 
 .list-card {
   background: #f0fdf4;
@@ -208,6 +252,11 @@ h1 {
 
 /* Responsive */
 @media (max-width: 900px) {
-  .dashboard-container { padding: 18px 6px; }
-  .form-group { flex-direction: column; }
+  .dashboard-container {
+    padding: 18px 6px;
+  }
+
+  .form-group {
+    flex-direction: column;
+  }
 }
