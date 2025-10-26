@@ -1,4 +1,4 @@
-/* ReservationAvenir.css - Style moderne avec nouvelle palette */
+/* ReservationAnnulees.css - Style moderne avec nouvelle palette */
 
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&family=Inter:wght@400;500;600&display=swap');
 
@@ -11,7 +11,7 @@
 }
 
 /* === CONTAINER === */
-.reservations-a-venir {
+.reservations-annulees {
   width: 100%;
 }
 
@@ -57,34 +57,25 @@
   gap: 16px;
 }
 
-/* === CARTE RÉSERVATION === */
-.reservation-card-avenir {
+/* === CARTE RÉSERVATION ANNULÉE === */
+.reservation-card-annulee {
   background: var(--color-white);
   border-radius: 16px;
   overflow: hidden;
   border: none;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   transition: all 0.3s;
-}
-
-.reservation-card-avenir:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-}
-
-/* Style pour les réservations passées */
-.reservation-card-avenir.reservation-past {
-  opacity: 0.75;
-}
-
-.reservation-card-avenir.reservation-past:hover {
   opacity: 0.85;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
-/* Header blanc neutre */
-.reservation-header-avenir {
+.reservation-card-annulee:hover {
+  opacity: 1;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Header neutre sans dégradé */
+.reservation-header-annulee {
   padding: 20px;
   background: var(--color-white);
   border-bottom: 1px solid #E5E7EB;
@@ -137,7 +128,7 @@
   flex-shrink: 0;
 }
 
-/* Badge de statut */
+/* Badge de statut annulé */
 .status-badge {
   display: inline-flex;
   align-items: center;
@@ -150,20 +141,20 @@
   border: 1px solid;
 }
 
-.status-badge-confirmed {
-  background: #DCFCE7;
-  color: var(--color-primary-green);
-  border-color: #86EFAC;
-}
-
-.status-badge-pending {
+.status-badge-cancelled-user {
   background: #FEF3C7;
   color: #92400E;
   border-color: #FDE047;
 }
 
+.status-badge-cancelled-club {
+  background: #FEE2E2;
+  color: #991B1B;
+  border-color: #FCA5A5;
+}
+
 /* Body */
-.reservation-body-avenir {
+.reservation-body-annulee {
   padding: 20px;
 }
 
@@ -235,40 +226,54 @@
 }
 
 .info-value.price {
-  color: var(--color-primary-green);
+  color: var(--color-gray);
+  text-decoration: line-through;
 }
 
-/* Actions */
-.reservation-actions-avenir {
-  padding-top: 16px;
-  border-top: 1px solid #F3F4F6;
+/* Motif d'annulation - fond blanc */
+.annulation-motif {
   display: flex;
-  justify-content: flex-end;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  background: var(--color-white);
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  margin-top: 16px;
 }
 
-.btn-cancel {
+.motif-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #F3F4F6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-gray);
+  flex-shrink: 0;
+}
+
+.motif-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.motif-label {
   font-family: 'Poppins', sans-serif;
   font-weight: 600;
+  font-size: 13px;
+  color: var(--color-black);
+}
+
+.motif-value {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
   font-size: 14px;
-  padding: 10px 24px;
-  background: var(--color-white);
-  color: #DC2626;
-  border: 2px solid #DC2626;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.btn-cancel:hover:not(:disabled) {
-  background: #DC2626;
-  color: var(--color-white);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
-}
-
-.btn-cancel:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+  color: var(--color-gray);
+  line-height: 1.5;
 }
 
 /* État vide */
@@ -320,7 +325,7 @@
     font-size: 13px;
   }
 
-  .reservation-header-avenir {
+  .reservation-header-annulee {
     flex-direction: column;
     padding: 16px;
   }
@@ -343,7 +348,7 @@
     font-size: 13px;
   }
 
-  .reservation-body-avenir {
+  .reservation-body-annulee {
     padding: 16px;
   }
 
@@ -360,8 +365,21 @@
     font-size: 14px;
   }
 
-  .btn-cancel {
-    width: 100%;
+  .annulation-motif {
+    padding: 12px;
+  }
+
+  .motif-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .motif-label {
+    font-size: 12px;
+  }
+
+  .motif-value {
+    font-size: 13px;
   }
 
   .empty-state-reservations {
@@ -391,7 +409,7 @@
     justify-content: center;
   }
 
-  .reservation-header-avenir {
+  .reservation-header-annulee {
     padding: 12px;
   }
 
@@ -405,7 +423,7 @@
     font-size: 15px;
   }
 
-  .reservation-body-avenir {
+  .reservation-body-annulee {
     padding: 12px;
   }
 
@@ -422,9 +440,22 @@
     font-size: 13px;
   }
 
-  .btn-cancel {
-    padding: 10px 20px;
-    font-size: 13px;
+  .annulation-motif {
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .motif-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .motif-label {
+    font-size: 11px;
+  }
+
+  .motif-value {
+    font-size: 12px;
   }
 
   .empty-state-reservations {

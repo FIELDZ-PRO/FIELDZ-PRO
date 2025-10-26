@@ -1,6 +1,5 @@
-/* JoueurDashboard - CSS avec nouvelle palette et typographies */
+/* JoueurDashboard - CSS avec formulaire de recherche amélioré */
 
-/* Import des variables globales */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&family=Inter:wght@400;500;600&display=swap');
 
 :root {
@@ -14,7 +13,7 @@
 /* === LAYOUT PRINCIPAL === */
 .jd-container {
   min-height: 100vh;
-  background-color: var(--color-white);
+  background-color: #F8FAFC;
   font-family: 'Inter', sans-serif;
 }
 
@@ -26,7 +25,7 @@
   justify-content: space-between;
   align-items: center;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  border-bottom: 1px solid var(--color-gray);
+  border-bottom: 1px solid #E5E7EB;
 }
 
 .header-left .logo {
@@ -93,7 +92,7 @@
   padding: 0;
   display: flex;
   gap: 0;
-  border-bottom: 1px solid var(--color-gray);
+  border-bottom: 1px solid #E5E7EB;
   max-width: 1200px;
   margin: 0 auto;
   padding-left: 24px;
@@ -122,9 +121,45 @@
   border-bottom-color: var(--color-secondary-green);
 }
 
+/* === NAVIGATION MODERNE === */
+.tab-navigation-modern {
+  display: flex;
+  gap: 0;
+  border-bottom: 3px solid #E5E7EB;
+  margin-bottom: 48px;
+  background: var(--color-white);
+  padding: 0;
+}
+
+.tab-button-modern {
+  padding: 24px 40px;
+  background: transparent;
+  border: none;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 17px;
+  color: #9CA3AF;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -3px;
+  white-space: nowrap;
+}
+
+.tab-button-modern:hover {
+  color: var(--color-primary-green);
+}
+
+.tab-button-modern.active {
+  color: var(--color-primary-green);
+  font-weight: 700;
+  border-bottom-color: var(--color-primary-green);
+}
+
 /* === CONTENU ONGLETS === */
 .tab-content {
-  padding: 24px;
+  padding: 32px 24px;
   max-width: 1200px;
   margin: 0 auto;
   width: 100%;
@@ -139,136 +174,263 @@
 .page-title {
   font-family: 'Poppins', sans-serif;
   font-weight: 800;
-  font-size: 24px;
+  font-size: 28px;
   color: var(--color-black);
   margin-bottom: 24px;
   text-align: left;
 }
 
-/* === MODULE DE RECHERCHE (NOUVEAU DESIGN) === */
-.search-module {
-  background: var(--color-white);
-  border-radius: 16px;
-  padding: 32px;
+.reservation-section {
   margin-bottom: 32px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
 }
 
-.search-form-modern {
+.section-subtitle {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--color-black);
+  margin-bottom: 16px;
+}
+
+/* === FORMULAIRE DE RECHERCHE AMÉLIORÉ === */
+.search-card-enhanced {
+  background: var(--color-white);
+  border-radius: 20px;
+  padding: 0;
+  margin-bottom: 48px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #E5E7EB;
+  overflow: hidden;
+}
+
+.search-card-body {
+  padding: 48px;
+}
+
+.search-form-enhanced {
   width: 100%;
 }
 
-.search-inputs-row {
+.search-inputs-grid {
   display: grid;
   grid-template-columns: 1fr 1fr auto;
   gap: 24px;
   align-items: end;
 }
 
-.search-input-group {
+.input-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
 }
 
-.search-label {
+.input-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-family: 'Poppins', sans-serif;
   font-weight: 600;
-  font-size: 14px;
+  font-size: 15px;
   color: var(--color-black);
-  margin-bottom: 4px;
 }
 
-.search-select {
+/* Labels rouges pour le nouveau design */
+.input-label-red {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  color: #DC2626;
+}
+
+.label-icon-red {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.label-text-red {
+  line-height: 1;
+  color: #DC2626;
+}
+
+.label-icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.label-text {
+  line-height: 1;
+}
+
+.select-container {
+  position: relative;
   width: 100%;
-  height: 48px;
-  padding: 0 16px;
-  border: 2px solid var(--color-gray);
-  border-radius: 12px;
-  background-color: var(--color-white);
+}
+
+.select-enhanced {
+  width: 100%;
+  height: 56px;
+  padding: 0 50px 0 20px;
+  border: 2px solid #E5E7EB;
+  border-radius: 14px;
+  background: var(--color-white);
   font-family: 'Inter', sans-serif;
-  font-size: 14px;
+  font-size: 15px;
+  font-weight: 500;
   color: var(--color-black);
   cursor: pointer;
   transition: all 0.2s;
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%2384928D' d='M1.41 0L6 4.58 10.59 0 12 1.41l-6 6-6-6z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 16px center;
-  padding-right: 48px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
 }
 
-.search-select:hover {
+.select-enhanced:hover {
   border-color: var(--color-secondary-green);
+  box-shadow: 0 2px 8px rgba(10, 123, 61, 0.1);
 }
 
-.search-select:focus {
+.select-enhanced:focus {
   outline: none;
-  border-color: var(--color-secondary-green);
-  box-shadow: 0 0 0 3px rgba(10, 123, 61, 0.1);
+  border-color: var(--color-primary-green);
+  box-shadow: 0 0 0 4px rgba(5, 97, 43, 0.1);
 }
 
-.search-button {
-  height: 48px;
-  padding: 0 32px;
+.select-arrow {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--color-gray);
+  transition: all 0.2s;
+}
+
+.select-enhanced:hover + .select-arrow,
+.select-enhanced:focus + .select-arrow {
+  color: var(--color-primary-green);
+}
+
+.search-btn-enhanced {
+  height: 56px;
+  padding: 0 36px;
+  background: linear-gradient(135deg, var(--color-primary-green) 0%, var(--color-secondary-green) 100%);
+  color: var(--color-white);
+  border: none;
+  border-radius: 14px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  white-space: nowrap;
+  box-shadow: 0 4px 16px rgba(5, 97, 43, 0.25);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Nouveau style bouton moderne - fond vert uniforme */
+.search-btn-modern {
+  height: 56px;
+  padding: 0 36px;
   background: var(--color-primary-green);
   color: var(--color-white);
   border: none;
-  border-radius: 12px;
+  border-radius: 14px;
   font-family: 'Poppins', sans-serif;
-  font-weight: 600;
-  font-size: 14px;
+  font-weight: 700;
+  font-size: 16px;
   cursor: pointer;
   transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
   white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(5, 97, 43, 0.2);
 }
 
-.search-button:hover:not(:disabled) {
+.search-btn-modern:hover:not(:disabled) {
   background: var(--color-secondary-green);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(5, 97, 43, 0.3);
 }
 
-.search-button:disabled {
-  opacity: 0.5;
+.search-btn-modern:disabled {
+  opacity: 0.6;
   cursor: not-allowed;
+  transform: none;
+}
+
+.search-btn-enhanced:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 24px rgba(5, 97, 43, 0.35);
+}
+
+.search-btn-enhanced:active:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.search-btn-enhanced:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-icon {
+  flex-shrink: 0;
+}
+
+.btn-text {
+  font-size: 16px;
+  font-weight: 700;
 }
 
 /* === MESSAGES D'ERREUR === */
 .error-message {
-  padding: 16px;
-  background: #fee;
-  border: 1px solid #fcc;
-  border-radius: 8px;
-  color: #c00;
+  padding: 16px 24px;
+  background: #FEE2E2;
+  border: 2px solid #FCA5A5;
+  border-radius: 12px;
+  color: #991B1B;
   font-family: 'Inter', sans-serif;
-  font-size: 14px;
+  font-size: 15px;
+  font-weight: 500;
   margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 /* === LISTE DES CLUBS === */
 .clubs-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  margin-top: 24px;
+  gap: 20px;
+  margin-top: 32px;
 }
 
 .club-card {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 24px;
   background: var(--color-white);
-  padding: 16px;
+  padding: 20px;
   border-radius: 16px;
-  border: 2px solid var(--color-gray);
-  transition: all 0.2s;
+  border: 2px solid #E5E7EB;
+  transition: all 0.3s;
 }
 
 .club-card:hover {
   border-color: var(--color-secondary-green);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  transform: translateY(-4px);
 }
 
 .club-image {
@@ -299,20 +461,20 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 .club-title {
   font-family: 'Poppins', sans-serif;
   font-weight: 800;
-  font-size: 20px;
+  font-size: 22px;
   color: var(--color-black);
   margin: 0;
 }
 
 .club-ville {
   font-family: 'Inter', sans-serif;
-  font-size: 14px;
+  font-size: 15px;
   color: var(--color-gray);
   margin: 0;
 }
@@ -332,17 +494,17 @@
   display: inline-block;
   background: var(--color-secondary-green);
   color: var(--color-white);
-  padding: 4px 12px;
+  padding: 6px 14px;
   border-radius: 8px;
   font-family: 'Poppins', sans-serif;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   margin-top: 4px;
 }
 
 .club-badges {
   display: flex;
-  gap: 6px;
+  gap: 8px;
   flex-wrap: wrap;
   margin-top: 4px;
 }
@@ -351,12 +513,12 @@
   flex-shrink: 0;
   background: var(--color-primary-green);
   color: var(--color-white);
-  padding: 12px 24px;
+  padding: 14px 28px;
   border: none;
   border-radius: 12px;
   font-family: 'Poppins', sans-serif;
   font-weight: 600;
-  font-size: 14px;
+  font-size: 15px;
   cursor: pointer;
   transition: all 0.2s;
   white-space: nowrap;
@@ -370,20 +532,21 @@
 
 /* === BOUTONS GÉNÉRIQUES === */
 .btn-danger {
-  background: #ef4444;
+  background: #EF4444;
   color: var(--color-white);
   border: none;
-  padding: 8px 16px;
-  border-radius: 8px;
+  padding: 10px 20px;
+  border-radius: 10px;
   font-family: 'Poppins', sans-serif;
   font-weight: 600;
   font-size: 14px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s;
 }
 
 .btn-danger:hover {
-  background: #dc2626;
+  background: #DC2626;
+  transform: translateY(-1px);
 }
 
 /* === GROUPES DE RÉSERVATIONS === */
@@ -393,7 +556,7 @@
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   overflow: hidden;
   margin-bottom: 16px;
-  border: 2px solid var(--color-gray);
+  border: 2px solid #E5E7EB;
 }
 
 .group-header {
@@ -411,7 +574,7 @@
 }
 
 .group-header:hover {
-  background: #f8fafc;
+  background: #F9FAFB;
 }
 
 .group-content {
@@ -419,26 +582,94 @@
 }
 
 /* === ÉTATS VIDES === */
+/* État vide générique */
 .empty-state {
   text-align: center;
-  color: var(--color-gray);
-  font-family: 'Inter', sans-serif;
-  font-style: italic;
-  padding: 40px 20px;
-  background: #f9fafb;
-  border-radius: 8px;
-  border: 2px dashed var(--color-gray);
+  padding: 60px 40px;
+  background: var(--color-white);
+  border-radius: 16px;
+  margin-top: 40px;
 }
 
-/* === LOADING === */
-.loading-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 50vh;
+.empty-state-icon {
+  font-size: 72px;
+  margin-bottom: 20px;
+}
+
+.empty-state-title {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 800;
+  font-size: 24px;
+  color: var(--color-black);
+  margin: 0 0 12px 0;
+}
+
+.empty-state-text {
   font-family: 'Inter', sans-serif;
-  font-size: 18px;
+  font-weight: 400;
+  font-size: 16px;
   color: var(--color-gray);
+  margin: 0;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
+}
+
+/* État vide avant recherche - style Terrains */
+.search-initial-state {
+  text-align: center;
+  padding: 64px 40px;
+}
+
+.search-initial-icon {
+  font-size: 96px;
+  margin-bottom: 16px;
+}
+
+.search-initial-title {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 28px;
+  color: #0E0E0E;
+  margin: 0 0 8px 0;
+}
+
+.search-initial-text {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 18px;
+  color: #6B7280;
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* État vide après recherche sans résultats - style Terrains */
+.no-results-state {
+  text-align: center;
+  padding: 64px 40px;
+}
+
+.no-results-icon {
+  font-size: 96px;
+  margin-bottom: 16px;
+}
+
+.no-results-title {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 28px;
+  color: #0E0E0E;
+  margin: 0 0 8px 0;
+}
+
+.no-results-text {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 18px;
+  color: #6B7280;
+  margin: 0;
+  line-height: 1.6;
 }
 
 /* === MODAL === */
@@ -457,7 +688,7 @@
   background: var(--color-white);
   width: 100%;
   max-width: 520px;
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 24px;
   box-shadow: 0 20px 40px rgba(0,0,0,0.15);
   position: relative;
@@ -465,14 +696,13 @@
 
 /* === RESPONSIVE === */
 
-/* Tablette (768px - 1024px) */
 @media (max-width: 1024px) {
-  .search-inputs-row {
+  .search-inputs-grid {
     grid-template-columns: 1fr 1fr;
-    gap: 16px;
+    gap: 20px;
   }
   
-  .search-button {
+  .search-btn-enhanced {
     grid-column: 1 / -1;
     width: 100%;
   }
@@ -485,20 +715,9 @@
     width: 100px;
     height: 100px;
   }
-
-  .club-title {
-    font-size: 18px;
-  }
-
-  .club-btn-voir {
-    padding: 10px 20px;
-    font-size: 13px;
-  }
 }
 
-/* Mobile (< 768px) */
 @media (max-width: 768px) {
-  /* Header */
   .dashboard-header {
     flex-direction: column;
     gap: 12px;
@@ -514,26 +733,6 @@
     justify-content: space-between;
   }
 
-  .user-avatar {
-    width: 36px;
-    height: 36px;
-    font-size: 14px;
-  }
-
-  .user-name {
-    font-size: 13px;
-  }
-
-  .user-role {
-    font-size: 11px;
-  }
-
-  .btn-danger {
-    padding: 6px 12px;
-    font-size: 13px;
-  }
-
-  /* Navigation onglets */
   .tab-navigation {
     padding-left: 16px;
     overflow-x: auto;
@@ -546,35 +745,41 @@
     font-size: 13px;
   }
 
-  /* Contenu */
   .tab-content {
-    padding: 16px;
+    padding: 24px 16px;
   }
 
   .page-title {
-    font-size: 20px;
-    margin-bottom: 16px;
+    font-size: 28px;
   }
 
-  /* Module de recherche */
-  .search-module {
-    padding: 20px;
+  .page-subtitle {
+    font-size: 16px;
+    margin-bottom: 24px;
   }
 
-  .search-inputs-row {
+  .search-card-body {
+    padding: 28px 20px;
+  }
+
+  .search-inputs-grid {
     grid-template-columns: 1fr;
-    gap: 16px;
+    gap: 20px;
   }
 
-  .search-button {
+  .select-enhanced,
+  .search-btn-enhanced {
+    height: 52px;
+  }
+
+  .search-btn-enhanced {
     width: 100%;
   }
 
-  /* Liste des clubs */
   .club-card {
     flex-direction: column;
     align-items: stretch;
-    padding: 12px;
+    padding: 16px;
   }
   
   .club-image {
@@ -582,89 +787,52 @@
     height: 180px;
   }
 
-  .club-title {
-    font-size: 18px;
-  }
-
-  .club-ville,
-  .club-adresse {
-    font-size: 13px;
-  }
-
-  .club-badge {
-    font-size: 11px;
-    padding: 3px 8px;
-  }
-  
   .club-btn-voir {
     width: 100%;
-    padding: 12px;
-    font-size: 14px;
-  }
-
-  /* Groupes de réservations */
-  .reservation-group {
-    margin-bottom: 12px;
-  }
-
-  .group-header {
-    padding: 12px 16px;
-    font-size: 15px;
-  }
-
-  .group-content {
-    padding: 12px;
-  }
-
-  /* Empty state */
-  .empty-state {
-    padding: 32px 16px;
-    font-size: 14px;
   }
 }
 
-/* Très petit mobile (< 480px) */
 @media (max-width: 480px) {
-  .dashboard-header {
-    padding: 10px 12px;
-  }
-
-  .header-left .logo {
-    font-size: 18px;
-  }
-
-  .user-info {
-    gap: 8px;
-  }
-
-  .user-avatar {
-    width: 32px;
-    height: 32px;
-    font-size: 12px;
-  }
-
   .page-title {
+    font-size: 24px;
+  }
+
+  .page-subtitle {
+    font-size: 14px;
+  }
+
+  .search-card-body {
+    padding: 20px 16px;
+  }
+
+  .input-label {
+    font-size: 14px;
+  }
+
+  .label-icon {
     font-size: 18px;
   }
 
-  .search-module {
-    padding: 16px;
+  .select-enhanced {
+    height: 48px;
+    font-size: 14px;
   }
 
-  .club-card {
-    padding: 10px;
+  .search-btn-enhanced {
+    height: 48px;
+    padding: 0 24px;
   }
 
-  .club-image {
-    height: 160px;
+  .btn-text {
+    font-size: 14px;
   }
 
   .club-title {
-    font-size: 16px;
+    font-size: 18px;
   }
 
-  .club-ville,
-  .club-adresse {
-    font-size: 12px;
+  .empty-state {
+    padding: 40px 20px;
+    font-size: 14px;
   }
 }

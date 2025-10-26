@@ -7,11 +7,12 @@ import "./style/ReservationAvenir.css";
 type Props = {
   reservations: Reservation[];
   onUpdate?: () => void;
+  isPast?: boolean; // Nouvelle prop pour identifier les réservations passées
 };
 
 type FilterStatus = "all" | "CONFIRMEE" | "RESERVE";
 
-const ReservationAVenir: React.FC<Props> = ({ reservations, onUpdate }) => {
+const ReservationAVenir: React.FC<Props> = ({ reservations, onUpdate, isPast = false }) => {
   const [filterStatus, setFilterStatus] = useState<FilterStatus>("all");
   const [loadingCancel, setLoadingCancel] = useState<number | null>(null);
 
@@ -60,12 +61,12 @@ const ReservationAVenir: React.FC<Props> = ({ reservations, onUpdate }) => {
   const getStatusBadge = (statut: string) => {
     const config = {
       CONFIRMEE: {
-        label: "Confirmé",
+        label: "Passée",
         icon: CheckCircle,
         className: "status-badge-confirmed",
       },
       RESERVE: {
-        label: "En attente",
+        label: "À venir",
         icon: Loader,
         className: "status-badge-pending",
       },
@@ -100,14 +101,14 @@ const ReservationAVenir: React.FC<Props> = ({ reservations, onUpdate }) => {
           onClick={() => setFilterStatus("CONFIRMEE")}
         >
           <CheckCircle size={16} />
-          Confirmées ({confirmedCount})
+          Passées ({confirmedCount})
         </button>
         <button
           className={`filter-btn ${filterStatus === "RESERVE" ? "active" : ""}`}
           onClick={() => setFilterStatus("RESERVE")}
         >
           <Loader size={16} />
-          En attente ({pendingCount})
+          À venir ({pendingCount})
         </button>
       </div>
 
@@ -120,8 +121,8 @@ const ReservationAVenir: React.FC<Props> = ({ reservations, onUpdate }) => {
             {filterStatus === "all"
               ? "Recherchez un terrain pour réserver"
               : filterStatus === "CONFIRMEE"
-              ? "Aucune réservation confirmée"
-              : "Aucune réservation en attente"}
+              ? "Aucune réservation passée"
+              : "Aucune réservation à venir"}
           </p>
         </div>
       ) : (
@@ -131,18 +132,22 @@ const ReservationAVenir: React.FC<Props> = ({ reservations, onUpdate }) => {
             const terrain = creneau?.terrain;
             const dateDebut = creneau?.dateDebut || "";
             const dateFin = creneau?.dateFin || "";
+            const isPassee = reservation.statut === "CONFIRMEE"; // Passée = CONFIRMEE
 
             return (
-              <div key={reservation.id} className="reservation-card-avenir">
+              <div key={reservation.id} className={`reservation-card-avenir ${isPassee ? 'reservation-past' : ''}`}>
                 {/* Header avec dégradé vert */}
                 <div className="reservation-header-avenir">
                   <div className="reservation-header-left">
-                    <h4 className="reservation-terrain-name">
-                      {terrain?.nomTerrain || terrain?.nomTerrain || "Terrain"}
-                    </h4>
-                    <div className="reservation-location">
-                      <MapPin size={16} />
-                      <span>Terrain sportif</span>
+                    <div className="terrain-icon">🏟️</div>
+                    <div>
+                      <h4 className="reservation-terrain-name">
+                        {terrain?.nomTerrain || "Terrain"}
+                      </h4>
+                      <div className="reservation-location">
+                        <MapPin size={16} />
+                        <span>Terrain sportif</span>
+                      </div>
                     </div>
                   </div>
                   <div className="reservation-header-right">
@@ -185,23 +190,26 @@ const ReservationAVenir: React.FC<Props> = ({ reservations, onUpdate }) => {
                       <div className="info-text">
                         <div className="info-label">Prix total</div>
                         <div className="info-value price">
+                          {creneau?.prix || 0} DZD
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  {/* Bouton annuler */}
-                  <div className="reservation-actions-avenir">
-                    <button
-                      onClick={() => handleCancel(reservation.id)}
-                      disabled={loadingCancel === reservation.id}
-                      className="btn-cancel"
-                    >
-                      {loadingCancel === reservation.id
-                        ? "Annulation..."
-                        : "Annuler la réservation"}
-                    </button>
-                  </div>
+                  {/* Bouton annuler - seulement pour réservations "À venir" (statut RESERVE) */}
+                  {!isPassee && (
+                    <div className="reservation-actions-avenir">
+                      <button
+                        onClick={() => handleCancel(reservation.id)}
+                        disabled={loadingCancel === reservation.id}
+                        className="btn-cancel"
+                      >
+                        {loadingCancel === reservation.id
+                          ? "Annulation..."
+                          : "Annuler la réservation"}
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             );

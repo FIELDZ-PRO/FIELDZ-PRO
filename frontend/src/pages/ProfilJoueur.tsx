@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './style/ProfilJoueur.css';
@@ -10,6 +10,7 @@ interface PlayerData {
   prenom: string;
   email: string;
   telephone: string | null;
+  description?: string | null;
   photoProfilUrl: string | null;
 }
 
@@ -18,8 +19,6 @@ const ProfilJoueur = () => {
   const { token, isAuthenticated, logout } = useAuth();
 
   const [playerData, setPlayerData] = useState<PlayerData | null>(null);
-  const [initialData, setInitialData] = useState<PlayerData | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [message, setMessage] = useState<{ text: string, type: 'success' | 'error' } | null>(null);
 
@@ -41,7 +40,6 @@ const ProfilJoueur = () => {
         }
         const data = await response.json();
         setPlayerData(data);
-        setInitialData(data);
       } catch (error: any) {
         setMessage({ text: error.message, type: 'error' });
       } finally {
@@ -51,95 +49,124 @@ const ProfilJoueur = () => {
     fetchPlayerData();
   }, [isAuthenticated, token, navigate, logout]);
 
-  // Met à jour l'état à chaque frappe dans un champ
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setPlayerData(prev => prev ? { ...prev, [e.target.name]: e.target.value } : null);
-  };
+  if (isLoading) {
+    return (
+      <div className="profil-page-background">
+        <div className="loading">Chargement du profil...</div>
+      </div>
+    );
+  }
 
-  // Annule les modifications
-  const handleCancel = () => {
-    setPlayerData(initialData);
-    setIsEditing(false);
-    setMessage(null);
-  };
-
-  // --- FONCTION DE SAUVEGARDE ---
-  const handleSave = async (e: FormEvent) => {
-    e.preventDefault(); // Empêche la page de se recharger
-    if (!playerData) return;
-    setMessage(null);
-
-    try {
-      // Envoie les données modifiées au backend
-      const response = await fetch('http://localhost:8080/api/utilisateur/update', {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(playerData), // On envoie l'objet complet
-      });
-
-      if (!response.ok) {
-        // Si le backend renvoie une erreur, on l'affiche
-        const errorText = await response.text();
-        throw new Error(errorText || 'La mise à jour a échoué.');
-      }
-      
-      const successMessage = await response.text();
-      setMessage({ text: successMessage, type: 'success' });
-      setIsEditing(false);
-      setInitialData(playerData); // Les nouvelles données deviennent la base pour la prochaine modif
-    } catch (error: any) {
-      setMessage({ text: error.message, type: 'error' });
-    }
-  };
-
-  if (isLoading) return <div className="loading">Chargement...</div>;
-  if (!playerData) return <div className="error">{message?.text || "Erreur."}</div>;
+  if (!playerData) {
+    return (
+      <div className="profil-page-background">
+        <div className="error">{message?.text || "Erreur lors du chargement du profil."}</div>
+      </div>
+    );
+  }
 
   return (
     <div className="profil-page-background">
-      <div className="profil-card">
+      <div className="profil-container">
         <button className="back-button" onClick={() => navigate('/joueur')}>
           ← Retour au dashboard
         </button>
 
-        {/* Le formulaire appelle handleSave lors de la soumission */}
-        <form onSubmit={handleSave}>
-          <div className="profil-header">
-            <img src={playerData.photoProfilUrl || 'https://via.placeholder.com/150'} alt="Profil" className="profil-photo"/>
-            <h2>{initialData?.prenom} {initialData?.nom}</h2>
-            <p className="email-display">{playerData.email}</p>
+        <div className="profil-page-header">
+          <h1 className="profil-page-title">Mon Profil</h1>
+          <p className="profil-page-subtitle">Tes informations personnelles</p>
+        </div>
+
+        {message && (
+          <div className={`message ${message.type}`}>
+            {message.text}
           </div>
-          <div className="profil-fields">
-            <div className="field-group">
-              <label htmlFor="prenom">Prénom</label>
-              <input type="text" name="prenom" value={playerData.prenom || ''} onChange={handleChange} disabled={!isEditing} />
-            </div>
-            <div className="field-group">
-              <label htmlFor="nom">Nom</label>
-              <input type="text" name="nom" value={playerData.nom || ''} onChange={handleChange} disabled={!isEditing} />
-            </div>
-            <div className="field-group">
-              <label htmlFor="telephone">Téléphone</label>
-              <input type="tel" name="telephone" value={playerData.telephone || ''} onChange={handleChange} disabled={!isEditing} />
+        )}
+
+        <div className="profil-card">
+          {/* Header avec photo et infos */}
+          <div className="profil-header">
+            {playerData.photoProfilUrl ? (
+              <img 
+                src={playerData.photoProfilUrl} 
+                alt="Profil" 
+                className="profil-photo"
+              />
+            ) : (
+              <div className="profil-photo-wrapper">
+                <span className="profil-user-icon">
+                  {playerData.prenom?.charAt(0)?.toUpperCase() || 'U'}
+                </span>
+              </div>
+            )}
+            
+            <div className="profil-header-info">
+              <h2>{playerData.prenom} {playerData.nom}</h2>
+              <p className="email-display">{playerData.email}</p>
             </div>
           </div>
 
-          <div className="profil-actions">
-            {isEditing ? (
-              <>
-                <button type="submit" className="action-button save">💾 Enregistrer</button>
-                <button type="button" className="action-button cancel" onClick={handleCancel}>❌ Annuler</button>
-              </>
-            ) : (
-              <button type="button" className="action-button edit" onClick={() => setIsEditing(true)}>✏️ Modifier</button>
-            )}
+          {/* Informations en lecture seule */}
+          <div className="profil-form">
+            <div className="profil-fields">
+              <div className="field-group">
+                <label htmlFor="prenom">
+                  <span className="field-icon">👤</span>
+                  Prénom
+                </label>
+                <input 
+                  type="text" 
+                  id="prenom"
+                  value={playerData.prenom || ''} 
+                  disabled
+                  className="readonly-field"
+                />
+              </div>
+
+              <div className="field-group">
+                <label htmlFor="nom">
+                  <span className="field-icon">👤</span>
+                  Nom
+                </label>
+                <input 
+                  type="text" 
+                  id="nom"
+                  value={playerData.nom || ''} 
+                  disabled
+                  className="readonly-field"
+                />
+              </div>
+
+              <div className="field-group">
+                <label htmlFor="email">
+                  <span className="field-icon">✉️</span>
+                  Email
+                </label>
+                <input 
+                  type="email" 
+                  id="email"
+                  value={playerData.email || ''} 
+                  disabled
+                  className="readonly-field"
+                />
+              </div>
+
+              <div className="field-group">
+                <label htmlFor="telephone">
+                  <span className="field-icon">📞</span>
+                  Téléphone
+                </label>
+                <input 
+                  type="tel" 
+                  id="telephone"
+                  value={playerData.telephone || 'Non renseigné'} 
+                  disabled
+                  className="readonly-field"
+                />
+              </div>
+            </div>
           </div>
-          
-          {message && <p className={`message ${message.type}`}>{message.text}</p>}
-        </form>
+        </div>
       </div>
     </div>
   );

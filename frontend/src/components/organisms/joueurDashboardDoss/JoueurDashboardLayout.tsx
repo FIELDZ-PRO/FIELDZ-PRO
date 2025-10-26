@@ -3,11 +3,12 @@ import { useNavigate } from "react-router-dom";
 import "./style/JoueurDashboardLayout.css";
 import { Creneau, Reservation, Joueur } from "../../../types";
 import ReservationModal from "./ReservationModal";
-import ReservationGroupByStatut from "./ReservationGroupByStatut";
+import ReservationAVenir from "./ReservationAvenir";
+import ReservationAnnulees from "./ReservationAnnulee";
 import { ClubService, ClubDto } from "../../../services/ClubService";
 
-const SPORTS = ["PADEL", "FOOT5", "TENNIS", "BASKET", "VOLLEY"];
-const VILLES = ["Alger", "Oran", "Constantine", "Annaba", "Blida", "Béjaïa"];
+const SPORTS = ["Tous les sports", "PADEL", "FOOT5", "TENNIS", "BASKET", "VOLLEY"];
+const VILLES = ["Alger", "Oran", "Tizi Ouzou", "Annaba", "Blida", "Béjaïa"];
 
 type Props = {
   joueur: Joueur | null;
@@ -31,11 +32,12 @@ const JoueurDashboardLayout: React.FC<Props> = ({
   const [activeTab, setActiveTab] = useState<'recherche' | 'reservations' | 'annulees'>('recherche');
 
   // --- Recherche clubs ---
-  const [sport, setSport] = useState<string>(SPORTS[0] || "");
+  const [sport, setSport] = useState<string>("Tous les sports");
   const [ville, setVille] = useState<string>(VILLES[0] || "");
   const [loadingSearch, setLoadingSearch] = useState<boolean>(false);
   const [errSearch, setErrSearch] = useState<string>("");
   const [clubs, setClubs] = useState<ClubDto[]>([]);
+  const [hasSearched, setHasSearched] = useState<boolean>(false);
 
   const canSearch = useMemo(() => !!(sport || ville), [sport, ville]);
 
@@ -45,13 +47,20 @@ const JoueurDashboardLayout: React.FC<Props> = ({
     try {
       setLoadingSearch(true);
       setErrSearch("");
+      setHasSearched(true);
       let data: ClubDto[] = [];
 
-      if (sport && ville) {
+      // Si "Tous les sports" est sélectionné, chercher seulement par ville
+      if (sport === "Tous les sports" && ville) {
+        data = await ClubService.searchByVille(ville);
+      } else if (sport && sport !== "Tous les sports" && ville) {
+        // Recherche par sport ET ville spécifique
         data = await ClubService.searchByVilleAndSport(ville, sport);
       } else if (ville) {
+        // Recherche par ville uniquement
         data = await ClubService.searchByVille(ville);
-      } else if (sport) {
+      } else if (sport && sport !== "Tous les sports") {
+        // Recherche par sport uniquement
         data = await ClubService.searchBySport(sport);
       }
 
@@ -68,66 +77,130 @@ const JoueurDashboardLayout: React.FC<Props> = ({
   const reservationsActives = reservations.filter(
     (r) => r.statut === "RESERVE" || r.statut === "CONFIRMEE"
   );
+  
   const reservationsAnnulees = reservations.filter(
     (r) => r.statut === "ANNULE_PAR_JOUEUR" || r.statut === "ANNULE_PAR_CLUB"
   );
+
+  // Séparer les réservations actives en "à venir" et "passées"
+  const reservationsAVenir = reservationsActives.filter((r) => {
+    const dateDebut = r.creneau?.dateDebut;
+    if (!dateDebut) return false;
+    return new Date(dateDebut) >= new Date();
+  });
+
+  const reservationsPassees = reservationsActives.filter((r) => {
+    const dateDebut = r.creneau?.dateDebut;
+    if (!dateDebut) return true;
+    return new Date(dateDebut) < new Date();
+  });
+
+  const getSportEmoji = (sport: string) => {
+    const emojis: Record<string, string> = {
+      PADEL: "🎾",
+      FOOT5: "⚽",
+      TENNIS: "🎾",
+      BASKET: "🏀",
+      VOLLEY: "🏐"
+    };
+    return emojis[sport] || "⚽";
+  };
 
   const renderTabContent = () => {
     switch (activeTab) {
       case 'recherche':
         return (
           <div className="tab-content-section">
-            <h2 className="page-title">Rechercher un terrain</h2>
+            {/* Formulaire de recherche repensé */}
+            <div className="search-card-enhanced">
+              <div className="search-card-body">
+                <form onSubmit={handleSearchClubs} className="search-form-enhanced">
+                  <div className="search-inputs-grid">
+                    <div className="input-wrapper">
+                      <label className="input-label-red">
+                        <span className="label-icon-red">🎯</span>
+                        <span className="label-text-red">Sport</span>
+                      </label>
+                      <div className="select-container">
+                        <select
+                          className="select-enhanced"
+                          value={sport}
+                          onChange={(e) => setSport(e.target.value)}
+                        >
+                          {SPORTS.map((s) => (
+                            <option key={s} value={s}>
+                              {getSportEmoji(s)} {s.replace("_", " ")}
+                            </option>
+                          ))}
+                        </select>
+                        <div className="select-arrow">
+                          <svg width="12" height="8" viewBox="0 0 12 8" fill="none">
+                            <path d="M1 1L6 6L11 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
 
-            {/* Module de recherche avec le nouveau design */}
-            <div className="search-module">
-              <form onSubmit={handleSearchClubs} className="search-form-modern">
-                <div className="search-inputs-row">
-                  <div className="search-input-group">
-                    <label className="search-label">Sport</label>
-                    <select
-                      className="search-select"
-                      value={sport}
-                      onChange={(e) => setSport(e.target.value)}
+                    <div className="input-wrapper">
+                      <label className="input-label-red">
+                        <span className="label-icon-red">📍</span>
+                        <span className="label-text-red">Ville</span>
+                      </label>
+                      <div className="select-container">
+                        <select
+                          className="select-enhanced"
+                          value={ville}
+                          onChange={(e) => setVille(e.target.value)}
+                        >
+                          {VILLES.map((v) => (
+                            <option key={v} value={v}>
+                              {v}
+                            </option>
+                          ))}
+                        </select>
+                        <div className="select-arrow">
+                          <svg width="12" height="8" viewBox="0 0 12 8" fill="none">
+                            <path d="M1 1L6 6L11 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+
+                    <button 
+                      className="search-btn-modern" 
+                      type="submit" 
+                      disabled={!canSearch || loadingSearch}
                     >
-                      {SPORTS.map((s) => (
-                        <option key={s} value={s}>
-                          {s.replace("_", " ")}
-                        </option>
-                      ))}
-                    </select>
+                      <svg className="btn-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M19 19L13 13M15 8C15 11.866 11.866 15 8 15C4.13401 15 1 11.866 1 8C1 4.13401 4.13401 1 8 1C11.866 1 15 4.13401 15 8Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                      </svg>
+                      <span className="btn-text">
+                        {loadingSearch ? "Recherche..." : "Rechercher"}
+                      </span>
+                    </button>
                   </div>
-
-                  <div className="search-input-group">
-                    <label className="search-label">Ville</label>
-                    <select
-                      className="search-select"
-                      value={ville}
-                      onChange={(e) => setVille(e.target.value)}
-                    >
-                      {VILLES.map((v) => (
-                        <option key={v} value={v}>
-                          {v}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <button 
-                    className="search-button" 
-                    type="submit" 
-                    disabled={!canSearch || loadingSearch}
-                  >
-                    {loadingSearch ? "Recherche..." : "Rechercher"}
-                  </button>
-                </div>
-              </form>
+                </form>
+              </div>
             </div>
 
             {/* Messages / Résultats */}
             {errSearch && (
               <div className="error-message">
-                Erreur : {errSearch}
+                ⚠️ Erreur : {errSearch}
+              </div>
+            )}
+
+            {/* État initial avant recherche */}
+            {!hasSearched && !loadingSearch && clubs.length === 0 && (
+              <div className="search-empty-state">
+                <div className="search-empty-icon">
+                  <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
+                    <circle cx="50" cy="50" r="30" stroke="#05612B" strokeWidth="6" fill="none"/>
+                    <line x1="72" y1="72" x2="95" y2="95" stroke="#05612B" strokeWidth="6" strokeLinecap="round"/>
+                  </svg>
+                </div>
+                <h3 className="search-empty-title">Recherche de terrains</h3>
+                <p className="search-empty-text">Sélectionne un sport et une ville pour trouver les meilleurs terrains disponibles</p>
               </div>
             )}
 
@@ -151,12 +224,12 @@ const JoueurDashboardLayout: React.FC<Props> = ({
                     <p className="club-adresse"><strong>Adresse :</strong> {club.adresse || "—"}</p>
                     
                     {club.sport && (
-                      <span className="club-badge">{club.sport}</span>
+                      <span className="club-badge">{getSportEmoji(club.sport)} {club.sport}</span>
                     )}
                     {!club.sport && club.sports && club.sports.length > 0 && (
                       <div className="club-badges">
                         {club.sports.map((s, idx) => (
-                          <span key={idx} className="club-badge">{s}</span>
+                          <span key={idx} className="club-badge">{getSportEmoji(s)} {s}</span>
                         ))}
                       </div>
                     )}
@@ -173,9 +246,16 @@ const JoueurDashboardLayout: React.FC<Props> = ({
               ))}
             </div>
 
-            {!loadingSearch && !errSearch && clubs.length === 0 && (
+            {!loadingSearch && !errSearch && clubs.length === 0 && hasSearched && (
               <div className="empty-state">
-                Aucun club trouvé pour {sport.replace("_", " ")} à {ville}.
+                <div className="empty-state-icon">🏟️</div>
+                <h3 className="empty-state-title">Aucun club trouvé</h3>
+                <p className="empty-state-text">
+                  Aucun club ne correspond à ta recherche 
+                  {sport !== "Tous les sports" && ` pour ${sport.replace("_", " ")}`}
+                  {` à ${ville}`}. 
+                  Essaie avec d'autres filtres !
+                </p>
               </div>
             )}
           </div>
@@ -186,15 +266,8 @@ const JoueurDashboardLayout: React.FC<Props> = ({
           <div className="tab-content-section">
             <h2 className="page-title">Mes réservations ({reservationsActives.length})</h2>
             
-            <ReservationGroupByStatut
-              titre="Réservations confirmées"
-              reservations={reservationsActives.filter(r => r.statut === "CONFIRMEE")}
-              onUpdate={onRefresh}
-            />
-            
-            <ReservationGroupByStatut
-              titre="Réservations en attente"
-              reservations={reservationsActives.filter(r => r.statut === "RESERVE")}
+            <ReservationAVenir 
+              reservations={reservationsActives}
               onUpdate={onRefresh}
             />
 
@@ -211,16 +284,8 @@ const JoueurDashboardLayout: React.FC<Props> = ({
           <div className="tab-content-section">
             <h2 className="page-title">Réservations annulées</h2>
             
-            <ReservationGroupByStatut
-              titre="Annulées par vous"
-              reservations={reservationsAnnulees.filter(r => r.statut === "ANNULE_PAR_JOUEUR")}
-              onUpdate={onRefresh}
-            />
-            
-            <ReservationGroupByStatut
-              titre="Annulées par le club"
-              reservations={reservationsAnnulees.filter(r => r.statut === "ANNULE_PAR_CLUB")}
-              onUpdate={onRefresh}
+            <ReservationAnnulees 
+              reservations={reservationsAnnulees}
             />
 
             {reservationsAnnulees.length === 0 && (
@@ -262,23 +327,23 @@ const JoueurDashboardLayout: React.FC<Props> = ({
         </div>
       </div>
 
-      <div className="tab-navigation">
+      <div className="tab-navigation-modern">
         <button
-          className={`tab-button ${activeTab === 'recherche' ? 'active' : ''}`}
+          className={`tab-button-modern ${activeTab === 'recherche' ? 'active' : ''}`}
           onClick={() => setActiveTab('recherche')}
         >
           Rechercher un terrain
         </button>
 
         <button
-          className={`tab-button ${activeTab === 'reservations' ? 'active' : ''}`}
+          className={`tab-button-modern ${activeTab === 'reservations' ? 'active' : ''}`}
           onClick={() => setActiveTab('reservations')}
         >
           Mes réservations ({reservationsActives.length})
         </button>
 
         <button
-          className={`tab-button ${activeTab === 'annulees' ? 'active' : ''}`}
+          className={`tab-button-modern ${activeTab === 'annulees' ? 'active' : ''}`}
           onClick={() => setActiveTab('annulees')}
         >
           Réservations annulées

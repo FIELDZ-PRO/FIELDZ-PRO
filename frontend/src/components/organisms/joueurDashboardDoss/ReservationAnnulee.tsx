@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { Calendar, Clock, MapPin, XCircle, AlertCircle } from "lucide-react";
 import { Reservation } from "../../../types";
-import "./style/ReservationAvenir.css";
+import "./style/ReservationAnnulee.css";
 
 type Props = {
   reservations: Reservation[];
@@ -40,7 +40,7 @@ const ReservationAnnulees: React.FC<Props> = ({ reservations }) => {
       ANNULE_PAR_JOUEUR: {
         label: "Annulé par vous",
         icon: XCircle,
-        className: "status-badge-cancelled",
+        className: "status-badge-cancelled-user",
       },
       ANNULE_PAR_CLUB: {
         label: "Annulé par le club",
@@ -68,7 +68,7 @@ const ReservationAnnulees: React.FC<Props> = ({ reservations }) => {
   ).length;
 
   return (
-    <div className="reservations-a-venir">
+    <div className="reservations-annulees">
       {/* Filtres par statut */}
       <div className="status-filters">
         <button
@@ -115,16 +115,19 @@ const ReservationAnnulees: React.FC<Props> = ({ reservations }) => {
             const dateFin = creneau?.dateFin || "";
 
             return (
-              <div key={reservation.id} className="reservation-card-avenir reservation-card-cancelled">
+              <div key={reservation.id} className="reservation-card-annulee">
                 {/* Header avec fond rouge/orange */}
-                <div className="reservation-header-avenir reservation-header-cancelled">
+                <div className="reservation-header-annulee">
                   <div className="reservation-header-left">
-                    <h4 className="reservation-terrain-name">
-                      {terrain?.nomTerrain || terrain?.nomTerrain || "Terrain"}
-                    </h4>
-                    <div className="reservation-location">
-                      <MapPin size={16} />
-                      <span>Terrain sportif</span>
+                    <div className="terrain-icon">🏟️</div>
+                    <div>
+                      <h4 className="reservation-terrain-name">
+                        {terrain?.nomTerrain || "Terrain"}
+                      </h4>
+                      <div className="reservation-location">
+                        <MapPin size={16} />
+                        <span>Terrain sportif</span>
+                      </div>
                     </div>
                   </div>
                   <div className="reservation-header-right">
@@ -133,7 +136,7 @@ const ReservationAnnulees: React.FC<Props> = ({ reservations }) => {
                 </div>
 
                 {/* Body avec 3 colonnes */}
-                <div className="reservation-body-avenir">
+                <div className="reservation-body-annulee">
                   <div className="reservation-info-row">
                     {/* Date */}
                     <div className="info-item">
@@ -166,7 +169,9 @@ const ReservationAnnulees: React.FC<Props> = ({ reservations }) => {
                       </div>
                       <div className="info-text">
                         <div className="info-label">Prix total</div>
-                        <div className="info-value price">                        </div>
+                        <div className="info-value price">
+                          {creneau?.prix || 0} DZD
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -174,8 +179,13 @@ const ReservationAnnulees: React.FC<Props> = ({ reservations }) => {
                   {/* Motif d'annulation si disponible */}
                   {reservation.motifAnnulation && (
                     <div className="annulation-motif">
-                      <AlertCircle size={16} />
-                      <span>{reservation.motifAnnulation}</span>
+                      <div className="motif-icon">
+                        <AlertCircle size={18} />
+                      </div>
+                      <div className="motif-text">
+                        <div className="motif-label">Raison de l'annulation</div>
+                        <div className="motif-value">{reservation.motifAnnulation}</div>
+                      </div>
                     </div>
                   )}
                 </div>

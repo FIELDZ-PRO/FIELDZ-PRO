@@ -5,8 +5,6 @@ import ReservationModal from "../components/organisms/joueurDashboardDoss/Reserv
 import { Creneau } from "../types";
 import "./style/ClubDetailsJoueur.css";
 
-
-
 const ClubDetailsJoueur: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -20,8 +18,9 @@ const ClubDetailsJoueur: React.FC = () => {
     return today.toISOString().split('T')[0];
   });
   
+  const [selectedSport, setSelectedSport] = useState<string>("");
   const [creneaux, setCreneaux] = useState<Creneau[]>([]);
-  const [selectedCreneau, setSelectedCreneau] = useState<Creneau | null>(null); // ← AJOUTE
+  const [selectedCreneau, setSelectedCreneau] = useState<Creneau | null>(null);
 
   // Charger les infos du club
   useEffect(() => {
@@ -31,6 +30,13 @@ const ClubDetailsJoueur: React.FC = () => {
         setLoading(true);
         const data = await ClubService.getClubById(parseInt(id));
         setClub(data);
+        
+        // Initialiser le sport sélectionné avec le premier sport disponible
+        if (data.sports && data.sports.length > 0) {
+          setSelectedSport(data.sports[0]);
+        } else if (data.sport) {
+          setSelectedSport(data.sport);
+        }
       } catch (err: any) {
         console.error("Erreur chargement club:", err);
         setError(err.message || "Erreur lors du chargement");
@@ -41,12 +47,12 @@ const ClubDetailsJoueur: React.FC = () => {
     fetchClub();
   }, [id]);
 
-  // Charger les créneaux pour la date sélectionnée
+  // Charger les créneaux pour la date et le sport sélectionnés
   useEffect(() => {
     const fetchCreneaux = async () => {
-      if (!id || !selectedDate) return;
+      if (!id || !selectedDate || !selectedSport) return;
       try {
-        const url = `http://localhost:8080/api/creneaux/club/${id}?date=${selectedDate}`;
+        const url = `http://localhost:8080/api/creneaux/club/${id}?date=${selectedDate}&sport=${encodeURIComponent(selectedSport)}`;
         const res = await fetch(url);
         
         if (!res.ok) {
@@ -61,7 +67,7 @@ const ClubDetailsJoueur: React.FC = () => {
       }
     };
     fetchCreneaux();
-  }, [id, selectedDate]);
+  }, [id, selectedDate, selectedSport]);
 
   const formatDate = (isoDate: string) => {
     const date = new Date(isoDate);
@@ -72,30 +78,44 @@ const ClubDetailsJoueur: React.FC = () => {
     });
   };
 
-  const generateDates = () => {
-  const dates: string[] = [];
-  const today = new Date();
-  for (let i = 0; i < 21; i++) {  // ← 21 jours (3 semaines)
-    const date = new Date(today);
-    date.setDate(today.getDate() + i);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    dates.push(`${year}-${month}-${day}`);
-  }
-  return dates;
-};
+  const getSportEmoji = (sport: string) => {
+    const sportLower = sport.toLowerCase();
+    const emojis: { [key: string]: string } = {
+      'padel': '🎾',
+      'tennis': '🎾',
+      'foot': '⚽',
+      'football': '⚽',
+      'foot5': '⚽',
+      'basket': '🏀',
+      'basketball': '🏀',
+      'volley': '🏐',
+      'volleyball': '🏐',
+    };
+    return emojis[sportLower] || '🏅';
+  };
 
-  // ← AJOUTE : Fonction pour ouvrir la modal
+  const generateDates = () => {
+    const dates: string[] = [];
+    const today = new Date();
+    for (let i = 0; i < 21; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() + i);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      dates.push(`${year}-${month}-${day}`);
+    }
+    return dates;
+  };
+
   const handleReserver = (creneau: Creneau) => {
     setSelectedCreneau(creneau);
   };
 
-  // ← AJOUTE : Fonction après réservation réussie
   const handleReservationSuccess = () => {
     setSelectedCreneau(null);
     // Recharger les créneaux pour mettre à jour la liste
-    const url = `http://localhost:8080/api/creneaux/club/${id}?date=${selectedDate}`;
+    const url = `http://localhost:8080/api/creneaux/club/${id}?date=${selectedDate}&sport=${encodeURIComponent(selectedSport)}`;
     fetch(url)
       .then(res => res.json())
       .then(data => setCreneaux(data || []))
@@ -158,15 +178,29 @@ const ClubDetailsJoueur: React.FC = () => {
         </div>
       </div>
 
-      {/* Équipements / Sports */}
+      {/* Sports disponibles avec filtre */}
       {(club.sport || club.sports) && (
-        <div className="club-equipements">
-          <h3>Équipements</h3>
-          <div className="equipements-list">
-            {club.sport && <span className="equipement-badge">🎾 {club.sport}</span>}
-            {club.sports?.map((s, idx) => (
-              <span key={idx} className="equipement-badge">🎾 {s}</span>
-            ))}
+        <div className="club-sports">
+          <h3>Sports disponibles</h3>
+          <div className="sports-filter">
+            {club.sports && club.sports.length > 0 ? (
+              club.sports.map((sport) => (
+                <button
+                  key={sport}
+                  className={`sport-badge ${selectedSport === sport ? 'active' : ''}`}
+                  onClick={() => setSelectedSport(sport)}
+                >
+                  {getSportEmoji(sport)} {sport}
+                </button>
+              ))
+            ) : club.sport ? (
+              <button
+                className="sport-badge active"
+                onClick={() => setSelectedSport(club.sport)}
+              >
+                {getSportEmoji(club.sport)} {club.sport}
+              </button>
+            ) : null}
           </div>
         </div>
       )}
@@ -216,7 +250,7 @@ const ClubDetailsJoueur: React.FC = () => {
                   <p className="creneau-prix">{creneau.prix} DA</p>
                   <button 
                     className="btn-reserver"
-                    onClick={() => handleReserver(creneau)} // ← MODIFIÉ
+                    onClick={() => handleReserver(creneau)}
                   >
                     Réserver
                   </button>
@@ -227,7 +261,7 @@ const ClubDetailsJoueur: React.FC = () => {
         )}
       </div>
 
-      {/* ← AJOUTE : Modal de réservation */}
+      {/* Modal de réservation */}
       {selectedCreneau && (
         <ReservationModal
           creneau={selectedCreneau}

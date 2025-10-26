@@ -51,7 +51,6 @@ export default function AppRouter() {
       <Route path="/oauth-success" element={<OAuthSuccess />} />
       <Route path="/complete-profile" element={<CompleteProfile />} />
       <Route path="/profil-joueur" element={<ProfilJoueur />} />
-      <Route path="/profil-club" element={<ProfilClub />} />
 
       {/* Club pages (publique) */}
       <Route path="/MailSent" element={<MailSent />} />
