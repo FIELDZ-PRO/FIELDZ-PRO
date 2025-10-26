@@ -79,66 +79,54 @@ const JoueurDashboardLayout: React.FC<Props> = ({
           <div className="tab-content-section">
             <h2 className="page-title">Rechercher un terrain</h2>
 
-            {/* Formulaire de recherche Clubs */}
-            <form onSubmit={handleSearchClubs} className="search-form">
-              <div 
-                className="form-row" 
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '1fr 1fr auto',
-                  gap: '1.5rem',
-                  alignItems: 'end'
-                }}
-              >
-                <div className="form-group">
-                  <label>Sport</label>
-                  <select
-                    className="form-select"
-                    value={sport}
-                    onChange={(e) => setSport(e.target.value)}
-                    style={{ height: '48px', padding: '0 1rem', borderRadius: '8px', border: '1px solid #d1d5db' }}
-                  >
-                    {SPORTS.map((s) => (
-                      <option key={s} value={s}>
-                        {s.replace("_", " ")}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+            {/* Module de recherche avec le nouveau design */}
+            <div className="search-module">
+              <form onSubmit={handleSearchClubs} className="search-form-modern">
+                <div className="search-inputs-row">
+                  <div className="search-input-group">
+                    <label className="search-label">Sport</label>
+                    <select
+                      className="search-select"
+                      value={sport}
+                      onChange={(e) => setSport(e.target.value)}
+                    >
+                      {SPORTS.map((s) => (
+                        <option key={s} value={s}>
+                          {s.replace("_", " ")}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
 
-                <div className="form-group">
-                  <label>Ville</label>
-                  <select
-                    className="form-select"
-                    value={ville}
-                    onChange={(e) => setVille(e.target.value)}
-                    style={{ height: '48px', padding: '0 1rem', borderRadius: '8px', border: '1px solid #d1d5db' }}
-                  >
-                    {VILLES.map((v) => (
-                      <option key={v} value={v}>
-                        {v}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                  <div className="search-input-group">
+                    <label className="search-label">Ville</label>
+                    <select
+                      className="search-select"
+                      value={ville}
+                      onChange={(e) => setVille(e.target.value)}
+                    >
+                      {VILLES.map((v) => (
+                        <option key={v} value={v}>
+                          {v}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
 
-                <div className="form-group">
-                  <label>&nbsp;</label>
                   <button 
-                    className="btn-search" 
+                    className="search-button" 
                     type="submit" 
                     disabled={!canSearch || loadingSearch}
-                    style={{ height: '48px', padding: '0 2rem' }}
                   >
                     {loadingSearch ? "Recherche..." : "Rechercher"}
                   </button>
                 </div>
-              </div>
-            </form>
+              </form>
+            </div>
 
             {/* Messages / Résultats */}
             {errSearch && (
-              <div className="mt-3" style={{ color: "tomato", fontSize: 14 }}>
+              <div className="error-message">
                 Erreur : {errSearch}
               </div>
             )}
@@ -146,7 +134,7 @@ const JoueurDashboardLayout: React.FC<Props> = ({
             {/* Liste des clubs */}
             <div className="clubs-list">
               {clubs.map((club) => (
-                <div key={club.id} className="club-item">
+                <div key={club.id} className="club-card">
                   {/* Image à gauche */}
                   <div className="club-image">
                     {club.banniereUrl ? (

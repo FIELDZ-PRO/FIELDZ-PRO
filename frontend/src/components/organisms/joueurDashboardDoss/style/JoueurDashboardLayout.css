@@ -1,26 +1,39 @@
-/* JoueurDashboard - CSS unifié style Bolt */
+/* JoueurDashboard - CSS avec nouvelle palette et typographies */
+
+/* Import des variables globales */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  --color-black: #000000;
+  --color-primary-green: #05612B;
+  --color-secondary-green: #0A7B3D;
+  --color-gray: #84928D;
+  --color-white: #FDFFFD;
+}
 
 /* === LAYOUT PRINCIPAL === */
 .jd-container {
   min-height: 100vh;
-  background-color: #f8fafc;
+  background-color: var(--color-white);
+  font-family: 'Inter', sans-serif;
 }
 
-/* === HEADER STYLE BOLT === */
+/* === HEADER === */
 .dashboard-header {
-  background: white;
+  background: var(--color-white);
   padding: 16px 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--color-gray);
 }
 
 .header-left .logo {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 800;
   font-size: 24px;
-  font-weight: 700;
-  color: #1f5a2f;
+  color: var(--color-primary-green);
   margin: 0;
 }
 
@@ -45,12 +58,13 @@
 .user-avatar {
   width: 40px;
   height: 40px;
-  background: #1f5a2f;
-  color: white;
+  background: var(--color-primary-green);
+  color: var(--color-white);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-family: 'Poppins', sans-serif;
   font-weight: 600;
   font-size: 16px;
 }
@@ -61,14 +75,16 @@
 }
 
 .user-name {
+  font-family: 'Poppins', sans-serif;
   font-weight: 600;
   font-size: 14px;
-  color: #111827;
+  color: var(--color-black);
 }
 
 .user-role {
+  font-family: 'Inter', sans-serif;
   font-size: 12px;
-  color: #6b7280;
+  color: var(--color-gray);
 }
 
 /* === NAVIGATION ONGLETS === */
@@ -77,7 +93,7 @@
   padding: 0;
   display: flex;
   gap: 0;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--color-gray);
   max-width: 1200px;
   margin: 0 auto;
   padding-left: 24px;
@@ -87,9 +103,10 @@
   background: none;
   border: none;
   padding: 16px 24px;
+  font-family: 'Poppins', sans-serif;
   font-size: 14px;
-  font-weight: 500;
-  color: #6b7280;
+  font-weight: 600;
+  color: var(--color-gray);
   cursor: pointer;
   border-bottom: 2px solid transparent;
   transition: all 0.2s;
@@ -97,12 +114,12 @@
 }
 
 .tab-button:hover {
-  color: #059669;
+  color: var(--color-secondary-green);
 }
 
 .tab-button.active {
-  color: #059669;
-  border-bottom-color: #059669;
+  color: var(--color-secondary-green);
+  border-bottom-color: var(--color-secondary-green);
 }
 
 /* === CONTENU ONGLETS === */
@@ -120,97 +137,246 @@
 }
 
 .page-title {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 800;
   font-size: 24px;
-  font-weight: 700;
-  color: #111827;
+  color: var(--color-black);
   margin-bottom: 24px;
   text-align: left;
 }
 
-/* === FORMULAIRE DE RECHERCHE === */
-.search-form {
-  background: white;
-  padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  margin-bottom: 2rem;
+/* === MODULE DE RECHERCHE (NOUVEAU DESIGN) === */
+.search-module {
+  background: var(--color-white);
+  border-radius: 16px;
+  padding: 32px;
+  margin-bottom: 32px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
 }
 
-.form-group {
+.search-form-modern {
+  width: 100%;
+}
+
+.search-inputs-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 24px;
+  align-items: end;
+}
+
+.search-input-group {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 8px;
 }
 
-.form-group label {
+.search-label {
+  font-family: 'Poppins', sans-serif;
   font-weight: 600;
-  font-size: 0.9rem;
-  color: #374151;
-}
-
-.form-select {
-  background-color: white;
-  cursor: pointer;
-  transition: border-color 0.2s;
   font-size: 14px;
-  color: #374151;
+  color: var(--color-black);
+  margin-bottom: 4px;
 }
 
-.form-select:focus {
+.search-select {
+  width: 100%;
+  height: 48px;
+  padding: 0 16px;
+  border: 2px solid var(--color-gray);
+  border-radius: 12px;
+  background-color: var(--color-white);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: var(--color-black);
+  cursor: pointer;
+  transition: all 0.2s;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%2384928D' d='M1.41 0L6 4.58 10.59 0 12 1.41l-6 6-6-6z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  padding-right: 48px;
+}
+
+.search-select:hover {
+  border-color: var(--color-secondary-green);
+}
+
+.search-select:focus {
   outline: none;
-  border-color: #0D4E1D;
-  box-shadow: 0 0 0 3px rgba(13, 78, 29, 0.1);
+  border-color: var(--color-secondary-green);
+  box-shadow: 0 0 0 3px rgba(10, 123, 61, 0.1);
 }
 
-.form-select:hover {
-  border-color: #9ca3af;
-}
-
-.btn-search {
-  background: #0D4E1D;
-  color: white;
+.search-button {
+  height: 48px;
+  padding: 0 32px;
+  background: var(--color-primary-green);
+  color: var(--color-white);
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
+  font-family: 'Poppins', sans-serif;
   font-weight: 600;
+  font-size: 14px;
   cursor: pointer;
   transition: all 0.2s;
   white-space: nowrap;
 }
 
-.btn-search:hover {
-  background: #16803d;
-  transform: translateY(-1px);
+.search-button:hover:not(:disabled) {
+  background: var(--color-secondary-green);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(5, 97, 43, 0.3);
 }
 
-.btn-search:disabled {
+.search-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-/* === BOUTONS GÉNÉRIQUES === */
-.btn-secondary {
-  background: #3b82f6;
-  color: white;
-  border: none;
-  padding: 8px 16px;
+/* === MESSAGES D'ERREUR === */
+.error-message {
+  padding: 16px;
+  background: #fee;
+  border: 1px solid #fcc;
   border-radius: 8px;
-  font-weight: 500;
+  color: #c00;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  margin-bottom: 24px;
+}
+
+/* === LISTE DES CLUBS === */
+.clubs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.club-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: var(--color-white);
+  padding: 16px;
+  border-radius: 16px;
+  border: 2px solid var(--color-gray);
+  transition: all 0.2s;
+}
+
+.club-card:hover {
+  border-color: var(--color-secondary-green);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.club-image {
+  flex-shrink: 0;
+  width: 120px;
+  height: 120px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--color-primary-green) 0%, var(--color-secondary-green) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.club-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.club-image-placeholder {
+  font-size: 3rem;
+  color: var(--color-white);
+  opacity: 0.7;
+}
+
+.club-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.club-title {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 800;
+  font-size: 20px;
+  color: var(--color-black);
+  margin: 0;
+}
+
+.club-ville {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: var(--color-gray);
+  margin: 0;
+}
+
+.club-adresse {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: var(--color-black);
+  margin: 0;
+}
+
+.club-adresse strong {
+  font-weight: 600;
+}
+
+.club-badge {
+  display: inline-block;
+  background: var(--color-secondary-green);
+  color: var(--color-white);
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.club-badges {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.club-btn-voir {
+  flex-shrink: 0;
+  background: var(--color-primary-green);
+  color: var(--color-white);
+  padding: 12px 24px;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
   font-size: 14px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s;
+  white-space: nowrap;
 }
 
-.btn-secondary:hover {
-  background: #2563eb;
+.club-btn-voir:hover {
+  background: var(--color-secondary-green);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(5, 97, 43, 0.3);
 }
 
+/* === BOUTONS GÉNÉRIQUES === */
 .btn-danger {
   background: #ef4444;
-  color: white;
+  color: var(--color-white);
   border: none;
   padding: 8px 16px;
   border-radius: 8px;
-  font-weight: 500;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
   font-size: 14px;
   cursor: pointer;
   transition: background 0.2s;
@@ -220,15 +386,14 @@
   background: #dc2626;
 }
 
-/* === GROUPES PLIABLES === */
-.creneau-group,
+/* === GROUPES DE RÉSERVATIONS === */
 .reservation-group {
-  background: white;
+  background: var(--color-white);
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   overflow: hidden;
   margin-bottom: 16px;
-  border: 1px solid #e5e7eb;
+  border: 2px solid var(--color-gray);
 }
 
 .group-header {
@@ -237,194 +402,32 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  font-family: 'Poppins', sans-serif;
   font-weight: 600;
   font-size: 16px;
   transition: background 0.2s;
+  background: var(--color-white);
+  color: var(--color-black);
 }
 
 .group-header:hover {
   background: #f8fafc;
 }
 
-.creneau-group .group-header {
-  background: #dbeafe;
-  color: #1d4ed8;
-}
-
-.reservation-group .group-header {
-  background: #f3f4f6;
-  color: #374151;
-}
-
 .group-content {
   padding: 20px;
-}
-
-/* === GRILLES === */
-.jd-grid {
-  display: grid;
-  grid-template-columns: repeat(1, minmax(0, 1fr));
-  gap: 16px;
-}
-
-@media (min-width: 640px) {
-  .jd-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (min-width: 1024px) {
-  .jd-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
-.reservation-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-/* === CARTES === */
-.creneau-card,
-.reservation-card {
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 16px;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.creneau-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-
-.reservation-card {
-  border-left: 4px solid #e5e7eb;
-}
-
-/* Couleurs selon statut des réservations */
-.reservation-card.confirmee {
-  border-left-color: #10b981;
-  background: linear-gradient(to right, #ecfdf5, #ffffff);
-}
-
-.reservation-card.reserve {
-  border-left-color: #3b82f6;
-  background: linear-gradient(to right, #eff6ff, #ffffff);
-}
-
-.reservation-card.annule-joueur {
-  border-left-color: #f59e0b;
-  background: linear-gradient(to right, #fffbeb, #ffffff);
-}
-
-.reservation-card.annule-club {
-  border-left-color: #ef4444;
-  background: linear-gradient(to right, #fef2f2, #ffffff);
-}
-
-/* === CONTENU DES CARTES === */
-.card-title {
-  font-weight: 600;
-  font-size: 16px;
-  color: #10b981;
-  margin-bottom: 8px;
-}
-
-.card-subtitle {
-  color: #6b7280;
-  font-size: 14px;
-  margin-bottom: 12px;
-}
-
-.card-info {
-  font-size: 14px;
-  color: #374151;
-  margin: 6px 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.card-prix {
-  font-weight: 600;
-  color: #059669;
-  font-size: 15px;
-  margin: 8px 0;
-}
-
-/* === ACTIONS === */
-.card-actions {
-  display: flex;
-  gap: 8px;
-  margin-top: 12px;
-  flex-wrap: wrap;
-}
-
-.jd-btn-primary {
-  background: #3b82f6;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 8px 16px;
-  cursor: pointer;
-  font-weight: 500;
-  font-size: 14px;
-  transition: background 0.2s;
-}
-
-.jd-btn-primary:hover {
-  background: #2563eb;
-}
-
-.jd-btn-primary:disabled {
-  background: #9ca3af;
-  cursor: not-allowed;
-}
-
-.jd-btn-success {
-  background: #10b981;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 8px 16px;
-  cursor: pointer;
-  font-weight: 500;
-  font-size: 14px;
-  transition: background 0.2s;
-}
-
-.jd-btn-success:hover {
-  background: #059669;
-}
-
-.jd-btn-danger {
-  background: #ef4444;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 8px 16px;
-  cursor: pointer;
-  font-weight: 500;
-  font-size: 14px;
-  transition: background 0.2s;
-}
-
-.jd-btn-danger:hover {
-  background: #dc2626;
 }
 
 /* === ÉTATS VIDES === */
 .empty-state {
   text-align: center;
-  color: #6b7280;
+  color: var(--color-gray);
+  font-family: 'Inter', sans-serif;
   font-style: italic;
   padding: 40px 20px;
   background: #f9fafb;
   border-radius: 8px;
-  border: 2px dashed #d1d5db;
+  border: 2px dashed var(--color-gray);
 }
 
 /* === LOADING === */
@@ -433,8 +436,9 @@
   justify-content: center;
   align-items: center;
   min-height: 50vh;
+  font-family: 'Inter', sans-serif;
   font-size: 18px;
-  color: #6b7280;
+  color: var(--color-gray);
 }
 
 /* === MODAL === */
@@ -450,7 +454,7 @@
 }
 
 .jd-modal {
-  background: white;
+  background: var(--color-white);
   width: 100%;
   max-width: 520px;
   border-radius: 12px;
@@ -459,207 +463,21 @@
   position: relative;
 }
 
-.modal-title {
-  font-size: 20px;
-  font-weight: 600;
-  color: #059669;
-  margin-bottom: 16px;
-}
-
-.modal-content {
-  color: #374151;
-  line-height: 1.6;
-  margin-bottom: 20px;
-}
-
-.modal-checkbox {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  margin-bottom: 24px;
-}
-
-.modal-checkbox input {
-  margin-top: 4px;
-}
-
-.modal-checkbox label {
-  color: #374151;
-  cursor: pointer;
-}
-
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-}
-
-/* === LISTE DES CLUBS === */
-.clubs-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin-top: 24px;
-}
-
-.club-item {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  background: white;
-  padding: 16px;
-  border-radius: 12px;
-  border: 1px solid #e5e7eb;
-  transition: box-shadow 0.2s;
-}
-
-.club-item:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-.club-image {
-  flex-shrink: 0;
-  width: 120px;
-  height: 120px;
-  border-radius: 8px;
-  overflow: hidden;
-  background: linear-gradient(135deg, #1f5a2f 0%, #059669 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.club-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.club-image-placeholder {
-  font-size: 3rem;
-  color: white;
-  opacity: 0.7;
-}
-
-.club-details {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.club-title {
-  font-size: 20px;
-  font-weight: 700;
-  color: #1f2937;
-  margin: 0;
-}
-
-.club-ville {
-  font-size: 14px;
-  color: #6b7280;
-  margin: 0;
-}
-
-.club-adresse {
-  font-size: 14px;
-  color: #374151;
-  margin: 0;
-}
-
-.club-adresse strong {
-  font-weight: 600;
-}
-
-.club-badge {
-  display: inline-block;
-  background: #dcfce7;
-  color: #166534;
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 600;
-  margin-top: 4px;
-}
-
-.club-badges {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-  margin-top: 4px;
-}
-
-.club-btn-voir {
-  flex-shrink: 0;
-  background: #166534;
-  color: white;
-  padding: 12px 24px;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background 0.2s;
-  white-space: nowrap;
-}
-
-.club-btn-voir:hover {
-  background: #14532d;
-}
-
 /* === RESPONSIVE === */
-@media (max-width: 768px) {
-  .dashboard-header {
-    flex-direction: column;
-    gap: 16px;
-    padding: 16px;
-  }
-  
-  .header-right {
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-  
-  .tab-navigation {
-    padding-left: 16px;
-    overflow-x: auto;
-  }
-  
-  .tab-button {
-    padding: 12px 16px;
-    white-space: nowrap;
-  }
-  
-  .tab-content {
-    padding: 16px;
-  }
-
-  .club-item {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  
-  .club-image {
-    width: 100%;
-    height: 160px;
-  }
-  
-  .club-btn-voir {
-    width: 100%;
-  }
-  /* === RESPONSIVE AMÉLIORÉ === */
 
 /* Tablette (768px - 1024px) */
 @media (max-width: 1024px) {
-  .tab-content {
-    padding: 16px;
+  .search-inputs-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  
+  .search-button {
+    grid-column: 1 / -1;
+    width: 100%;
   }
 
-  .search-form {
-    padding: 1.5rem;
-  }
-
-  .club-item {
+  .club-card {
     gap: 16px;
   }
 
@@ -738,22 +556,22 @@
     margin-bottom: 16px;
   }
 
-  /* Formulaire de recherche */
-  .search-form {
-    padding: 1rem;
+  /* Module de recherche */
+  .search-module {
+    padding: 20px;
   }
 
-  .form-group label {
-    font-size: 0.85rem;
+  .search-inputs-row {
+    grid-template-columns: 1fr;
+    gap: 16px;
   }
 
-  .form-select,
-  .btn-search {
-    font-size: 13px;
+  .search-button {
+    width: 100%;
   }
 
   /* Liste des clubs */
-  .club-item {
+  .club-card {
     flex-direction: column;
     align-items: stretch;
     padding: 12px;
@@ -785,8 +603,7 @@
   }
 
   /* Groupes de réservations */
-  .reservation-group,
-  .creneau-group {
+  .reservation-group {
     margin-bottom: 12px;
   }
 
@@ -830,11 +647,11 @@
     font-size: 18px;
   }
 
-  .search-form {
-    padding: 0.75rem;
+  .search-module {
+    padding: 16px;
   }
 
-  .club-item {
+  .club-card {
     padding: 10px;
   }
 
@@ -850,5 +667,4 @@
   .club-adresse {
     font-size: 12px;
   }
-}
 }
