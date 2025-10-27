@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import { Calendar, Clock, MapPin, CheckCircle, Loader } from "lucide-react";
 import { Reservation } from "../../../types";
 import { ReservationService } from "../../../services/ReservationService";
@@ -8,44 +8,28 @@ import "./style/ReservationAvenir.css";
 type Props = {
   reservations: Reservation[];
   onUpdate?: () => void;
-  isPast?: boolean;
 };
 
-type FilterStatus = "all" | "CONFIRMEE" | "RESERVE";
-
-const ReservationAVenir: React.FC<Props> = ({ reservations, onUpdate, isPast = false }) => {
-  const [filterStatus, setFilterStatus] = useState<FilterStatus>("all");
+const ReservationAVenir: React.FC<Props> = ({ reservations, onUpdate }) => {
   const [loadingCancel, setLoadingCancel] = useState<number | null>(null);
   const [showMotifModal, setShowMotifModal] = useState(false);
   const [reservationToCancel, setReservationToCancel] = useState<number | null>(null);
 
-  const filteredReservations = useMemo(() => {
-    if (filterStatus === "all") return reservations;
-    return reservations.filter((r) => r.statut === filterStatus);
-  }, [reservations, filterStatus]);
-
-  // Ouvrir la modal de motif
   const openMotifModal = (reservationId: number) => {
     setReservationToCancel(reservationId);
     setShowMotifModal(true);
   };
 
-  // Fermer la modal
   const closeMotifModal = () => {
     setShowMotifModal(false);
     setReservationToCancel(null);
   };
 
-  // Confirmer l'annulation avec motif
   const handleCancelWithMotif = async (motif: string) => {
     if (!reservationToCancel) return;
 
     try {
       setLoadingCancel(reservationToCancel);
-      console.log("Annulation réservation ID:", reservationToCancel);
-      console.log("Motif:", motif);
-      
-      // ⚠️ Passer le motif au service
       await ReservationService.cancelReservation(reservationToCancel, motif);
       
       alert("Réservation annulée avec succès !");
@@ -116,51 +100,18 @@ const ReservationAVenir: React.FC<Props> = ({ reservations, onUpdate, isPast = f
     );
   };
 
-  const confirmedCount = reservations.filter((r) => r.statut === "CONFIRMEE").length;
-  const pendingCount = reservations.filter((r) => r.statut === "RESERVE").length;
-
   return (
     <div className="reservations-a-venir">
-      {/* Filtres par statut */}
-      <div className="status-filters">
-        <button
-          className={`filter-btn ${filterStatus === "all" ? "active" : ""}`}
-          onClick={() => setFilterStatus("all")}
-        >
-          Toutes ({reservations.length})
-        </button>
-        <button
-          className={`filter-btn ${filterStatus === "CONFIRMEE" ? "active" : ""}`}
-          onClick={() => setFilterStatus("CONFIRMEE")}
-        >
-          <CheckCircle size={16} />
-          Passées ({confirmedCount})
-        </button>
-        <button
-          className={`filter-btn ${filterStatus === "RESERVE" ? "active" : ""}`}
-          onClick={() => setFilterStatus("RESERVE")}
-        >
-          <Loader size={16} />
-          À venir ({pendingCount})
-        </button>
-      </div>
-
-      {/* Liste des réservations */}
-      {filteredReservations.length === 0 ? (
+      {/* Liste des réservations - RIEN D'AUTRE */}
+      {reservations.length === 0 ? (
         <div className="empty-state-reservations">
           <div className="empty-icon">📅</div>
           <h3>Aucune réservation</h3>
-          <p>
-            {filterStatus === "all"
-              ? "Recherchez un terrain pour réserver"
-              : filterStatus === "CONFIRMEE"
-              ? "Aucune réservation passée"
-              : "Aucune réservation à venir"}
-          </p>
+          <p>Recherchez un terrain pour réserver</p>
         </div>
       ) : (
         <div className="reservations-list">
-          {filteredReservations.map((reservation) => {
+          {reservations.map((reservation) => {
             const creneau = reservation.creneau;
             const terrain = creneau?.terrain;
             const dateDebut = creneau?.dateDebut || "";
@@ -229,7 +180,7 @@ const ReservationAVenir: React.FC<Props> = ({ reservations, onUpdate, isPast = f
                     </div>
                   </div>
 
-                  {/* Bouton annuler */}
+                  {/* Bouton annuler - seulement pour réservations à venir */}
                   {!isPassee && (
                     <div className="reservation-actions-avenir">
                       <button
@@ -250,7 +201,7 @@ const ReservationAVenir: React.FC<Props> = ({ reservations, onUpdate, isPast = f
         </div>
       )}
 
-      {/* Modal de motif d'annulation */}
+      {/* Modal d'annulation */}
       {showMotifModal && (
         <MotifAnnulationModal
           onClose={closeMotifModal}

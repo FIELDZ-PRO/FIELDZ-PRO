@@ -1,0 +1,115 @@
+/* === POLITIQUE MODALE FIELDZ STYLE === */
+
+/* Couleurs principales */
+:root {
+   --fieldz-black: #000000;
+   --fieldz-green-dark: #05612B;
+   --fieldz-green: #0A7B3D;
+   --fieldz-gray: #84928D;
+   --fieldz-white: #FDFFFD;
+ }
+ 
+ /* Container global */
+ .reservation-modal-container {
+   background-color: var(--fieldz-white);
+   border-radius: 16px;
+   padding: 2rem;
+   max-width: 700px;
+   margin: 0 auto;
+   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+ }
+ 
+ /* Titre principal */
+ .reservation-modal-title {
+   font-family: "Poppins", sans-serif;
+   font-weight: 800; /* ExtraBold */
+   font-size: 2rem;
+   color: var(--fieldz-green-dark);
+   text-align: center;
+   margin-bottom: 1.5rem;
+ }
+ 
+ /* Bloc texte de politique */
+ .reservation-modal-text {
+   background-color: rgba(10, 123, 61, 0.05);
+   border-left: 5px solid var(--fieldz-green);
+   border-radius: 10px;
+   padding: 1.5rem;
+   font-family: "Inter", sans-serif;
+   font-weight: 400;
+   font-size: 1rem;
+   line-height: 1.6;
+   color: var(--fieldz-black);
+   margin-bottom: 2rem;
+ }
+ 
+ /* Checkbox */
+ .reservation-modal-checkbox {
+   display: flex;
+   align-items: center;
+   gap: 0.5rem;
+   font-family: "Inter", sans-serif;
+   font-weight: 400;
+   font-size: 1rem;
+   color: var(--fieldz-black);
+   margin-bottom: 2rem;
+ }
+ 
+ .reservation-modal-checkbox input[type="checkbox"] {
+   accent-color: var(--fieldz-green-dark);
+   transform: scale(1.2);
+   cursor: pointer;
+ }
+ 
+ /* Boutons d’action */
+ .reservation-modal-actions {
+   display: flex;
+   justify-content: flex-end;
+   gap: 1rem;
+ }
+ 
+ .reservation-modal-btn {
+   padding: 0.6rem 1.4rem;
+   font-family: "Poppins", sans-serif;
+   font-weight: 600; /* SemiBold */
+   border: none;
+   border-radius: 8px;
+   cursor: pointer;
+   transition: 0.2s ease-in-out;
+ }
+ 
+ .reservation-modal-btn.cancel {
+   background-color: var(--fieldz-gray);
+   color: var(--fieldz-white);
+ }
+ 
+ .reservation-modal-btn.cancel:hover {
+   background-color: #6c7b76;
+ }
+ 
+ .reservation-modal-btn.confirm {
+   background-color: var(--fieldz-green-dark);
+   color: var(--fieldz-white);
+ }
+ 
+ .reservation-modal-btn.confirm:hover {
+   background-color: var(--fieldz-green);
+ }
+ 
+ /* Désactivé */
+ .reservation-modal-btn:disabled {
+   background-color: #ccc;
+   color: #666;
+   cursor: not-allowed;
+ }
+ 
+ /* Responsive */
+ @media (max-width: 600px) {
+   .reservation-modal-container {
+     padding: 1.5rem;
+   }
+   .reservation-modal-title {
+     font-size: 1.6rem;
+   }
+ }
+ 

@@ -1,3 +1,4 @@
+import React from 'react';
 import './MailSent.css'
 import { useNavigate } from 'react-router-dom'
 export const MailSent = () => {
