@@ -35,40 +35,50 @@ const ReservationModal: React.FC<Props> = ({ creneau, onClose, onReservation, po
 
   return (
     <FullscreenModal onClose={onClose}>
-  <div className="reservation-modal-container">
-    <h2 className="reservation-modal-title">📜 Politique du club</h2>
-
-    <div className="reservation-modal-text">
-      {politiqueClub || "Aucune politique définie."}
-    </div>
-
-    <label className="reservation-modal-checkbox">
-      <input
-        type="checkbox"
-        checked={accepte}
-        onChange={(e) => setAccepte(e.target.checked)}
-      />
-      J’ai lu et j’accepte la politique du club
-    </label>
-
-    <div className="reservation-modal-actions">
-      <button onClick={onClose} className="reservation-modal-btn cancel">
-        Annuler
-      </button>
-      <button
-        disabled={!accepte || loading}
-        onClick={confirmer}
-        className="reservation-modal-btn confirm"
+      <h2
+        style={{
+          fontSize: "1.8rem",
+          fontWeight: "bold",
+          color: "#15803d",
+          marginBottom: "1rem",
+        }}
       >
-        {loading ? "Réservation..." : "Confirmer la réservation"}
-      </button>
-    </div>
-  </div>
-</FullscreenModal>
+        📜 Politique du club
+      </h2>
 
-    
-  
-    
+      <p style={{ marginBottom: "1.5rem", color: "#333" }}>
+        {politiqueClub || "Aucune politique définie."}
+      </p>
+
+      <label style={{ display: "flex", alignItems: "center", marginBottom: "1.5rem" }}>
+        <input
+          type="checkbox"
+          checked={accepte}
+          onChange={(e) => setAccepte(e.target.checked)}
+          style={{ marginRight: "0.5rem" }}
+        />
+        J’ai lu et j’accepte la politique du club
+      </label>
+
+      <div style={{ display: "flex", justifyContent: "flex-end", gap: "1rem" }}>
+        <button onClick={onClose} style={{ padding: "0.5rem 1rem", background: "#ccc", borderRadius: "6px" }}>
+          Annuler
+        </button>
+        <button
+          disabled={!accepte || loading}
+          onClick={confirmer}
+          style={{
+            padding: "0.5rem 1rem",
+            background: accepte ? "#22c55e" : "#ccc",
+            color: accepte ? "white" : "#666",
+            borderRadius: "6px",
+            cursor: accepte ? "pointer" : "not-allowed",
+          }}
+        >
+          {loading ? "Réservation..." : "Confirmer la réservation"}
+        </button>
+      </div>
+    </FullscreenModal>
   );
 };
 
