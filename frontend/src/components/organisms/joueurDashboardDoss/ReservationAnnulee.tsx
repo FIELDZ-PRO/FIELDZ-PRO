@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo, useState } from "react";
 import { Calendar, Clock, MapPin, XCircle, AlertCircle } from "lucide-react";
 import { Reservation } from "../../../types";
 import "./style/ReservationAnnulee.css";
@@ -7,7 +7,17 @@ type Props = {
   reservations: Reservation[];
 };
 
+type FilterStatus = "all" | "ANNULE_PAR_JOUEUR" | "ANNULE_PAR_CLUB";
+
 const ReservationAnnulees: React.FC<Props> = ({ reservations }) => {
+  const [filterStatus, setFilterStatus] = useState<FilterStatus>("all");
+
+  // Filtrer les réservations
+  const filteredReservations = useMemo(() => {
+    if (filterStatus === "all") return reservations;
+    return reservations.filter((r) => r.statut === filterStatus);
+  }, [reservations, filterStatus]);
+
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
     return date.toLocaleDateString("fr-FR", {
@@ -51,18 +61,55 @@ const ReservationAnnulees: React.FC<Props> = ({ reservations }) => {
     );
   };
 
+  const cancelledByUserCount = reservations.filter(
+    (r) => r.statut === "ANNULE_PAR_JOUEUR"
+  ).length;
+  const cancelledByClubCount = reservations.filter(
+    (r) => r.statut === "ANNULE_PAR_CLUB"
+  ).length;
+
   return (
     <div className="reservations-annulees">
-      {/* Liste des réservations - SANS FILTRES NI TITRE */}
-      {reservations.length === 0 ? (
+      {/* Filtres - SANS TITRE */}
+      <div className="status-filters">
+        <button
+          className={`filter-btn ${filterStatus === "all" ? "active" : ""}`}
+          onClick={() => setFilterStatus("all")}
+        >
+          Toutes ({reservations.length})
+        </button>
+        <button
+          className={`filter-btn ${filterStatus === "ANNULE_PAR_JOUEUR" ? "active" : ""}`}
+          onClick={() => setFilterStatus("ANNULE_PAR_JOUEUR")}
+        >
+          <XCircle size={16} />
+          Annulées par vous ({cancelledByUserCount})
+        </button>
+        <button
+          className={`filter-btn ${filterStatus === "ANNULE_PAR_CLUB" ? "active" : ""}`}
+          onClick={() => setFilterStatus("ANNULE_PAR_CLUB")}
+        >
+          <AlertCircle size={16} />
+          Annulées par le club ({cancelledByClubCount})
+        </button>
+      </div>
+
+      {/* Liste des réservations */}
+      {filteredReservations.length === 0 ? (
         <div className="empty-state-reservations">
           <div className="empty-icon">❌</div>
           <h3>Aucune réservation annulée</h3>
-          <p>Vous n'avez pas de réservations annulées</p>
+          <p>
+            {filterStatus === "all"
+              ? "Vous n'avez pas de réservations annulées"
+              : filterStatus === "ANNULE_PAR_JOUEUR"
+              ? "Aucune réservation annulée par vous"
+              : "Aucune réservation annulée par le club"}
+          </p>
         </div>
       ) : (
         <div className="reservations-list">
-          {reservations.map((reservation) => {
+          {filteredReservations.map((reservation) => {
             const creneau = reservation.creneau;
             const terrain = creneau?.terrain;
             const dateDebut = creneau?.dateDebut || "";

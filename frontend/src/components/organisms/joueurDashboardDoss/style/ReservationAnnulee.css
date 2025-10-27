@@ -1,4 +1,4 @@
-/* ReservationAnnulees.css - Style moderne avec nouvelle palette */
+/* ReservationAnnulees.css - Version corrigée */
 
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&family=Inter:wght@400;500;600&display=swap');
 
@@ -65,11 +65,10 @@
   border: none;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   transition: all 0.3s;
-  opacity: 0.85;
+  opacity: 1; /* ✅ CORRECTION: Pas de transparence par défaut */
 }
 
 .reservation-card-annulee:hover {
-  opacity: 1;
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
 }
@@ -128,29 +127,30 @@
   flex-shrink: 0;
 }
 
-/* Badge de statut annulé */
+/* Badge de statut annulé - ✅ CORRECTION: Plus visibles */
 .status-badge {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 16px;
-  border-radius: 8px;
+  padding: 10px 18px;
+  border-radius: 10px;
   font-family: 'Poppins', sans-serif;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 13px;
-  border: 1px solid;
+  border: 2px solid;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .status-badge-cancelled-user {
-  background: #FEF3C7;
-  color: #92400E;
-  border-color: #FDE047;
+  background: #F59E0B;
+  color: white;
+  border-color: #D97706;
 }
 
 .status-badge-cancelled-club {
-  background: #FEE2E2;
-  color: #991B1B;
-  border-color: #FCA5A5;
+  background: #EF4444;
+  color: white;
+  border-color: #DC2626;
 }
 
 /* Body */
@@ -225,9 +225,11 @@
   line-height: 1.4;
 }
 
-.info-value.price {
+/* ✅ CORRECTION: Prix barré SEULEMENT pour les annulations */
+.reservations-annulees .info-value.price {
   color: var(--color-gray);
   text-decoration: line-through;
+  opacity: 0.6;
 }
 
 /* Motif d'annulation - fond blanc */
@@ -236,8 +238,8 @@
   align-items: flex-start;
   gap: 12px;
   padding: 16px;
-  background: var(--color-white);
-  border: 1px solid #E5E7EB;
+  background: #FEF3C7;
+  border: 2px solid #FDE047;
   border-radius: 12px;
   margin-top: 16px;
 }
@@ -246,11 +248,11 @@
   width: 40px;
   height: 40px;
   border-radius: 10px;
-  background: #F3F4F6;
+  background: #FDE047;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-gray);
+  color: #92400E;
   flex-shrink: 0;
 }
 
@@ -263,16 +265,16 @@
 
 .motif-label {
   font-family: 'Poppins', sans-serif;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 13px;
-  color: var(--color-black);
+  color: #92400E;
 }
 
 .motif-value {
   font-family: 'Inter', sans-serif;
-  font-weight: 400;
+  font-weight: 500;
   font-size: 14px;
-  color: var(--color-gray);
+  color: #78350F;
   line-height: 1.5;
 }
 
@@ -346,6 +348,11 @@
 
   .reservation-location {
     font-size: 13px;
+  }
+
+  .status-badge {
+    padding: 8px 14px;
+    font-size: 12px;
   }
 
   .reservation-body-annulee {

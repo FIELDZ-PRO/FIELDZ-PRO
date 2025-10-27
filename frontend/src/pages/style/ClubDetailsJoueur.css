@@ -1,4 +1,4 @@
-/* ClubDetailsJoueur.css - Design FieldZ */
+/* ClubDetailsJoueur.css - Design FieldZ Amélioré */
 
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap');
 
@@ -74,7 +74,7 @@
   line-height: 1.2;
 }
 
-/* Bannière */
+/* ========== BANNIÈRE ========== */
 .club-banner {
   position: relative;
   width: 100%;
@@ -127,7 +127,13 @@
   font-weight: 400;
 }
 
-/* Informations */
+.inline-icon {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+/* ========== SECTION INFORMATIONS ========== */
 .club-info-section {
   display: grid;
   grid-template-columns: 2fr 1fr;
@@ -137,32 +143,127 @@
   margin: 0 auto;
 }
 
-.club-info-card,
-.club-contact-card {
+/* Cartes d'information */
+.info-card {
   background: var(--color-white);
-  padding: 20px;
-  border-radius: 12px;
+  border-radius: 16px;
   border: 1px solid #E5E7EB;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+  transition: all 0.3s;
 }
 
-.club-info-card h3,
-.club-contact-card h3 {
-  margin: 0 0 12px 0;
+.info-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+/* Header de carte */
+.info-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 24px;
+  background: linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%);
+  border-bottom: 2px solid #D1D5DB;
+}
+
+.card-icon {
+  width: 24px;
+  height: 24px;
+  color: var(--color-primary-green);
+  flex-shrink: 0;
+}
+
+.info-card-header h3 {
+  margin: 0;
   font-family: 'Poppins', sans-serif;
   font-size: 18px;
   font-weight: 700;
   color: var(--color-black);
 }
 
-.club-info-card p,
-.club-contact-card p {
-  margin: 8px 0;
-  font-family: 'Inter', sans-serif;
-  color: var(--color-gray);
-  line-height: 1.6;
+/* Contenu de carte */
+.info-card-content {
+  padding: 24px;
 }
 
-/* Sports disponibles avec filtre */
+/* Carte Description */
+.description-card {
+  grid-column: 1;
+}
+
+.description-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--color-gray);
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.btn-read-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 16px;
+  padding: 8px 16px;
+  background: transparent;
+  border: 2px solid var(--color-primary-green);
+  border-radius: 8px;
+  color: var(--color-primary-green);
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-read-more:hover {
+  background: var(--color-primary-green);
+  color: var(--color-white);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(5, 96, 43, 0.2);
+}
+
+.btn-icon {
+  width: 18px;
+  height: 18px;
+}
+
+/* Carte Contact */
+.contact-card {
+  grid-column: 2;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid #F3F4F6;
+}
+
+.contact-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.contact-icon {
+  width: 20px;
+  height: 20px;
+  color: var(--color-primary-green);
+  flex-shrink: 0;
+}
+
+.contact-item span {
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  color: var(--color-gray);
+  word-break: break-word;
+}
+
+/* ========== SPORTS DISPONIBLES ========== */
 .club-sports {
   padding: 0 24px;
   max-width: 1200px;
@@ -212,7 +313,7 @@
   box-shadow: 0 2px 8px rgba(5, 96, 43, 0.25);
 }
 
-/* Calendrier */
+/* ========== CALENDRIER ========== */
 .date-selector {
   padding: 0 24px;
   max-width: 1200px;
@@ -271,7 +372,7 @@
   color: var(--color-white);
 }
 
-/* Créneaux */
+/* ========== CRÉNEAUX ========== */
 .creneaux-section {
   padding: 0 24px;
   max-width: 1200px;
@@ -294,6 +395,17 @@
   border: 2px dashed #D1D5DB;
   font-family: 'Inter', sans-serif;
   color: var(--color-gray);
+}
+
+.no-creneaux-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+
+.no-creneaux-hint {
+  font-size: 14px;
+  color: var(--color-light-gray);
+  margin-top: 8px;
 }
 
 .creneaux-list {
@@ -348,6 +460,9 @@
   font-family: 'Inter', sans-serif;
   font-size: 14px;
   color: var(--color-gray);
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .creneau-sport {
@@ -392,7 +507,7 @@
   background: var(--color-secondary-green);
 }
 
-/* ===== RESPONSIVE ===== */
+/* ========== RESPONSIVE ========== */
 @media (max-width: 1024px) {
   .club-info-section {
     gap: 16px;
@@ -437,9 +552,25 @@
     gap: 12px;
   }
 
-  .club-info-card,
-  .club-contact-card {
-    padding: 16px;
+  .description-card,
+  .contact-card {
+    grid-column: 1;
+  }
+
+  .info-card-header {
+    padding: 16px 20px;
+  }
+
+  .info-card-content {
+    padding: 20px;
+  }
+
+  .description-text {
+    font-size: 14px;
+  }
+
+  .contact-item span {
+    font-size: 14px;
   }
 
   .club-sports,
@@ -549,20 +680,38 @@
     gap: 10px;
   }
 
-  .club-info-card,
-  .club-contact-card {
-    padding: 14px;
+  .info-card-header {
+    padding: 14px 16px;
   }
 
-  .club-info-card h3,
-  .club-contact-card h3 {
+  .info-card-header h3 {
     font-size: 16px;
-    margin-bottom: 10px;
   }
 
-  .club-info-card p,
-  .club-contact-card p {
-    font-size: 14px;
+  .card-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .info-card-content {
+    padding: 16px;
+  }
+
+  .description-text {
+    font-size: 13px;
+  }
+
+  .btn-read-more {
+    font-size: 13px;
+    padding: 6px 12px;
+  }
+
+  .contact-item {
+    padding: 12px 0;
+  }
+
+  .contact-item span {
+    font-size: 13px;
   }
 
   .club-sports,
@@ -602,7 +751,7 @@
   .creneau-details h4 {
     font-size: 14px;
   }
-a
+
   .creneau-time,
   .creneau-sport {
     font-size: 12px;

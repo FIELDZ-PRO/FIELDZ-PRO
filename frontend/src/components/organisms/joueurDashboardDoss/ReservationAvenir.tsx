@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Calendar, Clock, MapPin, CheckCircle, Loader } from "lucide-react";
 import { Reservation } from "../../../types";
 import { ReservationService } from "../../../services/ReservationService";
@@ -10,10 +10,19 @@ type Props = {
   onUpdate?: () => void;
 };
 
+type FilterStatus = "all" | "CONFIRMEE" | "RESERVE";
+
 const ReservationAVenir: React.FC<Props> = ({ reservations, onUpdate }) => {
+  const [filterStatus, setFilterStatus] = useState<FilterStatus>("all");
   const [loadingCancel, setLoadingCancel] = useState<number | null>(null);
   const [showMotifModal, setShowMotifModal] = useState(false);
   const [reservationToCancel, setReservationToCancel] = useState<number | null>(null);
+
+  // Filtrer les réservations
+  const filteredReservations = useMemo(() => {
+    if (filterStatus === "all") return reservations;
+    return reservations.filter((r) => r.statut === filterStatus);
+  }, [reservations, filterStatus]);
 
   const openMotifModal = (reservationId: number) => {
     setReservationToCancel(reservationId);
@@ -100,18 +109,51 @@ const ReservationAVenir: React.FC<Props> = ({ reservations, onUpdate }) => {
     );
   };
 
+  const confirmedCount = reservations.filter((r) => r.statut === "CONFIRMEE").length;
+  const pendingCount = reservations.filter((r) => r.statut === "RESERVE").length;
+
   return (
     <div className="reservations-a-venir">
-      {/* Liste des réservations - RIEN D'AUTRE */}
-      {reservations.length === 0 ? (
+      {/* Filtres - SANS TITRE */}
+      <div className="status-filters">
+        <button
+          className={`filter-btn ${filterStatus === "all" ? "active" : ""}`}
+          onClick={() => setFilterStatus("all")}
+        >
+          Toutes ({reservations.length})
+        </button>
+        <button
+          className={`filter-btn ${filterStatus === "CONFIRMEE" ? "active" : ""}`}
+          onClick={() => setFilterStatus("CONFIRMEE")}
+        >
+          <CheckCircle size={16} />
+          Passées ({confirmedCount})
+        </button>
+        <button
+          className={`filter-btn ${filterStatus === "RESERVE" ? "active" : ""}`}
+          onClick={() => setFilterStatus("RESERVE")}
+        >
+          <Loader size={16} />
+          À venir ({pendingCount})
+        </button>
+      </div>
+
+      {/* Liste des réservations */}
+      {filteredReservations.length === 0 ? (
         <div className="empty-state-reservations">
           <div className="empty-icon">📅</div>
           <h3>Aucune réservation</h3>
-          <p>Recherchez un terrain pour réserver</p>
+          <p>
+            {filterStatus === "all"
+              ? "Recherchez un terrain pour réserver"
+              : filterStatus === "CONFIRMEE"
+              ? "Aucune réservation passée"
+              : "Aucune réservation à venir"}
+          </p>
         </div>
       ) : (
         <div className="reservations-list">
-          {reservations.map((reservation) => {
+          {filteredReservations.map((reservation) => {
             const creneau = reservation.creneau;
             const terrain = creneau?.terrain;
             const dateDebut = creneau?.dateDebut || "";

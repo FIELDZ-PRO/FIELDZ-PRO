@@ -1,179 +1,389 @@
-/* === FIELDZ - Reservation Modal === */
+/* ReservationModal.css - Style moderne amélioré */
 
 :root {
-   --fieldz-black: #000000;
-   --fieldz-green-dark: #05612B;
-   --fieldz-green: #0A7B3D;
-   --fieldz-gray: #84928D;
-   --fieldz-white: #FDFFFD;
- }
- 
- /* Container principal */
- .reservation-modal-wrapper {
-   min-height: 90vh;
-   background-color: var(--fieldz-white);
-   display: flex;
-   align-items: center;
-   justify-content: center;
-   font-family: "Inter", sans-serif;
-   padding: 2rem 1rem;
- }
- 
- /* Carte principale */
- .reservation-modal-card {
-   width: 100%;
-   max-width: 720px;
-   border-radius: 16px;
-   background-color: #ffffff;
-   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-   overflow: hidden;
-   border: 1px solid #eee;
- }
- 
- /* Header (gradient vert FieldZ) */
- .reservation-modal-header {
-   display: flex;
-   align-items: center;
-   gap: 1rem;
-   background: linear-gradient(90deg, var(--fieldz-green-dark), var(--fieldz-green));
-   color: var(--fieldz-white);
-   padding: 1.5rem 2rem;
- }
- 
- .reservation-modal-header h2 {
-   font-family: "Poppins", sans-serif;
-   font-weight: 800;
-   font-size: 1.8rem;
-   margin: 0;
- }
- 
- .reservation-modal-header p {
-   font-family: "Poppins", sans-serif;
-   font-weight: 600;
-   font-size: 0.9rem;
-   color: rgba(255, 255, 255, 0.9);
- }
- 
- /* Contenu */
- .reservation-modal-content {
-   padding: 2rem;
- }
- 
- /* Boîte d'information */
- .reservation-info-box {
-   background-color: rgba(5, 97, 43, 0.08);
-   border-left: 5px solid var(--fieldz-green);
-   padding: 1rem;
-   border-radius: 8px;
-   margin-bottom: 1.5rem;
-   color: var(--fieldz-green-dark);
-   font-family: "Inter", sans-serif;
-   font-size: 0.95rem;
- }
- 
- /* Texte politique */
- .reservation-policy {
-   white-space: pre-wrap;
-   color: var(--fieldz-black);
-   line-height: 1.7;
-   font-family: "Inter", sans-serif;
-   font-size: 1rem;
-   margin-bottom: 1.5rem;
- }
- 
- /* Checkbox */
- .reservation-checkbox {
-   display: flex;
-   align-items: center;
-   gap: 0.5rem;
-   margin: 1rem 0 2rem;
-   color: var(--fieldz-black);
-   font-family: "Inter", sans-serif;
- }
- 
- .reservation-checkbox input[type="checkbox"] {
-   accent-color: var(--fieldz-green-dark);
-   width: 20px;
-   height: 20px;
-   cursor: pointer;
- }
- 
- /* Section des boutons */
- .reservation-actions {
-   display: flex;
-   flex-direction: column;
-   gap: 1rem;
-   padding-top: 1.5rem;
-   border-top: 1px solid #e5e7eb;
- }
- 
- @media (min-width: 640px) {
-   .reservation-actions {
-     flex-direction: row;
-   }
- }
- 
- /* Bouton Annuler */
- .btn-cancel {
-   flex: 1;
-   height: 48px;
-   border: 2px solid var(--fieldz-gray);
-   background: transparent;
-   color: var(--fieldz-gray);
-   border-radius: 8px;
-   font-family: "Poppins", sans-serif;
-   font-weight: 600;
-   cursor: pointer;
-   transition: 0.2s ease-in-out;
- }
- 
- .btn-cancel:hover {
-   background-color: var(--fieldz-gray);
-   color: var(--fieldz-white);
- }
- 
- /* Bouton Confirmer */
- .btn-confirm {
-   flex: 1;
-   height: 48px;
-   border: none;
-   border-radius: 8px;
-   background: linear-gradient(90deg, var(--fieldz-green-dark), var(--fieldz-green));
-   color: var(--fieldz-white);
-   font-family: "Poppins", sans-serif;
-   font-weight: 600;
-   cursor: pointer;
-   transition: 0.2s ease-in-out;
- }
- 
- .btn-confirm:disabled {
-   background: #cccccc;
-   color: #666;
-   cursor: not-allowed;
- }
- 
- .btn-confirm:hover:not(:disabled) {
-   opacity: 0.9;
- }
- 
- /* Icônes */
- .reservation-icon-box {
-   width: 3rem;
-   height: 3rem;
-   background-color: rgba(255, 255, 255, 0.25);
-   border-radius: 12px;
-   display: flex;
-   align-items: center;
-   justify-content: center;
- }
- 
- /* Responsive */
- @media (max-width: 600px) {
-   .reservation-modal-header h2 {
-     font-size: 1.4rem;
-   }
-   .reservation-policy {
-     font-size: 0.95rem;
-   }
- }
- 
+  --color-primary: #05602B;
+  --color-primary-hover: #0A7B3D;
+  --color-black: #0E0E0E;
+  --color-gray-50: #F9FAFB;
+  --color-gray-100: #F3F4F6;
+  --color-gray-200: #E5E7EB;
+  --color-gray-400: #9CA3AF;
+  --color-gray-600: #6B7280;
+  --color-white: #FFFFFF;
+  --color-red: #EF4444;
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* === CONTENU PRINCIPAL - VERSION COMPACTE === */
+.reservation-modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  max-width: 550px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* === EN-TÊTE - VERSION COMPACTE === */
+.modal-header {
+  text-align: left;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--color-gray-200);
+}
+
+.modal-icon-wrapper {
+  display: none; /* Masquer l'icône */
+}
+
+.modal-title {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: var(--color-primary); /* ✅ Vert au lieu de noir */
+  margin: 0 0 0.5rem 0;
+}
+
+.modal-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9375rem;
+  color: var(--color-gray-600);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.modal-subtitle .highlight-read {
+  color: #DC2626; /* ✅ Rouge pour "lire" */
+  font-weight: 600;
+}
+
+/* === CONTENU POLITIQUE - STYLE COLORÉ === */
+.politique-content {
+  background: #FEF3C7; /* ✅ Fond jaune comme le motif */
+  border: 2px solid #FDE047; /* ✅ Bordure jaune vif */
+  border-radius: 12px;
+  padding: 20px;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+/* Scrollbar verte vive */
+.politique-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.politique-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.politique-content::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: 3px;
+}
+
+.politique-content::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary-hover);
+}
+
+/* Texte lisible sur fond jaune */
+.politique-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #78350F; /* ✅ Marron foncé pour contraste */
+  font-weight: 500;
+}
+
+.politique-text p {
+  margin: 0 0 14px 0;
+}
+
+.politique-text p:last-child {
+  margin-bottom: 0;
+}
+
+.politique-text p:empty {
+  display: none;
+}
+
+/* État sans politique */
+.no-politique {
+  text-align: center;
+  padding: 2rem;
+  color: var(--color-gray-600);
+}
+
+.no-politique-icon {
+  width: 3rem;
+  height: 3rem;
+  color: var(--color-gray-400);
+  margin-bottom: 0.75rem;
+}
+
+.no-politique p {
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  margin: 0;
+}
+
+/* === MESSAGE D'ERREUR === */
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  background: #FEE2E2;
+  border: 2px solid #FCA5A5;
+  border-radius: 0.75rem;
+  color: #991B1B;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 500;
+}
+
+.error-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+}
+
+/* === CHECKBOX D'ACCEPTATION - STYLE VIF === */
+.acceptance-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  background: var(--color-white);
+  border: 2px solid var(--color-primary); /* ✅ Bordure verte */
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  user-select: none;
+}
+
+.acceptance-checkbox:hover {
+  border-color: var(--color-primary-hover);
+  background: #DCFCE7; /* ✅ Fond vert clair au hover */
+}
+
+.checkbox-input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.checkbox-custom {
+  position: relative;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 2px solid var(--color-primary); /* ✅ Bordure verte */
+  border-radius: 0.375rem;
+  background: var(--color-white);
+  transition: all 0.2s;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.checkbox-input:checked + .checkbox-custom {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  box-shadow: 0 2px 6px rgba(5, 96, 43, 0.3); /* ✅ Ombre verte */
+}
+
+.checkbox-icon {
+  width: 1rem;
+  height: 1rem;
+  color: var(--color-white);
+}
+
+.checkbox-label {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  color: var(--color-black);
+}
+
+/* === ACTIONS === */
+.modal-actions {
+  display: flex;
+  gap: 1rem;
+  padding-top: 0.5rem;
+}
+
+/* Bouton Annuler */
+.btn-cancel {
+  flex: 1;
+  padding: 0.875rem 1.5rem;
+  background: var(--color-gray-100);
+  color: var(--color-gray-600);
+  border: 2px solid var(--color-gray-200);
+  border-radius: 0.75rem;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-cancel:hover:not(:disabled) {
+  background: var(--color-gray-200);
+  border-color: var(--color-gray-400);
+}
+
+.btn-cancel:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Bouton Confirmer */
+.btn-confirm {
+  flex: 2;
+  padding: 0.875rem 1.5rem;
+  border: none;
+  border-radius: 0.75rem;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  box-shadow: var(--shadow-md);
+}
+
+.btn-confirm.active {
+  background: var(--color-primary);
+  color: var(--color-white);
+}
+
+.btn-confirm.active:hover {
+  background: var(--color-primary-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.btn-confirm.disabled {
+  background: var(--color-gray-200);
+  color: var(--color-gray-400);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.btn-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+}
+
+/* Spinner de chargement */
+.btn-spinner {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: var(--color-white);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* === RESPONSIVE === */
+
+@media (max-width: 640px) {
+  .reservation-modal-content {
+    gap: 1.25rem;
+  }
+
+  .modal-icon-wrapper {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .modal-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  .modal-title {
+    font-size: 1.5rem;
+  }
+
+  .modal-subtitle {
+    font-size: 0.875rem;
+  }
+
+  .politique-content {
+    padding: 20px;
+    max-height: 300px;
+  }
+
+  .politique-text {
+    font-size: 14px;
+  }
+
+  .politique-text p {
+    padding: 10px;
+    margin-bottom: 12px;
+  }
+
+  .acceptance-checkbox {
+    padding: 1rem;
+  }
+
+  .checkbox-label {
+    font-size: 0.875rem;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+  }
+
+  .btn-confirm {
+    flex: 1;
+  }
+
+  .btn-cancel,
+  .btn-confirm {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-title {
+    font-size: 1.375rem;
+  }
+
+  .politique-content {
+    max-height: 250px;
+    padding: 16px;
+  }
+
+  .politique-text {
+    font-size: 13px;
+  }
+
+  .politique-text p {
+    padding: 8px;
+    margin-bottom: 10px;
+  }
+
+  .acceptance-checkbox {
+    padding: 0.875rem;
+  }
+
+  .btn-cancel,
+  .btn-confirm {
+    padding: 0.625rem 1rem;
+    font-size: 0.8125rem;
+  }
+}

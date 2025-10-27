@@ -26,8 +26,6 @@ const ClubManagementPage = () => {
     const fetchClubInfo = async () => {
         try {
             const data = await getClubMe();
-            console.log("this is the data received : ")
-            console.log(data);
             setClubInfo(data);
             if (data.banniereUrl) setPreviewUrl(data.banniereUrl);
         } catch (error) {
