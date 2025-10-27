@@ -1,24 +1,37 @@
+// src/pages/ClubDetailsJoueur.tsx
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ClubService, ClubDto } from "../services/ClubService";
 import ReservationModal from "../components/organisms/joueurDashboardDoss/ReservationModal";
 import { Creneau } from "../types";
 import "./style/ClubDetailsJoueur.css";
-import { ChevronDown, ChevronUp, MapPin, Phone, Info } from "lucide-react";
+import { ChevronDown, ChevronUp, MapPin, Phone, Info, Clock } from "lucide-react";
+
+// ✅ Helpers pour parser/formatter en LOCAL (sans décalage)
+import {
+  parseYMDLocal,
+  parseLocalDateTime,
+  formatShortDate,
+  formatRangeLocal,
+} from "../utils/datetime";
 
 const ClubDetailsJoueur: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  
+
   const [club, setClub] = useState<ClubDto | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  
+
+  // ✅ On génère "YYYY-MM-DD" à la main (pas de toISOString qui bascule en UTC)
   const [selectedDate, setSelectedDate] = useState<string>(() => {
-    const today = new Date();
-    return today.toISOString().split('T')[0];
+    const t = new Date();
+    const y = t.getFullYear();
+    const m = String(t.getMonth() + 1).padStart(2, "0");
+    const d = String(t.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
   });
-  
+
   const [selectedSport, setSelectedSport] = useState<string>("");
   const [creneaux, setCreneaux] = useState<Creneau[]>([]);
   const [selectedCreneau, setSelectedCreneau] = useState<Creneau | null>(null);
@@ -26,16 +39,18 @@ const ClubDetailsJoueur: React.FC = () => {
   // États pour "Lire plus"
   const [showFullDescription, setShowFullDescription] = useState(false);
 
-  // Charger les infos du club
+  // ────────────────────────────────────────────────────────────────────────────────
+  // Chargement des infos club
+  // ────────────────────────────────────────────────────────────────────────────────
   useEffect(() => {
     const fetchClub = async () => {
       if (!id) return;
       try {
         setLoading(true);
-        const data = await ClubService.getClubById(parseInt(id));
+        const data = await ClubService.getClubById(parseInt(id, 10));
         setClub(data);
-        
-        // Initialiser le sport sélectionné avec le premier sport disponible
+
+        // Initialise le sport sélectionné
         if (data.sports && data.sports.length > 0) {
           setSelectedSport(data.sports[0]);
         } else if (data.sport) {
@@ -51,14 +66,17 @@ const ClubDetailsJoueur: React.FC = () => {
     fetchClub();
   }, [id]);
 
-  // Charger les créneaux
+  // ────────────────────────────────────────────────────────────────────────────────
+  // Chargement des créneaux du club
+  // ────────────────────────────────────────────────────────────────────────────────
   useEffect(() => {
     const fetchCreneaux = async () => {
       if (!id || !selectedDate || !selectedSport) return;
       try {
-        const url = `http://localhost:8080/api/creneaux/club/${id}?date=${selectedDate}&sport=${encodeURIComponent(selectedSport)}`;
+        const url = `http://localhost:8080/api/creneaux/club/${id}?date=${selectedDate}&sport=${encodeURIComponent(
+          selectedSport
+        )}`;
         const res = await fetch(url);
-        
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         setCreneaux(data || []);
@@ -70,14 +88,17 @@ const ClubDetailsJoueur: React.FC = () => {
     fetchCreneaux();
   }, [id, selectedDate, selectedSport]);
 
-  const formatDate = (isoDate: string) => {
-    const date = new Date(isoDate);
-    return date.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' });
+  // ────────────────────────────────────────────────────────────────────────────────
+  // Helpers d’affichage
+  // ────────────────────────────────────────────────────────────────────────────────
+  const formatDate = (ymd: string) => {
+    const d = parseYMDLocal(ymd); // évite le bug Date("YYYY-MM-DD") en UTC
+    return formatShortDate(d);
   };
 
   const getSportEmoji = (sport: string) => {
-    const sportLower = sport.toLowerCase();
-    const emojis: { [key: string]: string } = {
+    const s = (sport || "").toLowerCase();
+    const emojis: Record<string, string> = {
       padel: "🎾",
       tennis: "🎾",
       foot: "⚽",
@@ -88,7 +109,27 @@ const ClubDetailsJoueur: React.FC = () => {
       volley: "🏐",
       volleyball: "🏐",
     };
-    return emojis[sportLower] || "🏅";
+    return emojis[s] || "🏅";
+  };
+
+  // Nom de terrain robuste (selon que l’API renvoie nom/nomTerrain)
+  const getTerrainName = (cr: Creneau) =>
+    (cr.terrain as any)?.nomTerrain || (cr.terrain as any)?.nom || "Terrain";
+
+  // Label heure/date du créneau (lisible)
+  const renderCreneauTime = (cr: Creneau) => {
+    // Cas API “ancienne” : heureDebut/heureFin + dateDebut
+    if (cr.heureDebut && cr.heureFin && cr.dateDebut) {
+      const d = parseLocalDateTime(cr.dateDebut);
+      const dateLbl = formatShortDate(d);
+      return `${dateLbl} • ${cr.heureDebut}–${cr.heureFin}`;
+    }
+    // Cas API “nouvelle” : dateDebut/dateFin
+    if (cr.dateDebut && cr.dateFin) {
+      return formatRangeLocal(cr.dateDebut, cr.dateFin);
+    }
+    // Fallback
+    return `${cr.heureDebut || cr.dateDebut} - ${cr.heureFin || cr.dateFin}`;
   };
 
   const generateDates = () => {
@@ -97,32 +138,34 @@ const ClubDetailsJoueur: React.FC = () => {
     for (let i = 0; i < 21; i++) {
       const date = new Date(today);
       date.setDate(today.getDate() + i);
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const day = String(date.getDate()).padStart(2, "0");
-      dates.push(`${year}-${month}-${day}`);
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, "0");
+      const d = String(date.getDate()).padStart(2, "0");
+      dates.push(`${y}-${m}-${d}`);
     }
     return dates;
   };
 
-  const handleReserver = (creneau: Creneau) => {
-    setSelectedCreneau(creneau);
-  };
+  const handleReserver = (creneau: Creneau) => setSelectedCreneau(creneau);
 
   const handleReservationSuccess = () => {
     setSelectedCreneau(null);
-    const url = `http://localhost:8080/api/creneaux/club/${id}?date=${selectedDate}&sport=${encodeURIComponent(selectedSport)}`;
+    // refresh des créneaux
+    const url = `http://localhost:8080/api/creneaux/club/${id}?date=${selectedDate}&sport=${encodeURIComponent(
+      selectedSport
+    )}`;
     fetch(url)
-      .then(res => res.json())
-      .then(data => setCreneaux(data || []))
-      .catch(err => console.error("Erreur rechargement:", err));
+      .then((r) => r.json())
+      .then((data) => setCreneaux(data || []))
+      .catch((err) => console.error("Erreur rechargement:", err));
   };
 
-  const truncateText = (text: string, maxLength: number = 200) => {
-    if (!text || text.length <= maxLength) return text;
-    return text.substring(0, maxLength) + "...";
-  };
+  const truncateText = (text: string, maxLength = 200) =>
+    !text || text.length <= maxLength ? text : text.slice(0, maxLength) + "...";
 
+  // ────────────────────────────────────────────────────────────────────────────────
+  // Renders
+  // ────────────────────────────────────────────────────────────────────────────────
   if (loading) {
     return (
       <div className="club-details-loading">
@@ -172,7 +215,7 @@ const ClubDetailsJoueur: React.FC = () => {
         </div>
       </div>
 
-      {/* Description */}
+      {/* Description & Contact */}
       <div className="club-info-section">
         {club.description && (
           <div className="info-card description-card">
@@ -185,7 +228,10 @@ const ClubDetailsJoueur: React.FC = () => {
                 {showFullDescription ? club.description : truncateText(club.description, 200)}
               </p>
               {club.description.length > 200 && (
-                <button className="btn-read-more" onClick={() => setShowFullDescription(!showFullDescription)}>
+                <button
+                  className="btn-read-more"
+                  onClick={() => setShowFullDescription((v) => !v)}
+                >
                   {showFullDescription ? (
                     <>
                       <ChevronUp className="btn-icon" /> Voir moins
@@ -201,7 +247,6 @@ const ClubDetailsJoueur: React.FC = () => {
           </div>
         )}
 
-        {/* Contact */}
         <div className="info-card contact-card">
           <div className="info-card-header">
             <Phone className="card-icon" />
@@ -236,7 +281,10 @@ const ClubDetailsJoueur: React.FC = () => {
                 </button>
               ))
             ) : club.sport ? (
-              <button className="sport-badge active" onClick={() => setSelectedSport(club.sport!)}>
+              <button
+                className="sport-badge active"
+                onClick={() => setSelectedSport(club.sport!)}
+              >
                 {getSportEmoji(club.sport)} {club.sport}
               </button>
             ) : null}
@@ -263,6 +311,7 @@ const ClubDetailsJoueur: React.FC = () => {
       {/* Créneaux */}
       <div className="creneaux-section">
         <h3>Créneaux disponibles le {formatDate(selectedDate)}</h3>
+
         {creneaux.length === 0 ? (
           <div className="no-creneaux">
             <div className="no-creneaux-icon">📅</div>
@@ -274,18 +323,33 @@ const ClubDetailsJoueur: React.FC = () => {
             {creneaux.map((creneau) => (
               <div key={creneau.id} className="creneau-card">
                 <div className="creneau-info">
-                  <div className="creneau-icon">{getSportEmoji(creneau.terrain.sport || "sport")}</div>
+                  <div className="creneau-icon">
+                    {getSportEmoji((creneau.terrain as any)?.sport || "sport")}
+                  </div>
                   <div className="creneau-details">
-                    <h4>{creneau.terrain.nom}</h4>
+                    <h4>{getTerrainName(creneau)}</h4>
+
+                    {/* ✅ Affichage lisible et cohérent */}
                     <p className="creneau-time">
-                      ⏰ {creneau.heureDebut || creneau.dateDebut} - {creneau.heureFin || creneau.dateFin}
+                      <Clock size={16} className="inline-icon text-emerald-700" />
+                      {" "}
+                      {renderCreneauTime(creneau)}
                     </p>
-                    <p className="creneau-sport">{creneau.terrain.sport || "Sport"}</p>
+
+                    <p className="creneau-sport">
+                      {(creneau.terrain as any)?.sport || "Sport"}
+                    </p>
                   </div>
                 </div>
+
                 <div className="creneau-action">
-                  <p className="creneau-prix">{creneau.prix} DA</p>
-                  <button className="btn-reserver" onClick={() => handleReserver(creneau)}>
+                  <p className="creneau-prix">
+                    {creneau.prix.toLocaleString("fr-DZ")} DA
+                  </p>
+                  <button
+                    className="btn-reserver"
+                    onClick={() => handleReserver(creneau)}
+                  >
                     Réserver
                   </button>
                 </div>
@@ -301,7 +365,7 @@ const ClubDetailsJoueur: React.FC = () => {
           creneau={selectedCreneau}
           onClose={() => setSelectedCreneau(null)}
           onReservation={handleReservationSuccess}
-          politiqueClub={club.politique} // ✅ passage direct
+          politiqueClub={club.politique}
         />
       )}
     </div>

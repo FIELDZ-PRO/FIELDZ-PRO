@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import './style/CreneauForm.css'
+import './style/CreneauForm.css';
+
 interface CreneauFormProps {
   terrains: { id: number; nomTerrain: string; typeSurface?: string }[];
   onSubmit: (data: {
-    dateDebut: string;
-    dateFin: string;
+    dateDebut: string;  // "YYYY-MM-DDTHH:mm:ss" (local, sans Z)
+    dateFin: string;    // "YYYY-MM-DDTHH:mm:ss" (local, sans Z)
     prix: number;
     terrainId: number;
   }) => void;
@@ -17,6 +18,9 @@ const CreneauForm: React.FC<CreneauFormProps> = ({ terrains, onSubmit }) => {
   const [heureFin, setHeureFin] = useState('');
   const [prix, setPrix] = useState('');
 
+  // ✅ petit helper: ajoute ":00" si l'input time renvoie HH:mm
+  const addSeconds = (t: string) => (t && t.length === 5 ? `${t}:00` : t);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -25,21 +29,25 @@ const CreneauForm: React.FC<CreneauFormProps> = ({ terrains, onSubmit }) => {
       return;
     }
 
-    const dateDebut = new Date(`${date}T${heureDebut}:00`);
-    const dateFin = new Date(`${date}T${heureFin}:00`);
+    // ✅ IMPORTANT : on construit des chaînes locales SANS créer d'objet Date
+    // et SANS toISOString() (qui convertirait en UTC et décale d'1h)
+    const dateDebut = `${date}T${addSeconds(heureDebut)}`; // ex: "2025-12-25T10:00:00"
+    const dateFin   = `${date}T${addSeconds(heureFin)}`;   // ex: "2025-12-25T11:30:00"
 
+    // ✅ vérif simple : comparaison lexicographique OK sur ce format
     if (dateFin <= dateDebut) {
       alert("L'heure de fin doit être après l'heure de début.");
       return;
     }
 
     onSubmit({
-      dateDebut: dateDebut.toISOString(),
-      dateFin: dateFin.toISOString(),
+      dateDebut,               // ✅ chaîne locale (pas de Z)
+      dateFin,                 // ✅ chaîne locale (pas de Z)
       prix: Number(prix),
       terrainId: Number(terrainId),
     });
 
+    // Reset du formulaire
     setTerrainId('');
     setDate('');
     setHeureDebut('');
@@ -55,7 +63,7 @@ const CreneauForm: React.FC<CreneauFormProps> = ({ terrains, onSubmit }) => {
           <option value="">-- Sélectionner un terrain --</option>
           {terrains.map((t) => (
             <option key={t.id} value={t.id}>
-              {t.nomTerrain} ({t.typeSurface})
+              {t.nomTerrain} {t.typeSurface ? `(${t.typeSurface})` : ''}
             </option>
           ))}
         </select>
