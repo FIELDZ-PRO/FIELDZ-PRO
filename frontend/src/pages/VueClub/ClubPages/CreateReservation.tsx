@@ -115,13 +115,11 @@ export const CreateReservationPage: React.FC = () => {
         );
     }
 
-    // 🧮 Filter only today's reservations
     const todayReservations = reservations.filter(r => {
         const resDate = new Date(r.creneau.dateDebut).toISOString().slice(0, 10);
         return resDate === today;
     });
 
-    // ✅ Filter today's confirmed reservations
     const todayConfirmedReservations = todayReservations.filter(
         r => r.statut === 'CONFIRMEE'
     );
@@ -144,22 +142,11 @@ export const CreateReservationPage: React.FC = () => {
                 />
             </div>
 
-            {/* Reservation par date Section */}
-            <div className="card-section">
-                <ReservationParDateSection
-                    date={date}
-                    onDateChange={setDate}
-                    onVoir={handleVoirReservationsDate}
-                    reservations={reservationsDate}
-                />
-            </div>
-
             {/* 📊 Dashboard Stats (only for today) */}
             <div className="card-section">
                 <h1 className="stats-title">
                     Dashboard du club — {new Date(today).toLocaleDateString('fr-FR')}
                 </h1>
-
                 <div className="stats-container">
                     {/* Terrains */}
                     <div className="stat-card">
@@ -170,7 +157,6 @@ export const CreateReservationPage: React.FC = () => {
                             Terrains
                         </div>
                     </div>
-
                     {/* Today's Reservations */}
                     <div className="stat-card">
                         <div className="stat-value">
@@ -180,7 +166,6 @@ export const CreateReservationPage: React.FC = () => {
                             Réservations du jour
                         </div>
                     </div>
-
                     {/* Today's Confirmed Reservations */}
                     <div className="stat-card stat-card-success">
                         <div className="stat-value stat-value-success">

@@ -114,6 +114,15 @@ const CreneauxSection: React.FC<Props> = ({ terrains, reservations, setReservati
         </section>
       </div>
 
+
+
+      {/* ♻️ Section 3: Créneaux récurrents */}
+      <div className="section-wrapper">
+        <section>
+          <div className="section-title">Ajout de créneaux récurrents</div>
+          <CreneauRecurrentFormSection terrains={terrains} onSubmit={handleAddCreneauxRecurrents} />
+        </section>
+      </div>
       {/* 📅 Section 2: Créneaux à venir */}
       <div className="section-wrapper">
         <section>
@@ -125,15 +134,8 @@ const CreneauxSection: React.FC<Props> = ({ terrains, reservations, setReservati
           />
         </section>
       </div>
-
-      {/* ♻️ Section 3: Créneaux récurrents */}
-      <div className="section-wrapper">
-        <section>
-          <div className="section-title">Ajout de créneaux récurrents</div>
-          <CreneauRecurrentFormSection terrains={terrains} onSubmit={handleAddCreneauxRecurrents} />
-        </section>
-      </div>
     </div>
+
   );
 };
 
