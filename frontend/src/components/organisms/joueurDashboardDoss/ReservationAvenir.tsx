@@ -2,12 +2,13 @@ import React, { useMemo, useState } from "react";
 import { Calendar, Clock, MapPin, CheckCircle, Loader } from "lucide-react";
 import { Reservation } from "../../../types";
 import { ReservationService } from "../../../services/ReservationService";
+import MotifAnnulationModal from "../../molecules/MotifAnnulationModal";
 import "./style/ReservationAvenir.css";
 
 type Props = {
   reservations: Reservation[];
   onUpdate?: () => void;
-  isPast?: boolean; // Nouvelle prop pour identifier les réservations passées
+  isPast?: boolean;
 };
 
 type FilterStatus = "all" | "CONFIRMEE" | "RESERVE";
@@ -15,26 +16,58 @@ type FilterStatus = "all" | "CONFIRMEE" | "RESERVE";
 const ReservationAVenir: React.FC<Props> = ({ reservations, onUpdate, isPast = false }) => {
   const [filterStatus, setFilterStatus] = useState<FilterStatus>("all");
   const [loadingCancel, setLoadingCancel] = useState<number | null>(null);
+  const [showMotifModal, setShowMotifModal] = useState(false);
+  const [reservationToCancel, setReservationToCancel] = useState<number | null>(null);
 
   const filteredReservations = useMemo(() => {
     if (filterStatus === "all") return reservations;
     return reservations.filter((r) => r.statut === filterStatus);
   }, [reservations, filterStatus]);
 
-  const handleCancel = async (reservationId: number) => {
-    if (!window.confirm("Êtes-vous sûr de vouloir annuler cette réservation ?")) {
-      return;
-    }
+  // Ouvrir la modal de motif
+  const openMotifModal = (reservationId: number) => {
+    setReservationToCancel(reservationId);
+    setShowMotifModal(true);
+  };
+
+  // Fermer la modal
+  const closeMotifModal = () => {
+    setShowMotifModal(false);
+    setReservationToCancel(null);
+  };
+
+  // Confirmer l'annulation avec motif
+  const handleCancelWithMotif = async (motif: string) => {
+    if (!reservationToCancel) return;
 
     try {
-      setLoadingCancel(reservationId);
-      await ReservationService.cancelReservation(reservationId);
+      setLoadingCancel(reservationToCancel);
+      console.log("Annulation réservation ID:", reservationToCancel);
+      console.log("Motif:", motif);
+      
+      // ⚠️ Passer le motif au service
+      await ReservationService.cancelReservation(reservationToCancel, motif);
+      
+      alert("Réservation annulée avec succès !");
+      closeMotifModal();
+      
       if (onUpdate) {
         onUpdate();
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Erreur lors de l'annulation:", error);
-      alert("Impossible d'annuler la réservation");
+      
+      const errorMessage = error.message || "Erreur inconnue";
+      
+      if (errorMessage.includes("déjà annulée") || errorMessage.includes("already cancelled")) {
+        alert("Cette réservation est déjà annulée.");
+        closeMotifModal();
+        if (onUpdate) {
+          onUpdate();
+        }
+      } else {
+        alert("Erreur lors de l'annulation : " + errorMessage);
+      }
     } finally {
       setLoadingCancel(null);
     }
@@ -132,11 +165,11 @@ const ReservationAVenir: React.FC<Props> = ({ reservations, onUpdate, isPast = f
             const terrain = creneau?.terrain;
             const dateDebut = creneau?.dateDebut || "";
             const dateFin = creneau?.dateFin || "";
-            const isPassee = reservation.statut === "CONFIRMEE"; // Passée = CONFIRMEE
+            const isPassee = reservation.statut === "CONFIRMEE";
 
             return (
               <div key={reservation.id} className={`reservation-card-avenir ${isPassee ? 'reservation-past' : ''}`}>
-                {/* Header avec dégradé vert */}
+                {/* Header */}
                 <div className="reservation-header-avenir">
                   <div className="reservation-header-left">
                     <div className="terrain-icon">🏟️</div>
@@ -155,7 +188,7 @@ const ReservationAVenir: React.FC<Props> = ({ reservations, onUpdate, isPast = f
                   </div>
                 </div>
 
-                {/* Body avec 3 colonnes */}
+                {/* Body */}
                 <div className="reservation-body-avenir">
                   <div className="reservation-info-row">
                     {/* Date */}
@@ -196,11 +229,11 @@ const ReservationAVenir: React.FC<Props> = ({ reservations, onUpdate, isPast = f
                     </div>
                   </div>
 
-                  {/* Bouton annuler - seulement pour réservations "À venir" (statut RESERVE) */}
+                  {/* Bouton annuler */}
                   {!isPassee && (
                     <div className="reservation-actions-avenir">
                       <button
-                        onClick={() => handleCancel(reservation.id)}
+                        onClick={() => openMotifModal(reservation.id)}
                         disabled={loadingCancel === reservation.id}
                         className="btn-cancel"
                       >
@@ -215,6 +248,14 @@ const ReservationAVenir: React.FC<Props> = ({ reservations, onUpdate, isPast = f
             );
           })}
         </div>
+      )}
+
+      {/* Modal de motif d'annulation */}
+      {showMotifModal && (
+        <MotifAnnulationModal
+          onClose={closeMotifModal}
+          onSubmit={handleCancelWithMotif}
+        />
       )}
     </div>
   );
