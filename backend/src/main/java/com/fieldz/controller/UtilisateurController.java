@@ -148,42 +148,49 @@ public class UtilisateurController {
         }
 
         if (utilisateur instanceof Club club) {
-            // ✅ 1. Re-fetch the managed entity from DB using its ID
+            // Re-fetch entity managed (bonne pratique JPA)
             Club managedClub = utilisateurRepository.findById(club.getId())
                     .filter(Club.class::isInstance)
                     .map(Club.class::cast)
                     .orElseThrow(() -> new RuntimeException("Club introuvable"));
-            // Nazim : j'ai changé cette partie pour plus de clarification et pour permettre
-            // au club d'être libre sur leur modification
-            managedClub.setNom(req.getNom());
-            managedClub.setVille(req.getVille());
-            managedClub.setAdresse(req.getAdresse());
-            managedClub.setTelephone(req.getTelephone());
-            managedClub.setBanniereUrl(req.getBanniereUrl());
-            managedClub.setDescription(req.getDescription());
-            managedClub.setPolitique(req.getPolitique());
-            System.out.println("The club's politics are : " + managedClub.getDescription());
 
-            Set<Sport> sports = req.getSports();
-            if (sports != null) {
-                // Choix d'update:
-                // - si vide => on efface; si tu préfères "ne pas toucher si vide", remplace
-                // par:
-                // if (!sports.isEmpty()) club.setSports(sports);
-                managedClub.setSports(sports);
+            // Helpers
+            java.util.function.Function<String, String> clean = s -> (s == null) ? null : s.trim();
+            java.util.function.Predicate<String> hasText = s -> s != null && !s.trim().isEmpty();
+
+            // N'écrire que si fourni et non vide (évite d'écraser par "")
+            if (hasText.test(req.getNom()))          managedClub.setNom(clean.apply(req.getNom()));
+            if (hasText.test(req.getVille()))        managedClub.setVille(clean.apply(req.getVille()));
+            if (hasText.test(req.getAdresse()))      managedClub.setAdresse(clean.apply(req.getAdresse()));
+            if (hasText.test(req.getTelephone()))    managedClub.setTelephone(clean.apply(req.getTelephone()));
+            if (hasText.test(req.getBanniereUrl()))  managedClub.setBanniereUrl(clean.apply(req.getBanniereUrl()));
+
+            // Champs longs : on accepte chaîne vide => efface si tu veux, sinon garde la même logique que dessus
+            if (req.getDescription() != null)        managedClub.setDescription(req.getDescription()); // pas de trim obligatoire
+            if (req.getPolitique() != null)          managedClub.setPolitique(req.getPolitique());
+
+            if (req.getSports() != null) {
+                managedClub.setSports(req.getSports()); // null => ne touche pas; vide => efface
             }
 
-            // (Optionnel) Revalider profilComplet si souhaité :
-            if (!club.isProfilComplet() &&
-                    notBlank(club.getNom()) && notBlank(club.getVille()) && notBlank(club.getTelephone())) {
-                managedClub.setProfilComplet(true);
+            // (Re)validation profil complet basée sur l'entité à jour
+            if (!Boolean.TRUE.equals(managedClub.isProfilComplet())) {
+                if (hasText.test(managedClub.getNom())
+                        && hasText.test(managedClub.getVille())
+                        && hasText.test(managedClub.getTelephone())) {
+                    managedClub.setProfilComplet(true);
+                }
             }
 
-            // Nazim : Je comprenais pas pk mais ici la save ne persistait pas dans la
-            // database du coup j'ai mis le clubmanaged
+            // Log correct
+            System.out.println("Club politique (aperçu) : " +
+                    (managedClub.getPolitique() == null ? "<null>" :
+                            managedClub.getPolitique().substring(0, Math.min(80, managedClub.getPolitique().length())) + "..."));
+
             utilisateurRepository.save(managedClub);
             return ResponseEntity.ok("Profil club mis à jour avec succès.");
         }
+
 
         return ResponseEntity.badRequest().body("Type d'utilisateur non pris en charge.");
     }

@@ -36,9 +36,9 @@ public class Club extends Utilisateur {
     @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Terrain> terrains;
 
-    // Ajout de la politique du club
-
+    @Column(columnDefinition = "TEXT")
     private String politique;
 
+    @Column(columnDefinition = "TEXT")
     private String description;
 }

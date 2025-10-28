@@ -58,12 +58,18 @@ public class ClubService {
         if (notBlank(dto.getAdresse())) club.setAdresse(dto.getAdresse());
         if (notBlank(dto.getTelephone())) club.setTelephone(dto.getTelephone());
         if (notBlank(dto.getBanniereUrl())) club.setBanniereUrl(dto.getBanniereUrl());
+
+        // ✅ champs longs (ne pas filtrer avec notBlank : on veut accepter du multi-ligne)
+        if (dto.getDescription() != null) club.setDescription(dto.getDescription());
+        if (dto.getPolitique() != null) club.setPolitique(dto.getPolitique());
+
         Set<Sport> sports = dto.getSports();
         if (sports != null) club.setSports(sports);
 
         Club saved = (Club) utilisateurRepository.save(club);
         return ClubMapper.toDto(saved);
     }
+
 
     // ---------- NOUVELLES MÉTHODES DE RECHERCHE ----------
 
