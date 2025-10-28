@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+// src/components/molecules/CreneauCard.tsx
+import React from 'react';
 import { Creneau } from "../../types";
 import { toast } from "react-toastify";
 import { useAuth } from "../../context/AuthContext";
-import { fetchCreneaux } from "../../services/ClubService";
+
 type Props = {
   creneau: Creneau;
   onReserver?: () => void;
@@ -12,6 +13,7 @@ type Props = {
 
 const CreneauCard: React.FC<Props> = ({ creneau, onReserver, onUpdate, role }) => {
   const { token } = useAuth();
+
   const handleAnnulerCreneau = async () => {
     if (!window.confirm("Voulez-vous vraiment annuler ce créneau ?")) return;
 
@@ -33,64 +35,61 @@ const CreneauCard: React.FC<Props> = ({ creneau, onReserver, onUpdate, role }) =
       console.error(err);
     }
   };
-  console.log(creneau)
+
+  const terrainNom = creneau.terrain?.nomTerrain || "Terrain inconnu";
+  const typeSurface = creneau.terrain?.typeSurface;
+  const taille = creneau.terrain?.taille;
+
+  const dateStr = creneau.dateDebut
+    ? new Date(creneau.dateDebut).toLocaleDateString("fr-FR")
+    : "Date inconnue";
+
+  const heureStr =
+    creneau.dateDebut && creneau.dateFin
+      ? `${new Date(creneau.dateDebut).toLocaleTimeString("fr-FR", {
+          hour: "2-digit",
+          minute: "2-digit",
+        })} – ${new Date(creneau.dateFin).toLocaleTimeString("fr-FR", {
+          hour: "2-digit",
+          minute: "2-digit",
+        })}`
+      : "Heure inconnue";
+
   return (
     <div className="creneau-card">
+      {/* 🔹 Titre : TERRAIN (plus de club ici) */}
       <div className="card-title">
-        {creneau.terrain?.club?.nom || "Club inconnu"}
-        {creneau.terrain?.ville && (
-          <span className="card-subtitle"> • {creneau.terrain.ville}</span>
-        )}
+        {terrainNom}
+        {typeSurface && <span className="card-subtitle"> • {typeSurface}</span>}
       </div>
 
-      <div className="card-info">
-        {creneau.terrain?.nomTerrain || "Terrain inconnu"}
-        {creneau.terrain?.typeSurface && ` • ${creneau.terrain.typeSurface}`}
-        {creneau.terrain?.taille && ` • ${creneau.terrain.taille}`}
-      </div>
+      
 
-      <div className="card-info">
-        📅{" "}
-        {creneau.dateDebut
-          ? new Date(creneau.dateDebut).toLocaleDateString("fr-FR")
-          : "Date inconnue"}
-      </div>
+      {/* 🔹 Date */}
+      <div className="card-info"> {dateStr}</div>
 
-      <div className="card-info">
-        ⏰{" "}
-        {creneau.dateDebut && creneau.dateFin
-          ? `${new Date(creneau.dateDebut).toLocaleTimeString("fr-FR", {
-            hour: "2-digit",
-            minute: "2-digit",
-          })} – ${new Date(creneau.dateFin).toLocaleTimeString("fr-FR", {
-            hour: "2-digit",
-            minute: "2-digit",
-          })}`
-          : "Heure inconnue"}
-      </div>
+      {/* 🔹 Heure */}
+      <div className="card-info"> {heureStr}</div>
 
+      {/* 🔹 Prix */}
       <div className="card-prix">
         {creneau.prix != null ? `${creneau.prix} Da` : "Prix non défini"}
       </div>
 
+      {/* 🔹 Actions */}
       <div className="card-actions">
         {role === "joueur" && onReserver && (
-          <button
-            onClick={onReserver}
-            className="jd-btn-primary"
-          >
+          <button onClick={onReserver} className="jd-btn-primary">
             Réserver
           </button>
         )}
 
-        {role === "club" && (creneau.statut === "LIBRE" || creneau.statut === "RESERVE") && (
-          <button
-            onClick={handleAnnulerCreneau}
-            className="jd-btn-danger"
-          >
-            ❌ Annuler ce créneau
-          </button>
-        )}
+        {role === "club" &&
+          (creneau.statut === "LIBRE" || creneau.statut === "RESERVE") && (
+            <button onClick={handleAnnulerCreneau} className="jd-btn-danger">
+              ❌ Annuler ce créneau
+            </button>
+          )}
       </div>
     </div>
   );

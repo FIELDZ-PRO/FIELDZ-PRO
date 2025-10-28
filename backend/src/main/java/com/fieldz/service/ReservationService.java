@@ -21,6 +21,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.format.DateTimeFormatter;
 
+import java.time.Duration;
 
 
 
@@ -36,6 +37,8 @@ public class ReservationService {
 
     private final JoueurService joueurService;
     private final NotificationService notificationService;
+
+    private static final Duration NO_SHOW_GRACE = Duration.ofMinutes(15);
 
 
 
@@ -229,6 +232,62 @@ public class ReservationService {
 
     }
 
+    public String marquerAbsent(Long reservationId, Authentication authentication, String motif) {
+        String email = authentication.getName();
+        Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
+
+        if (!(utilisateur instanceof Club club)) {
+            throw new RuntimeException("Seul un club peut marquer une absence.");
+        }
+
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new ReservationIntrouvableException("Réservation introuvable."));
+
+        // Vérifier que la réservation appartient bien à ce club
+        if (reservation.getCreneau() == null ||
+                reservation.getCreneau().getTerrain() == null ||
+                reservation.getCreneau().getTerrain().getClub() == null ||
+                !reservation.getCreneau().getTerrain().getClub().getId().equals(club.getId())) {
+            throw new RuntimeException("Action non autorisée pour ce club.");
+        }
+
+        // Transitions autorisées : RESERVE -> ABSENT, CONFIRMEE -> ABSENT (optionnel)
+        Statut s = reservation.getStatut();
+        if (!(s == Statut.RESERVE || s == Statut.CONFIRMEE)) {
+            throw new IllegalStateException("Transition vers ABSENT non autorisée depuis " + s);
+        }
+
+        // Règle de timing : après l'heure de début + marge (15 min)
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime start = reservation.getCreneau().getDateDebut();
+        if (now.isBefore(start.plus(NO_SHOW_GRACE))) {
+            throw new IllegalStateException(
+                    "Impossible de marquer absent avant " + NO_SHOW_GRACE.toMinutes() + " minutes après le début."
+            );
+        }
+
+        reservation.setStatut(Statut.ABSENT);
+        reservation.setDateAnnulation(now); // on historise la date du no-show
+        if (motif != null && !motif.isBlank()) {
+            reservation.setMotifAnnulation(motif);
+        } else {
+            reservation.setMotifAnnulation("Absence constatée par le club");
+        }
+
+        // ⚠️ On ne libère PAS le créneau : l'événement est passé, l'historique doit refléter la réalité
+        reservationRepository.save(reservation);
+
+        // (Optionnel) notification au joueur
+        try {
+            notificationService.notifierAbsenceReservationParClub(reservation,
+                    reservation.getMotifAnnulation() != null ? reservation.getMotifAnnulation() : "Absence");
+        } catch (Exception e) {
+            log.warn("Notification absence non envoyée: {}", e.getMessage());
+        }
+
+        return "Réservation marquée comme ABSENT.";
+    }
 
 
 }

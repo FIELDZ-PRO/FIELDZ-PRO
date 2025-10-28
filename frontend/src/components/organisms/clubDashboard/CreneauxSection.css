@@ -1,28 +1,332 @@
+/* ===============================
+   🧩 SECTIONS — blocs encadrés
+   =============================== */
 .section-wrapper {
-    background-color: #ffffff;
-    border-radius: 16px;
-    padding: 28px;
-    border: 1px solid #e2e8f0;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-    transition: box-shadow 0.3s ease, transform 0.3s ease;
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 28px;
+  border: 1px solid #e2e8f0; /* gris clair */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 
 .section-wrapper:hover {
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-    transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  transform: translateY(-3px);
 }
 
+.section-wrapper + .section-wrapper {
+  margin-top: 40px;
+}
 
-.section-wrapper+.section-wrapper {
-    margin-top: 40px;
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937; /* gris foncé */
+  margin-bottom: 20px;
 }
 
 @media (max-width: 768px) {
+  .section-wrapper {
+    padding: 20px;
+  }
+}
 
+/* ===============================
+   🎯 BARRE DE FILTRES — PILLS
+   =============================== */
 
-    .section-wrapper {
-        padding: 20px;
-    }
+/* grille sans fond */
+.filters-bar {
+  display: grid;
+  grid-template-columns: 1.4fr 0.9fr 1fr 0.9fr auto;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 16px;
+}
 
+/* conteneur d'un champ (pill) */
+.fz-control {
+  position: relative;
+  display: block;
+}
 
+/* icône à gauche, centrée verticalement */
+.fz-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6b7280;              /* gray-500 */
+  pointer-events: none;
+}
+
+/* style commun (input / select / date) */
+.fz-input,
+.fz-select {
+  width: 100%;
+  height: 44px;
+  padding: 10px 14px 10px 42px;  /* place pour l’icône */
+  font-size: 14px;
+  border: 1px solid #e5e7eb;     /* gray-200 */
+  background: #fff;
+  border-radius: 14px;           /* arrondi plus généreux */
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+  transition:
+    border-color .15s ease,
+    box-shadow .15s ease,
+    background .15s ease,
+    transform .05s ease;
+}
+
+/* focus vert + halo doux */
+.fz-input:focus,
+.fz-select:focus {
+  outline: none;
+  border-color: #10b981;         /* green-500/600 Fieldz */
+  box-shadow: 0 0 0 3px rgba(16,185,129,.16), 0 4px 12px rgba(0,0,0,.06);
+}
+
+/* petit effet press */
+.fz-input:active,
+.fz-select:active { transform: translateY(1px); }
+
+/* bouton Réinitialiser en “super pill” */
+.btn-reset {
+  height: 44px;
+  padding: 0 20px;
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: 9999px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  color: #111827;
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+  transition: background .15s ease, box-shadow .15s ease, transform .05s ease;
+}
+.btn-reset:hover {
+  background: #f9fafb;
+  box-shadow: 0 4px 16px rgba(0,0,0,.08);
+}
+.btn-reset:active { transform: translateY(1px); }
+
+/* ajuste la flèche native des <select> (évite qu'elle touche l’icône) */
+.fz-select {
+  padding-right: 36px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #6b7280 50%),
+    linear-gradient(135deg, #6b7280 50%, transparent 50%);
+  background-position:
+    calc(100% - 18px) 18px,
+    calc(100% - 12px) 18px;
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+}
+
+/* date : évite le “padding cassé” sur certains navigateurs */
+.fz-input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: .7;
+  margin-right: 4px;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .filters-bar { grid-template-columns: 1fr 1fr 1fr; }
+}
+@media (max-width: 640px) {
+  .filters-bar { grid-template-columns: 1fr; }
+}
+
+/* ===============================
+   🎯 BARRE DE FILTRES — PILLS
+   =============================== */
+
+/* grille sans fond */
+.filters-bar {
+  display: grid;
+  grid-template-columns: 1.4fr 0.9fr 1fr 0.9fr auto;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+/* conteneur d'un champ (pill) */
+.fz-control {
+  position: relative;
+  display: block;
+}
+
+/* icône à gauche, centrée verticalement */
+.fz-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6b7280;              /* gray-500 */
+  pointer-events: none;
+}
+
+/* style commun (input / select / date) */
+.fz-input,
+.fz-select {
+  width: 100%;
+  height: 44px;
+  padding: 10px 14px 10px 42px;  /* place pour l’icône */
+  font-size: 14px;
+  border: 1px solid #e5e7eb;     /* gray-200 */
+  background: #fff;
+  border-radius: 14px;           /* arrondi plus généreux */
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+  transition:
+    border-color .15s ease,
+    box-shadow .15s ease,
+    background .15s ease,
+    transform .05s ease;
+}
+
+/* focus vert + halo doux */
+.fz-input:focus,
+.fz-select:focus {
+  outline: none;
+  border-color: #10b981;         /* green-500/600 Fieldz */
+  box-shadow: 0 0 0 3px rgba(16,185,129,.16), 0 4px 12px rgba(0,0,0,.06);
+}
+
+/* petit effet press */
+.fz-input:active,
+.fz-select:active { transform: translateY(1px); }
+
+/* bouton Réinitialiser en “super pill” */
+.btn-reset {
+  height: 44px;
+  padding: 0 20px;
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: 9999px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  color: #111827;
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+  transition: background .15s ease, box-shadow .15s ease, transform .05s ease;
+}
+.btn-reset:hover {
+  background: #f9fafb;
+  box-shadow: 0 4px 16px rgba(0,0,0,.08);
+}
+.btn-reset:active { transform: translateY(1px); }
+
+/* ajuste la flèche native des <select> (évite qu'elle touche l’icône) */
+.fz-select {
+  padding-right: 36px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #6b7280 50%),
+    linear-gradient(135deg, #6b7280 50%, transparent 50%);
+  background-position:
+    calc(100% - 18px) 18px,
+    calc(100% - 12px) 18px;
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+}
+
+/* date : évite le “padding cassé” sur certains navigateurs */
+.fz-input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: .7;
+  margin-right: 4px;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .filters-bar { grid-template-columns: 1fr 1fr 1fr; }
+}
+@media (max-width: 640px) {
+  .filters-bar { grid-template-columns: 1fr; }
+}
+/* ===========================
+   CreneauCard — style FIELDZ
+   =========================== */
+
+.creneau-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;              /* gris clair */
+  border-radius: 16px;
+  padding: 22px 24px;
+  box-shadow: 0 4px 14px rgba(0,0,0,.06);
+  transition: box-shadow .2s ease, transform .1s ease, border-color .2s ease;
+}
+.creneau-card:hover {
+  border-color: #dbe3ec;
+  box-shadow: 0 10px 24px rgba(0,0,0,.10);
+  transform: translateY(-1px);
+}
+
+/* Titre : terrain (plus de club/ville) */
+.card-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #0f172a;                          /* slate-900 */
+  font-weight: 800;
+  font-size: 1.125rem;                     /* 18px */
+  margin-bottom: 6px;
+}
+.card-subtitle {
+  color: #64748b;                          /* slate-500 */
+  font-weight: 600;
+}
+
+/* Lignes d'info (date / heure) */
+.card-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #475569;                          /* slate-600 */
+  font-weight: 600;
+  margin-top: 6px;
+  line-height: 1.4;
+}
+
+/* Prix en avant, cohérent avec le reste */
+.card-prix {
+  margin-top: 12px;
+  color: #059669;                          /* green-600 */
+  font-weight: 800;
+  font-size: 1.25rem;                      /* 20px */
+  letter-spacing: .2px;
+}
+
+/* Actions : alignées à droite, espacées */
+.card-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+/* Boutons existants : léger polish */
+.jd-btn-primary, .jd-btn-danger {
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 10px;
+  font-weight: 700;
+  border: 1px solid transparent;
+  transition: filter .15s ease, box-shadow .15s ease, transform .05s ease;
+}
+.jd-btn-primary { box-shadow: 0 6px 12px rgba(16,185,129,.18); }
+.jd-btn-primary:hover { filter: brightness(1.05); }
+.jd-btn-danger  { box-shadow: 0 6px 12px rgba(220,38,38,.18); }
+.jd-btn-danger:hover  { filter: brightness(1.05); }
+.jd-btn-primary:active, .jd-btn-danger:active { transform: translateY(1px); }
+
+/* Responsive */
+@media (max-width: 640px) {
+  .creneau-card { padding: 18px; }
+  .card-prix { font-size: 1.125rem; }
+  .card-actions { flex-wrap: wrap; row-gap: 8px; }
 }

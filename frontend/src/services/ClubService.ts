@@ -412,6 +412,24 @@ export async function confirmReservations(id: number) {
   }
 }
 
+export async function markReservationAbsent(id: number, motif?: string) {
+  const res = await fetch(`${UrlService}/reservations/${id}/absent`, {
+    method: "PUT",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      ...getAuthHeaders(), // cohérent avec le reste
+    },
+    body: JSON.stringify({ motif: motif ?? "" }),
+  });
+
+  const text = await res.text(); // l’API renvoie une String
+  if (!res.ok) {
+    throw new Error(text || `HTTP ${res.status}`);
+  }
+  return text; // “Réservation marquée comme ABSENT.”
+}
+
 export async function getReservations(): Promise<ReservationSummary[]> {
   try {
     const res = await fetch(`${UrlService}/reservations/reservations`, {
@@ -559,3 +577,5 @@ export const ClubService = {
   // 👇 nouveau
   createCreneau,
 };
+
+

@@ -333,5 +333,86 @@ public class NotificationService {
         }
     }
 
+    public void notifierAbsenceReservationParClub(Reservation r, String motif) {
+        if (r == null || r.getJoueur() == null) return;
+
+        final Joueur joueur = r.getJoueur();
+        final Creneau c = r.getCreneau();
+
+        // --- 1) Email au joueur
+        try {
+            if (c != null) {
+                String sujet = "🚫 Absence constatée – FIELDZ";
+                String contenu = String.format(
+                        """
+                        Bonjour %s,
+    
+                        Le club a signalé votre absence (no-show) sur la réservation suivante :
+    
+                        📅 Date : %s
+                        🕒 Heure : %s - %s
+                        🏟️ Terrain : %s (Club : %s)
+                        %s
+    
+                        Si vous pensez qu’il s’agit d’une erreur, contactez le club au plus vite.
+    
+                        L’équipe FIELDZ
+                        """,
+                        joueur.getPrenom() != null ? joueur.getPrenom() : "",
+                        formatDate(c.getDateDebut()),
+                        formatHeure(c.getDateDebut()),
+                        formatHeure(c.getDateFin()),
+                        c.getTerrain() != null ? c.getTerrain().getNomTerrain() : "Terrain",
+                        (c.getTerrain() != null && c.getTerrain().getClub() != null) ? c.getTerrain().getClub().getNom() : "Club",
+                        (motif != null && !motif.isBlank()) ? ("\nMotif : " + motif) : ""
+                );
+
+                emailService.envoyerEmail(joueur.getEmail(), sujet, contenu);
+            }
+        } catch (Exception e) {
+            log.warn("Échec envoi email ABSENCE pour réservation {}: {}", r.getId(), e.getMessage());
+        }
+
+        // --- 2) Notification in-app au joueur
+        try {
+            Notification notif = new Notification();
+            notif.setDestinataire(joueur);
+            notif.setType(TypeNotification.ABSENCE);           // 👈 nouveau type
+            notif.setDateEnvoi(LocalDateTime.now());
+            notif.setLue(false);
+
+            String titre = "Absence marquée par le club";
+            String contenu;
+            if (c != null) {
+                contenu = String.format(
+                        "Le club a signalé une absence sur votre réservation.\n\nDate : %s\nHeure : %s - %s\nTerrain : %s%s",
+                        formatDate(c.getDateDebut()),
+                        formatHeure(c.getDateDebut()),
+                        formatHeure(c.getDateFin()),
+                        (c.getTerrain() != null ? c.getTerrain().getNomTerrain() : "Terrain"),
+                        (motif != null && !motif.isBlank() ? "\nMotif : " + motif : "")
+                );
+            } else {
+                contenu = "Le club a signalé une absence sur votre réservation."
+                        + (motif != null && !motif.isBlank() ? " Motif : " + motif : "");
+            }
+
+            // tes entités Notification semblent variables : on garde la même technique que chez toi
+            try { notif.getClass().getMethod("setTitre", String.class).invoke(notif, titre); } catch (Exception ignored) {}
+            try { notif.getClass().getMethod("setContenu", String.class).invoke(notif, contenu); } catch (Exception ignored) {}
+            try { notif.getClass().getMethod("setMessage", String.class).invoke(notif, contenu); } catch (Exception ignored) {}
+
+            notificationRepository.save(notif);
+        } catch (Exception e) {
+            log.warn("Échec création notification in-app ABSENCE pour réservation {}: {}", r.getId(), e.getMessage());
+        }
+    }
+
+    /** Overload pratique si pas de motif à fournir. */
+    public void notifierAbsenceReservationParClub(Reservation r) {
+        notifierAbsenceReservationParClub(r, null);
+    }
+
+
 
 }

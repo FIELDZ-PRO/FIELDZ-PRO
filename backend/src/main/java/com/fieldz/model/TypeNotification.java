@@ -5,5 +5,6 @@ public enum TypeNotification {
     ANNULATION,
     RAPPEL_2H,
     CRENEAU_CREE,
-    SANCTION
+    SANCTION,
+    ABSENCE
 }

@@ -123,7 +123,7 @@ const CreneauRecurrentForm: React.FC<Props> = ({
       </div>
 
       <div className="creneau-form-group">
-        <label>Prix (Dzd)</label>
+        <label>Prix (Da)</label>
         <input
           type="number"
           min="0"
