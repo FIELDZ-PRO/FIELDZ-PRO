@@ -118,7 +118,7 @@ const ClubsPartnership: React.FC = () => {
   })
 } catch (error: any) {
   // Si une erreur survient (réseau, 500, 429, etc.)
-  console.error('Erreur lors de l’envoi:', error)
+  console.error("Erreur lors de l'envoi:", error)
 
   const status = error?.response?.status
 
@@ -133,7 +133,7 @@ const ClubsPartnership: React.FC = () => {
     setSubmitMessage('❌ ' + (msg || "Une erreur s'est produite."))
   }
 } finally {
-  // Ce code s’exécute TOUJOURS, succès ou erreur
+  // Ce code s'exécute TOUJOURS, succès ou erreur
   // Ici, on désactive le spinner/bouton de chargement
   setIsSubmitting(false)
 }
@@ -159,20 +159,6 @@ const ClubsPartnership: React.FC = () => {
               </div>
             </div>
           ))}
-
-          <div className="clubs__stats">
-            <h4>Nos partenaires génèrent en moyenne :</h4>
-            <div className="stats__grid">
-              <div>
-                <div className="stats__value">+40%</div>
-                <div>de réservations</div>
-              </div>
-              <div>
-                <div className="stats__value">+25%</div>
-                <div>de chiffre d'affaires</div>
-              </div>
-            </div>
-          </div>
         </div>
 
         <div className="clubs__contact-card">
@@ -282,8 +268,8 @@ const ClubsPartnership: React.FC = () => {
 
           <div className="clubs__direct-contact">
             <p>Ou contactez-nous directement :</p>
-            <div><Mail size={16} /><span>partenaires@fieldz.dz</span></div>
-            <div><Phone size={16} /><span>+213 XX XX XX XX</span></div>
+            <div><Mail size={16} /><span>contact.fieldz@gmail.com</span></div>
+            <div><Phone size={16} /><span>+213 770 26 36 40</span></div>
           </div>
         </div>
       </div>

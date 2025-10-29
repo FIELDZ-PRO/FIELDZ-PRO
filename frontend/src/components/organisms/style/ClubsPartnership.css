@@ -85,38 +85,6 @@
   line-height: 1.5;
 }
 
-.clubs__stats {
-  background: rgba(255, 255, 255, 0.1);
-  padding: 2rem;
-  border-radius: 1rem;
-  margin-top: 3rem;
-  backdrop-filter: blur(10px);
-}
-
-.clubs__stats h4 {
-  margin: 0 0 1rem;
-  font-size: 1.125rem;
-}
-
-.stats__grid {
-  display: flex;
-  gap: 2rem;
-  margin-top: 1.5rem;
-  flex-wrap: wrap;
-}
-
-.stats__grid > div {
-  flex: 1;
-  min-width: 120px;
-  text-align: center;
-}
-
-.stats__value {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #fff;
-}
-
 /* Contact card */
 .clubs__contact-card {
   flex: 1 1 45%;
@@ -318,10 +286,6 @@
   .clubs__contact-card {
     flex: 1 1 100%;
   }
-
-  .stats__grid {
-    justify-content: center;
-  }
 }
 
 /* Mobile large (paysage) */
@@ -357,19 +321,6 @@
 
   .benefit__icon {
     padding: 0.625rem;
-  }
-
-  .clubs__stats {
-    padding: 1.5rem;
-    margin-top: 2rem;
-  }
-
-  .stats__grid {
-    gap: 1.5rem;
-  }
-
-  .stats__value {
-    font-size: 1.75rem;
   }
 
   .clubs__contact-card {
@@ -424,27 +375,6 @@
   .benefit__icon svg {
     width: 24px;
     height: 24px;
-  }
-
-  .clubs__stats {
-    padding: 1.25rem;
-  }
-
-  .clubs__stats h4 {
-    font-size: 1rem;
-  }
-
-  .stats__grid {
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .stats__grid > div {
-    text-align: left;
-  }
-
-  .stats__value {
-    font-size: 1.5rem;
   }
 
   .clubs__contact-card {
