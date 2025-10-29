@@ -34,7 +34,7 @@ const Footer: React.FC = () => {
             <span className="footer__logo-text">FIELDZ</span>
           </Link>
           <p className="footer__description">
-            La plateforme qui connecte joueurs et clubs sportifs pour réserver vos terrains en quelques clics.
+          🇩🇿 La plateforme qui connecte joueurs et clubs sportifs pour réserver vos terrains en quelques clics.
           </p>
           
           {/* Réseaux sociaux */}

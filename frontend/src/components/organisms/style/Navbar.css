@@ -1,4 +1,4 @@
-/* Navbar.css */
+/* Navbar.css - Taille du logo corrigée */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&family=Inter:wght@400;500;600&display=swap');
 
 .navbar {
@@ -23,6 +23,7 @@
   gap: 1rem;
 }
 
+/* === LOGO COMPLET === */
 .navbar__logo {
   display: flex;
   align-items: center;
@@ -36,26 +37,19 @@
   transform: scale(1.05);
 }
 
-.navbar__logo-icon {
-  width: 3rem;
-  height: 3rem;
-  border-radius: 0.75rem;
-  background: linear-gradient(135deg, #05612B 0%, #0A7B3D 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'Poppins', sans-serif;
-  font-weight: 800;
-  font-size: 1.25rem;
-  color: #FDFFFD;
-  flex-shrink: 0;
+/* Symbole SVG - TAILLE AUGMENTÉE */
+.navbar__logo-symbol {
+  height: 50px;           /* ✅ Augmenté de 40px à 50px */
+  width: auto;
+  object-fit: contain;
 }
 
+/* Texte FIELDZ */
 .navbar__logo-text {
   font-family: 'Poppins', sans-serif;
   font-weight: 800;
-  font-size: 1.5rem;
-  color: #000000;
+  font-size: 1.75rem;     /* ✅ Augmenté de 1.5rem à 1.75rem */
+  color: #05612B;
   white-space: nowrap;
   user-select: none;
   -webkit-user-select: none;
@@ -175,7 +169,9 @@
   display: none;
 }
 
-/* Responsive */
+/* === RESPONSIVE === */
+
+/* Tablette (1024px) */
 @media (max-width: 1024px) {
   .navbar__menu {
     gap: 1.5rem;
@@ -189,9 +185,28 @@
     padding: 0.5rem 1rem;
     font-size: 0.8125rem;
   }
+
+  /* Logo légèrement plus petit sur tablette */
+  .navbar__logo-symbol {
+    height: 45px;
+  }
+
+  .navbar__logo-text {
+    font-size: 1.625rem;
+  }
 }
 
+/* Tablette (768px) - Symbole uniquement */
 @media (max-width: 768px) {
+  /* Cache le texte FIELDZ */
+  .navbar__logo-text {
+    display: none;
+  }
+
+  .navbar__logo-symbol {
+    height: 42px;          /* ✅ Plus grand sur mobile */
+  }
+
   .navbar__actions-desktop {
     display: none;
   }
@@ -251,18 +266,17 @@
   }
 }
 
+/* Mobile (480px) */
 @media (max-width: 480px) {
   .navbar__container {
     padding: 0.875rem 1rem;
   }
 
-  .navbar__logo-icon {
-    width: 2.5rem;
-    height: 2.5rem;
-    font-size: 1rem;
+  .navbar__logo-symbol {
+    height: 38px;          /* ✅ Reste visible sur petit mobile */
   }
 
   .navbar__logo-text {
-    font-size: 1.25rem;
+    display: none;
   }
 }
