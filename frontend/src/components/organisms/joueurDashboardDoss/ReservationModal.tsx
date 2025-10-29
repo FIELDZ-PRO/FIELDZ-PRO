@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Creneau } from "../../../types";
 import { useAuth } from "../../../context/AuthContext";
 import FullscreenModal from "./FullscreenModal";
-import { FileText, CheckCircle, AlertCircle } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
 import "./style/ReservationModal.css";
 
 type Props = {
@@ -19,13 +19,10 @@ const ReservationModal: React.FC<Props> = ({
   politiqueClub 
 }) => {
   const { token } = useAuth();
-  const [accepte, setAccepte] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const confirmer = async () => {
-    if (!accepte) return;
-    
     setLoading(true);
     setError("");
     
@@ -54,11 +51,20 @@ const ReservationModal: React.FC<Props> = ({
   return (
     <FullscreenModal onClose={onClose}>
       <div className="reservation-modal-content">
-        {/* En-tête */}
+        {/* En-tête épuré */}
         <div className="modal-header">
-          <h2 className="modal-title">Politique du club</h2>
-          <p className="modal-subtitle">
-            Veuillez <span className="highlight-read">lire</span> et accepter les conditions avant de réserver
+          <div className="modal-header-left">
+            <div className="modal-icon-wrapper">
+              <AlertTriangle className="modal-icon" />
+            </div>
+            <h2 className="modal-title">Politique du club</h2>
+          </div>
+        </div>
+
+        {/* Bandeau d'avertissement */}
+        <div className="warning-banner">
+          <p>
+            <strong>Lecture obligatoire :</strong> Veuillez lire attentivement les conditions avant de confirmer votre réservation.
           </p>
         </div>
 
@@ -66,13 +72,10 @@ const ReservationModal: React.FC<Props> = ({
         <div className="politique-content">
           {politiqueClub ? (
             <div className="politique-text">
-              {politiqueClub.split('\n').map((line, index) => (
-                <p key={index}>{line}</p>
-              ))}
+              {politiqueClub}
             </div>
           ) : (
             <div className="no-politique">
-              <AlertCircle className="no-politique-icon" />
               <p>Aucune politique d'annulation définie par ce club.</p>
             </div>
           )}
@@ -81,26 +84,10 @@ const ReservationModal: React.FC<Props> = ({
         {/* Message d'erreur */}
         {error && (
           <div className="error-message">
-            <AlertCircle className="error-icon" />
+            <AlertTriangle className="error-icon" />
             <span>{error}</span>
           </div>
         )}
-
-        {/* Checkbox d'acceptation */}
-        <label className="acceptance-checkbox">
-          <input
-            type="checkbox"
-            checked={accepte}
-            onChange={(e) => setAccepte(e.target.checked)}
-            className="checkbox-input"
-          />
-          <span className="checkbox-custom">
-            {accepte && <CheckCircle className="checkbox-icon" />}
-          </span>
-          <span className="checkbox-label">
-            J'ai lu et j'accepte la politique du club
-          </span>
-        </label>
 
         {/* Boutons d'action */}
         <div className="modal-actions">
@@ -112,9 +99,9 @@ const ReservationModal: React.FC<Props> = ({
             Annuler
           </button>
           <button
-            disabled={!accepte || loading}
+            disabled={loading}
             onClick={confirmer}
-            className={`btn-confirm ${accepte ? 'active' : 'disabled'}`}
+            className={`btn-confirm ${!loading ? 'active' : 'disabled'}`}
           >
             {loading ? (
               <>
@@ -122,10 +109,7 @@ const ReservationModal: React.FC<Props> = ({
                 Réservation en cours...
               </>
             ) : (
-              <>
-                <CheckCircle className="btn-icon" />
-                Confirmer la réservation
-              </>
+              "J'accepte et je réserve"
             )}
           </button>
         </div>

@@ -1,102 +1,137 @@
-/* ReservationModal.css - Style moderne amélioré */
+/* ReservationModal.css - Style simple et épuré */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Inter:wght@400;500;600&display=swap');
 
 :root {
-  --color-primary: #05602B;
-  --color-primary-hover: #0A7B3D;
-  --color-black: #0E0E0E;
-  --color-gray-50: #F9FAFB;
-  --color-gray-100: #F3F4F6;
-  --color-gray-200: #E5E7EB;
-  --color-gray-400: #9CA3AF;
-  --color-gray-600: #6B7280;
-  --color-white: #FFFFFF;
-  --color-red: #EF4444;
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+   --color-primary: #05602B;
+   --color-primary-hover: #0A7B3D;
+   --color-black: #0E0E0E;
+   --color-gray-50: #F9FAFB;
+   --color-gray-100: #F3F4F6;
+   --color-gray-200: #E5E7EB;
+   --color-gray-400: #9CA3AF;
+   --color-gray-600: #6B7280;
+   --color-white: #FFFFFF;
+   --color-red: #EF4444;
+   --color-orange: #F97316;
 }
-
-/* === CONTENU PRINCIPAL - VERSION COMPACTE === */
+ 
+/* === CONTENU PRINCIPAL === */
 .reservation-modal-content {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
-  max-width: 550px;
+  gap: 1.5rem;
+  max-width: 700px;
   width: 100%;
   margin: 0 auto;
 }
 
-/* === EN-TÊTE - VERSION COMPACTE === */
+/* === EN-TÊTE ÉLÉGANT === */
 .modal-header {
-  text-align: left;
-  padding-bottom: 1.25rem;
-  border-bottom: 1px solid var(--color-gray-200);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 0;
+  border-bottom: 2px solid var(--color-gray-200);
+}
+
+.modal-header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 .modal-icon-wrapper {
-  display: none; /* Masquer l'icône */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  flex-shrink: 0;
+}
+
+.modal-icon {
+  width: 32px;
+  height: 32px;
+  color: var(--color-orange);
 }
 
 .modal-title {
   font-family: 'Poppins', sans-serif;
   font-weight: 700;
   font-size: 1.5rem;
-  color: var(--color-primary); /* ✅ Vert au lieu de noir */
-  margin: 0 0 0.5rem 0;
+  color: var(--color-black);
+  margin: 0;
 }
 
 .modal-subtitle {
+  display: none;
+}
+
+/* === BANDEAU AVERTISSEMENT === */
+.warning-banner {
+  background: #FEF3C7;
+  border: 1px solid #FDE047;
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.warning-banner p {
   font-family: 'Inter', sans-serif;
   font-size: 0.9375rem;
-  color: var(--color-gray-600);
+  line-height: 1.6;
+  color: #92400E;
   margin: 0;
-  line-height: 1.5;
 }
 
-.modal-subtitle .highlight-read {
-  color: #DC2626; /* ✅ Rouge pour "lire" */
-  font-weight: 600;
+.warning-banner strong {
+  font-weight: 700;
+  color: #78350F;
 }
 
-/* === CONTENU POLITIQUE - STYLE COLORÉ === */
+/* === CONTENU POLITIQUE SIMPLE === */
 .politique-content {
-  background: #FEF3C7; /* ✅ Fond jaune comme le motif */
-  border: 2px solid #FDE047; /* ✅ Bordure jaune vif */
+  background: var(--color-gray-50);
+  border: 1px solid var(--color-gray-200);
   border-radius: 12px;
-  padding: 20px;
-  max-height: 280px;
+  padding: 24px;
+  max-height: 400px;
   overflow-y: auto;
+  font-family: 'Courier New', monospace; /* Police monospace comme l'image */
 }
 
-/* Scrollbar verte vive */
+/* Scrollbar discrète */
 .politique-content::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
 }
 
 .politique-content::-webkit-scrollbar-track {
-  background: transparent;
+  background: var(--color-gray-100);
+  border-radius: 4px;
 }
 
 .politique-content::-webkit-scrollbar-thumb {
-  background: var(--color-primary);
-  border-radius: 3px;
+  background: var(--color-gray-400);
+  border-radius: 4px;
 }
 
 .politique-content::-webkit-scrollbar-thumb:hover {
-  background: var(--color-primary-hover);
+  background: var(--color-gray-600);
 }
 
-/* Texte lisible sur fond jaune */
+/* Texte simple */
 .politique-text {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Courier New', monospace;
   font-size: 14px;
-  line-height: 1.7;
-  color: #78350F; /* ✅ Marron foncé pour contraste */
-  font-weight: 500;
+  line-height: 1.8;
+  color: var(--color-black);
+  white-space: pre-wrap;
 }
 
 .politique-text p {
-  margin: 0 0 14px 0;
+  margin: 0 0 12px 0;
 }
 
 .politique-text p:last-child {
@@ -118,7 +153,7 @@
   width: 3rem;
   height: 3rem;
   color: var(--color-gray-400);
-  margin-bottom: 0.75rem;
+  margin: 0 auto 0.75rem;
 }
 
 .no-politique p {
@@ -148,88 +183,35 @@
   flex-shrink: 0;
 }
 
-/* === CHECKBOX D'ACCEPTATION - STYLE VIF === */
+/* === CHECKBOX D'ACCEPTATION INVISIBLE === */
 .acceptance-checkbox {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 1.25rem;
-  background: var(--color-white);
-  border: 2px solid var(--color-primary); /* ✅ Bordure verte */
-  border-radius: 0.75rem;
-  cursor: pointer;
-  transition: all 0.2s;
-  user-select: none;
-}
-
-.acceptance-checkbox:hover {
-  border-color: var(--color-primary-hover);
-  background: #DCFCE7; /* ✅ Fond vert clair au hover */
-}
-
-.checkbox-input {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.checkbox-custom {
-  position: relative;
-  width: 1.5rem;
-  height: 1.5rem;
-  border: 2px solid var(--color-primary); /* ✅ Bordure verte */
-  border-radius: 0.375rem;
-  background: var(--color-white);
-  transition: all 0.2s;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.checkbox-input:checked + .checkbox-custom {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
-  box-shadow: 0 2px 6px rgba(5, 96, 43, 0.3); /* ✅ Ombre verte */
-}
-
-.checkbox-icon {
-  width: 1rem;
-  height: 1rem;
-  color: var(--color-white);
-}
-
-.checkbox-label {
-  font-family: 'Poppins', sans-serif;
-  font-weight: 600;
-  font-size: 0.9375rem;
-  color: var(--color-black);
+  display: none; /* Masquée dans ce design */
 }
 
 /* === ACTIONS === */
 .modal-actions {
   display: flex;
   gap: 1rem;
-  padding-top: 0.5rem;
+  padding-top: 1rem;
 }
 
 /* Bouton Annuler */
 .btn-cancel {
   flex: 1;
-  padding: 0.875rem 1.5rem;
-  background: var(--color-gray-100);
+  padding: 1rem 1.5rem;
+  background: var(--color-white);
   color: var(--color-gray-600);
-  border: 2px solid var(--color-gray-200);
-  border-radius: 0.75rem;
+  border: 1px solid var(--color-gray-300);
+  border-radius: 12px;
   font-family: 'Poppins', sans-serif;
   font-weight: 600;
-  font-size: 0.9375rem;
+  font-size: 1rem;
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .btn-cancel:hover:not(:disabled) {
-  background: var(--color-gray-200);
+  background: var(--color-gray-100);
   border-color: var(--color-gray-400);
 }
 
@@ -241,19 +223,18 @@
 /* Bouton Confirmer */
 .btn-confirm {
   flex: 2;
-  padding: 0.875rem 1.5rem;
+  padding: 1rem 1.5rem;
   border: none;
-  border-radius: 0.75rem;
+  border-radius: 12px;
   font-family: 'Poppins', sans-serif;
   font-weight: 700;
-  font-size: 0.9375rem;
+  font-size: 1rem;
   cursor: pointer;
   transition: all 0.2s;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  box-shadow: var(--shadow-md);
 }
 
 .btn-confirm.active {
@@ -264,14 +245,13 @@
 .btn-confirm.active:hover {
   background: var(--color-primary-hover);
   transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 4px 12px rgba(5, 96, 43, 0.3);
 }
 
 .btn-confirm.disabled {
   background: var(--color-gray-200);
   color: var(--color-gray-400);
   cursor: not-allowed;
-  box-shadow: none;
 }
 
 .btn-icon {
@@ -298,49 +278,30 @@
 
 /* === RESPONSIVE === */
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .reservation-modal-content {
     gap: 1.25rem;
+    max-width: 100%;
   }
 
   .modal-icon-wrapper {
-    width: 3rem;
-    height: 3rem;
+    width: 40px;
+    height: 40px;
   }
 
   .modal-icon {
-    width: 1.5rem;
-    height: 1.5rem;
+    width: 20px;
+    height: 20px;
   }
 
   .modal-title {
     font-size: 1.5rem;
   }
 
-  .modal-subtitle {
-    font-size: 0.875rem;
-  }
-
   .politique-content {
     padding: 20px;
-    max-height: 300px;
-  }
-
-  .politique-text {
-    font-size: 14px;
-  }
-
-  .politique-text p {
-    padding: 10px;
-    margin-bottom: 12px;
-  }
-
-  .acceptance-checkbox {
-    padding: 1rem;
-  }
-
-  .checkbox-label {
-    font-size: 0.875rem;
+    max-height: 350px;
+    font-size: 13px;
   }
 
   .modal-actions {
@@ -353,37 +314,29 @@
 
   .btn-cancel,
   .btn-confirm {
-    padding: 0.75rem 1.25rem;
-    font-size: 0.875rem;
+    padding: 0.875rem 1.25rem;
+    font-size: 0.9375rem;
   }
 }
 
 @media (max-width: 480px) {
+  .modal-header {
+    padding-bottom: 1rem;
+  }
+
   .modal-title {
     font-size: 1.375rem;
   }
 
   .politique-content {
-    max-height: 250px;
+    max-height: 300px;
     padding: 16px;
-  }
-
-  .politique-text {
-    font-size: 13px;
-  }
-
-  .politique-text p {
-    padding: 8px;
-    margin-bottom: 10px;
-  }
-
-  .acceptance-checkbox {
-    padding: 0.875rem;
+    font-size: 12px;
   }
 
   .btn-cancel,
   .btn-confirm {
-    padding: 0.625rem 1rem;
-    font-size: 0.8125rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
   }
 }
