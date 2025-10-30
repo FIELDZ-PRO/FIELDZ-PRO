@@ -1,4 +1,4 @@
-/* Navbar.css - Taille du logo corrigée */
+/* Navbar.css - Logo à la même taille que le texte */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&family=Inter:wght@400;500;600&display=swap');
 
 .navbar {
@@ -37,9 +37,9 @@
   transform: scale(1.05);
 }
 
-/* Symbole SVG - TAILLE AUGMENTÉE */
+/* Symbole SVG - MÊME HAUTEUR QUE LE TEXTE */
 .navbar__logo-symbol {
-  height: 50px;           /* ✅ Augmenté de 40px à 50px */
+  height: 2.5rem;         /* ✅ Même hauteur visuelle que le texte */
   width: auto;
   object-fit: contain;
 }
@@ -48,7 +48,8 @@
 .navbar__logo-text {
   font-family: 'Poppins', sans-serif;
   font-weight: 800;
-  font-size: 1.75rem;     /* ✅ Augmenté de 1.5rem à 1.75rem */
+  font-size: 1.75rem;
+  line-height: 1;         /* ✅ Hauteur de ligne réduite pour meilleur alignement */
   color: #05612B;
   white-space: nowrap;
   user-select: none;
@@ -188,7 +189,7 @@
 
   /* Logo légèrement plus petit sur tablette */
   .navbar__logo-symbol {
-    height: 45px;
+    height: 2.25rem;      /* ✅ Proportionnel au texte */
   }
 
   .navbar__logo-text {
@@ -204,7 +205,7 @@
   }
 
   .navbar__logo-symbol {
-    height: 42px;          /* ✅ Plus grand sur mobile */
+    height: 2.5rem;       /* ✅ Plus visible quand seul */
   }
 
   .navbar__actions-desktop {
@@ -273,7 +274,7 @@
   }
 
   .navbar__logo-symbol {
-    height: 38px;          /* ✅ Reste visible sur petit mobile */
+    height: 2.25rem;      /* ✅ Reste bien visible */
   }
 
   .navbar__logo-text {

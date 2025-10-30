@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import "./style/completeProfile.css"
+
 const CompleteProfile = () => {
   const { token } = useAuth();
   const navigate = useNavigate();
@@ -11,9 +12,11 @@ const CompleteProfile = () => {
   const [prenom, setPrenom] = useState('');
   const [telephone, setTelephone] = useState('');
   const [message, setMessage] = useState('');
-  const [isCheckingProfile, setIsCheckingProfile] = useState(true); // ✅ loader initial
+  const [messageType, setMessageType] = useState(''); // 'error', 'success', 'warning'
+  const [isCheckingProfile, setIsCheckingProfile] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // ✅ Vérifie l’état du profil
+  // ✅ Vérifie l'état du profil
   useEffect(() => {
     fetch('http://localhost:8080/api/utilisateur/me', {
       method: 'GET',
@@ -35,93 +38,127 @@ const CompleteProfile = () => {
       });
   }, [token, navigate]);
 
-  
-
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setMessage('');
+    e.preventDefault();
+    setMessage('');
+    setMessageType('');
+    setIsSubmitting(true);
 
-  try {
-    // 🔁 Envoie la mise à jour du profil
-    const response = await fetch('http://localhost:8080/api/utilisateur/complete-profile', {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify({ nom, prenom, telephone })
-    });
+    try {
+      // 🔁 Envoie la mise à jour du profil
+      const response = await fetch('http://localhost:8080/api/utilisateur/complete-profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ nom, prenom, telephone })
+      });
 
-    if (!response.ok) throw new Error("Erreur lors de la mise à jour du profil.");
+      if (!response.ok) {
+        setMessage("❌ Erreur lors de la mise à jour du profil.");
+        setMessageType('error');
+        setIsSubmitting(false);
+        return;
+      }
 
-    // ✅ Recharge les données utilisateur à jour
-    const res = await fetch('http://localhost:8080/api/utilisateur/me', {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+      // ✅ Recharge les données utilisateur à jour
+      const res = await fetch('http://localhost:8080/api/utilisateur/me', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
 
-    const updatedUser = await res.json();
-    console.log("✅ Profil rechargé :", updatedUser);
+      const updatedUser = await res.json();
+      console.log("✅ Profil rechargé :", updatedUser);
 
-    if (updatedUser.profilComplet) {
-      navigate('/joueur');
-    } else {
-      setMessage("⚠️ Profil toujours incomplet. Réessayez.");
+      if (updatedUser.profilComplet) {
+        setMessage("✅ Profil complété avec succès !");
+        setMessageType('success');
+        setTimeout(() => navigate('/joueur'), 1000);
+      } else {
+        setMessage("⚠️ Profil toujours incomplet. Réessayez.");
+        setMessageType('warning');
+        setIsSubmitting(false);
+      }
+
+    } catch (error) {
+      console.error("Erreur :", error);
+      setMessage("❌ Une erreur est survenue.");
+      setMessageType('error');
+      setIsSubmitting(false);
     }
+  };
 
-  } catch (error) {
-    console.error("Erreur :", error);
-    setMessage("❌ Une erreur est survenue.");
+  // Affiche le loader pendant la vérification du profil
+  if (isCheckingProfile) {
+    return (
+      <div className="complete-profile-container">
+        <div className="profile-loader">
+          <div className="loader-spinner"></div>
+          <p className="loader-text">Chargement de votre profil...</p>
+        </div>
+      </div>
+    );
   }
-};
-
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-100 to-white">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md flex flex-col gap-4 border border-green-200"
-        style={{ minWidth: 340 }}
-      >
-        <div className="text-center mb-2">
-          <div className="text-3xl mb-2 font-bold text-green-600">🎾 FIELDZ</div>
-          <div className="text-xl font-semibold text-gray-800">Complétez votre profil</div>
+    <div className="complete-profile-container">
+      <form onSubmit={handleSubmit} className="complete-profile-form">
+        <div className="form-header">
+          <div className="form-logo">
+            <span className="form-logo-emoji">🎾</span>FIELDZ
+          </div>
+          <h1 className="form-title">Complétez votre profil</h1>
         </div>
 
-        <input
-          type="text"
-          placeholder="Nom"
-          value={nom}
-          onChange={(e) => setNom(e.target.value)}
-          className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400 transition"
-          required
-        />
+        <div className="form-group">
+          <label className="form-label">Nom *</label>
+          <input
+            type="text"
+            placeholder="Votre nom"
+            value={nom}
+            onChange={(e) => setNom(e.target.value)}
+            className="form-input"
+            required
+          />
+        </div>
 
-        <input
-          type="text"
-          placeholder="Prénom"
-          value={prenom}
-          onChange={(e) => setPrenom(e.target.value)}
-          className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400 transition"
-          required
-        />
+        <div className="form-group">
+          <label className="form-label">Prénom *</label>
+          <input
+            type="text"
+            placeholder="Votre prénom"
+            value={prenom}
+            onChange={(e) => setPrenom(e.target.value)}
+            className="form-input"
+            required
+          />
+        </div>
 
-        <input
-          type="tel"
-          placeholder="Téléphone"
-          value={telephone}
-          onChange={(e) => setTelephone(e.target.value)}
-          className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400 transition"
-          required
-        />
+        <div className="form-group">
+          <label className="form-label">Téléphone *</label>
+          <input
+            type="tel"
+            placeholder="+213 XX XX XX XX"
+            value={telephone}
+            onChange={(e) => setTelephone(e.target.value)}
+            className="form-input"
+            required
+          />
+        </div>
 
         <button
           type="submit"
-          className="bg-green-500 text-white p-2 rounded-lg font-semibold hover:bg-green-600 transition"
+          className="form-submit"
+          disabled={isSubmitting}
         >
-          Valider
+          {isSubmitting ? 'Validation en cours...' : 'Valider'}
         </button>
 
-        {message && <p className="text-center text-red-500 text-sm">{message}</p>}
+        {message && (
+          <div className={`form-message ${messageType}`}>
+            {message}
+          </div>
+        )}
       </form>
     </div>
   );
