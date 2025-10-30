@@ -4,13 +4,28 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import "./style/completeProfile.css"
 
+// Liste des indicatifs téléphoniques principaux
+const COUNTRY_CODES = [
+  { code: '+213', country: 'Algérie', flag: '🇩🇿' },
+  { code: '+33', country: 'France', flag: '🇫🇷' },
+  { code: '+34', country: 'Espagne', flag: '🇪🇸' },
+  { code: '+212', country: 'Maroc', flag: '🇲🇦' },
+  { code: '+216', country: 'Tunisie', flag: '🇹🇳' },
+  { code: '+1', country: 'USA/Canada', flag: '🇺🇸' },
+  { code: '+44', country: 'Royaume-Uni', flag: '🇬🇧' },
+  { code: '+49', country: 'Allemagne', flag: '🇩🇪' },
+  { code: '+39', country: 'Italie', flag: '🇮🇹' },
+  { code: '+32', country: 'Belgique', flag: '🇧🇪' },
+];
+
 const CompleteProfile = () => {
   const { token } = useAuth();
   const navigate = useNavigate();
 
   const [nom, setNom] = useState('');
   const [prenom, setPrenom] = useState('');
-  const [telephone, setTelephone] = useState('');
+  const [countryCode, setCountryCode] = useState('+213'); // Par défaut Algérie
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState(''); // 'error', 'success', 'warning'
   const [isCheckingProfile, setIsCheckingProfile] = useState(true);
@@ -38,11 +53,47 @@ const CompleteProfile = () => {
       });
   }, [token, navigate]);
 
-  const handleSubmit = async (e) => {
+  // Validation du numéro de téléphone (max 10 chiffres)
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/\D/g, ''); // Garde uniquement les chiffres
+    if (value.length <= 10) {
+      setPhoneNumber(value);
+    }
+  };
+
+  // Validation du formulaire
+  const validateForm = () => {
+    if (!nom.trim()) {
+      setMessage("❌ Le nom est requis.");
+      setMessageType('error');
+      return false;
+    }
+    if (!prenom.trim()) {
+      setMessage("❌ Le prénom est requis.");
+      setMessageType('error');
+      return false;
+    }
+    if (phoneNumber.length < 9 || phoneNumber.length > 10) {
+      setMessage("❌ Le numéro de téléphone doit contenir 9 ou 10 chiffres.");
+      setMessageType('error');
+      return false;
+    }
+    return true;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage('');
     setMessageType('');
+
+    if (!validateForm()) {
+      return;
+    }
+
     setIsSubmitting(true);
+
+    // Construction du numéro complet avec l'indicatif
+    const fullPhoneNumber = `${countryCode}${phoneNumber}`;
 
     try {
       // 🔁 Envoie la mise à jour du profil
@@ -52,7 +103,11 @@ const CompleteProfile = () => {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify({ nom, prenom, telephone })
+        body: JSON.stringify({ 
+          nom: nom.trim(), 
+          prenom: prenom.trim(), 
+          telephone: fullPhoneNumber 
+        })
       });
 
       if (!response.ok) {
@@ -105,7 +160,7 @@ const CompleteProfile = () => {
       <form onSubmit={handleSubmit} className="complete-profile-form">
         <div className="form-header">
           <div className="form-logo">
-            <span className="form-logo-emoji">🎾</span>FIELDZ
+            <span className="form-logo-emoji">⚽</span>FIELDZ
           </div>
           <h1 className="form-title">Complétez votre profil</h1>
         </div>
@@ -136,14 +191,30 @@ const CompleteProfile = () => {
 
         <div className="form-group">
           <label className="form-label">Téléphone *</label>
-          <input
-            type="tel"
-            placeholder="+213 XX XX XX XX"
-            value={telephone}
-            onChange={(e) => setTelephone(e.target.value)}
-            className="form-input"
-            required
-          />
+          <div className="phone-input-wrapper">
+            <select 
+              className="country-code-select"
+              value={countryCode}
+              onChange={(e) => setCountryCode(e.target.value)}
+            >
+              {COUNTRY_CODES.map((item) => (
+                <option key={item.code} value={item.code}>
+                  {item.flag} {item.code}
+                </option>
+              ))}
+            </select>
+            <input
+              type="tel"
+              placeholder="0X XX XX XX XX (max 10 chiffres)"
+              value={phoneNumber}
+              onChange={handlePhoneChange}
+              className="form-input phone-number-input"
+              required
+            />
+          </div>
+          <div className="phone-hint">
+            Format: {countryCode} {phoneNumber || 'XXXXXXXXXX'}
+          </div>
         </div>
 
         <button

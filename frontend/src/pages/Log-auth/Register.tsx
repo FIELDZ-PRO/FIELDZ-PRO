@@ -6,12 +6,28 @@ import React from "react";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
 
+// Liste des indicatifs téléphoniques principaux
+const COUNTRY_CODES = [
+  { code: '+213', country: 'Algérie', flag: '🇩🇿' },
+  { code: '+33', country: 'France', flag: '🇫🇷' },
+  { code: '+34', country: 'Espagne', flag: '🇪🇸' },
+  { code: '+212', country: 'Maroc', flag: '🇲🇦' },
+  { code: '+216', country: 'Tunisie', flag: '🇹🇳' },
+  { code: '+1', country: 'USA/Canada', flag: '🇺🇸' },
+  { code: '+44', country: 'Royaume-Uni', flag: '🇬🇧' },
+  { code: '+49', country: 'Allemagne', flag: '🇩🇪' },
+  { code: '+39', country: 'Italie', flag: '🇮🇹' },
+  { code: '+32', country: 'Belgique', flag: '🇧🇪' },
+];
+
 export default function Register() {
   const [form, setForm] = useState({
     nom: "",
     email: "",
     motDePasse: "",
     confirm: "",
+    countryCode: "+213", // Indicatif par défaut
+    phoneNumber: "", // Numéro sans l'indicatif
   });
 
   const [showPwd, setShowPwd] = useState(false);
@@ -19,14 +35,24 @@ export default function Register() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+  const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
     setForm({ ...form, [e.target.name]: e.target.value });
+
+  // Gestion spécifique pour le numéro de téléphone (max 10 chiffres)
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/\D/g, ''); // Garde uniquement les chiffres
+    if (value.length <= 10) {
+      setForm({ ...form, phoneNumber: value });
+    }
+  };
 
   const validate = () => {
     if (!form.nom.trim()) return "Nom requis";
     if (!/^\S+@\S+\.\S+$/.test(form.email)) return "Email invalide";
     if (form.motDePasse.length < 6) return "Mot de passe trop court (≥6)";
     if (form.motDePasse !== form.confirm) return "Les mots de passe ne correspondent pas";
+    if (form.phoneNumber.length < 9 || form.phoneNumber.length > 10) 
+      return "Le numéro doit contenir 9 ou 10 chiffres";
     return "";
   };
 
@@ -37,11 +63,16 @@ export default function Register() {
     if (v) return setMessage(v);
 
     setIsLoading(true);
+    
+    // Construction du numéro complet avec l'indicatif
+    const fullPhoneNumber = `${form.countryCode}${form.phoneNumber}`;
+
     try {
       await axios.post(`${API_BASE}/api/auth/register`, {
         nom: form.nom,
         email: form.email,
         motDePasse: form.motDePasse,
+        telephone: fullPhoneNumber, // Envoi du numéro complet
         role: "JOUEUR",
         adresse: "",
         nomClub: ""
@@ -113,6 +144,35 @@ export default function Register() {
                 autoComplete="email"
                 required
               />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Téléphone</label>
+              <div className="phone-input-container">
+                <select 
+                  className="country-code-select"
+                  name="countryCode"
+                  value={form.countryCode}
+                  onChange={onChange}
+                >
+                  {COUNTRY_CODES.map((item) => (
+                    <option key={item.code} value={item.code}>
+                      {item.flag} {item.code}
+                    </option>
+                  ))}
+                </select>
+                <input
+                  className="form-input phone-number-input"
+                  type="tel"
+                  placeholder="0X XX XX XX XX (max 10)"
+                  value={form.phoneNumber}
+                  onChange={handlePhoneChange}
+                  required
+                />
+              </div>
+              <div className="phone-hint">
+                Format: {form.countryCode} {form.phoneNumber || 'XXXXXXXXXX'}
+              </div>
             </div>
 
             <div className="form-group">

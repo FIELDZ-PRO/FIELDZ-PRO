@@ -39,7 +39,7 @@
 
 /* Symbole SVG - MÊME HAUTEUR QUE LE TEXTE */
 .navbar__logo-symbol {
-  height: 2.5rem;         /* ✅ Même hauteur visuelle que le texte */
+  height: 4.5rem;         /* ✅ VRAIMENT GRAND maintenant */
   width: auto;
   object-fit: contain;
 }
@@ -48,8 +48,8 @@
 .navbar__logo-text {
   font-family: 'Poppins', sans-serif;
   font-weight: 800;
-  font-size: 1.75rem;
-  line-height: 1;         /* ✅ Hauteur de ligne réduite pour meilleur alignement */
+  font-size: 4.5rem;      /* ✅ VRAIMENT GRAND maintenant */
+  line-height: 1;
   color: #05612B;
   white-space: nowrap;
   user-select: none;
@@ -189,11 +189,11 @@
 
   /* Logo légèrement plus petit sur tablette */
   .navbar__logo-symbol {
-    height: 2.25rem;      /* ✅ Proportionnel au texte */
+    height: 4rem;      /* ✅ Proportionnel au texte */
   }
 
   .navbar__logo-text {
-    font-size: 1.625rem;
+    font-size: 4rem;
   }
 }
 
@@ -205,7 +205,7 @@
   }
 
   .navbar__logo-symbol {
-    height: 2.5rem;       /* ✅ Plus visible quand seul */
+    height: 3.5rem;       /* ✅ Plus visible quand seul */
   }
 
   .navbar__actions-desktop {
@@ -274,7 +274,7 @@
   }
 
   .navbar__logo-symbol {
-    height: 2.25rem;      /* ✅ Reste bien visible */
+    height: 3rem;      /* ✅ Reste bien visible */
   }
 
   .navbar__logo-text {

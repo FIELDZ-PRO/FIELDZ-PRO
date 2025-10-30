@@ -120,6 +120,7 @@
   color: var(--color-black);
   background: var(--color-white);
   transition: all 0.2s;
+  box-sizing: border-box;
 }
 
 .form-input::placeholder {
@@ -134,6 +135,52 @@
 
 .form-input:hover:not(:focus) {
   border-color: var(--color-secondary-green);
+}
+
+/* === PHONE INPUT === */
+.phone-input-wrapper {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.country-code-select {
+  flex-shrink: 0;
+  width: 110px;
+  padding: 14px 12px;
+  border: 2px solid #E5E7EB;
+  border-radius: 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  color: var(--color-black);
+  background: var(--color-white);
+  cursor: pointer;
+  transition: all 0.2s;
+  box-sizing: border-box;
+}
+
+.country-code-select:focus {
+  outline: none;
+  border-color: var(--color-primary-green);
+  box-shadow: 0 0 0 3px rgba(5, 96, 43, 0.1);
+}
+
+.country-code-select:hover {
+  border-color: var(--color-secondary-green);
+}
+
+.phone-number-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.phone-hint {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  color: var(--color-gray);
+  margin-left: 4px;
+  margin-top: -4px;
+  font-weight: 500;
 }
 
 /* === BOUTON === */
@@ -223,9 +270,19 @@
     font-size: 14px;
   }
 
+  .country-code-select {
+    width: 100px;
+    padding: 12px 10px;
+    font-size: 14px;
+  }
+
   .form-submit {
     padding: 12px 20px;
     font-size: 15px;
+  }
+
+  .phone-hint {
+    font-size: 11px;
   }
 }
 
@@ -249,6 +306,12 @@
     font-size: 14px;
   }
 
+  .country-code-select {
+    width: 95px;
+    padding: 11px 8px;
+    font-size: 13px;
+  }
+
   .form-submit {
     padding: 11px 18px;
     font-size: 14px;
@@ -256,5 +319,9 @@
 
   .form-message {
     font-size: 13px;
+  }
+
+  .phone-hint {
+    font-size: 10px;
   }
 }
