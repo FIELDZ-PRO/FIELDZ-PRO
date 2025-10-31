@@ -33,6 +33,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -112,27 +113,25 @@ public class NotificationService {
     }
 
 
+    @Transactional(readOnly = true) // 👈 ouvre une session Hibernate pour initialiser les proxys
     public void envoyerRappels2hAvant() {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime target = now.plusHours(2);
 
-        // 🔎 Ne récupère que les réservations valides pour un rappel
         List<Reservation> reservations =
                 reservationRepository.findUpcomingWithCreneauBetween(now, target, Statut.RESERVE);
 
         for (Reservation r : reservations) {
-            // Anti-doublon
-            boolean dejaEnvoye = notificationEnvoyeeRepository
-                    .findByReservationIdAndType(r.getId(), "RAPPEL_2H")
-                    .isPresent();
-            if (dejaEnvoye) continue;
+            // ✅ anti-doublon plus propre
+            if (notificationEnvoyeeRepository.existsByReservationIdAndType(r.getId(), "RAPPEL_2H")) {
+                continue;
+            }
 
-            // Sécurité supplémentaire (au cas où)
-            Creneau c = r.getCreneau();
+            Creneau c = r.getCreneau();   // déjà initialisé
             if (c == null) continue;
+            Joueur joueur = r.getJoueur(); // déjà initialisé
 
-            Joueur joueur = r.getJoueur();
-
+            // ✅ TON message conservé mot pour mot
             String sujet = "⏰ Rappel : Créneau à venir bientôt";
             String contenu = String.format("""
                 Bonjour %s,
@@ -146,12 +145,12 @@ public class NotificationService {
                 À tout de suite sur le terrain !
                 L'équipe FIELDZ
                 """,
-                    joueur != null ? joueur.getPrenom() : "",
+                    (joueur != null ? joueur.getPrenom() : ""),
                     c.getDateDebut().toLocalDate(),
                     c.getDateDebut().toLocalTime(),
                     c.getDateFin().toLocalTime(),
-                    c.getTerrain().getNomTerrain(),
-                    c.getTerrain().getClub().getNom()
+                    (c.getTerrain() != null ? c.getTerrain().getNomTerrain() : "Terrain"),
+                    (c.getTerrain() != null && c.getTerrain().getClub() != null ? c.getTerrain().getClub().getNom() : "Club")
             );
 
             emailService.envoyerEmail(joueur.getEmail(), sujet, contenu);

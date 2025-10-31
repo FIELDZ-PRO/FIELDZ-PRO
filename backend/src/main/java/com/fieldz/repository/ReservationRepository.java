@@ -91,17 +91,21 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     java.util.List<com.fieldz.model.Reservation> findByCreneau_TerrainId(Long terrainId);
 
 
-    @org.springframework.data.jpa.repository.Query("""
-   SELECT r FROM Reservation r
-   WHERE r.statut = :statut
-     AND r.creneau IS NOT NULL
-     AND r.creneau.dateDebut BETWEEN :start AND :end
+    @Query("""
+    select r
+    from Reservation r
+    join fetch r.creneau c
+    join fetch r.joueur j
+    left join fetch c.terrain t
+    left join fetch t.club club
+    where r.statut = :statut
+      and c.dateDebut between :start and :end
 """)
-    java.util.List<com.fieldz.model.Reservation> findUpcomingWithCreneauBetween(
-            @org.springframework.data.repository.query.Param("start") java.time.LocalDateTime start,
-            @org.springframework.data.repository.query.Param("end") java.time.LocalDateTime end,
-            @org.springframework.data.repository.query.Param("statut") com.fieldz.model.Statut statut);
-
+    List<Reservation> findUpcomingWithCreneauBetween(
+            @Param("start") LocalDateTime start,
+            @Param("end")   LocalDateTime end,
+            @Param("statut") Statut statut
+    );
 
 
 }
