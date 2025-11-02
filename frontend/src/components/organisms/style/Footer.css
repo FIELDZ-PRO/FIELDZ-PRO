@@ -133,7 +133,9 @@
   color: rgba(255, 255, 255, 0.7);
   text-decoration: none;
   transition: all 0.2s;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .footer__link:hover {
@@ -186,6 +188,10 @@
   margin: 0 auto;
   padding-top: 24px;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
 }
 
 .footer__copyright {
@@ -193,6 +199,28 @@
   font-size: 14px;
   color: rgba(255, 255, 255, 0.5);
   margin: 0;
+}
+
+/* Lien Admin discret */
+.footer__link--admin {
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 12px;
+  font-weight: 400;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s;
+}
+
+.footer__link--admin:hover {
+  color: rgba(255, 255, 255, 0.5);
+  padding-left: 0;
+}
+
+.footer__admin-icon {
+  flex-shrink: 0;
+  opacity: 0.4;
 }
 
 /* === RESPONSIVE === */
@@ -273,5 +301,9 @@
 
   .footer__copyright {
     font-size: 13px;
+  }
+
+  .footer__link--admin {
+    font-size: 14px;
   }
 }

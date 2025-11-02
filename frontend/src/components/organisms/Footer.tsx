@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Facebook, Instagram, Linkedin } from 'lucide-react';
+import { Facebook, Instagram, Linkedin, Shield } from 'lucide-react';
 import './style/Footer.css';
 
 // Import TikTok icon (SVG custom)
@@ -123,8 +123,8 @@ const Footer: React.FC = () => {
           </p>
           <p className="footer__contact-info">
             <strong>Téléphone:</strong><br />
-            <a href="tel:+213555123456" className="footer__contact-link">
-              +213 555 123 456
+            <a href="tel:+213770263640" className="footer__contact-link">
+              +213 770 26 36 40
             </a>
           </p>
         </div>
@@ -135,6 +135,11 @@ const Footer: React.FC = () => {
         <p className="footer__copyright">
           © {new Date().getFullYear()} FIELDZ. Tous droits réservés.
         </p>
+        {/* Lien admin très discret */}
+        <Link to="/admin/login" className="footer__link footer__link--admin">
+          <Shield size={14} className="footer__admin-icon" />
+          Admin
+        </Link>
       </div>
     </footer>
   );

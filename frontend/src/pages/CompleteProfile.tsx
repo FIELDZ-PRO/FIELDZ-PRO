@@ -199,7 +199,7 @@ const CompleteProfile = () => {
             >
               {COUNTRY_CODES.map((item) => (
                 <option key={item.code} value={item.code}>
-                  {item.flag} {item.code}
+                  {item.code}
                 </option>
               ))}
             </select>

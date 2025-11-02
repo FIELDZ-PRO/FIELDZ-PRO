@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
-import logoSymbol from '../../assets/Logo-fieldz.svg';
 import './style/Navbar.css';
 
 const Navbar: React.FC = () => {
@@ -23,9 +22,8 @@ const Navbar: React.FC = () => {
   return (
     <nav className="navbar">
       <div className="navbar__container">
-        {/* Logo avec symbole SVG + texte FIELDZ */}
+        {/* Logo avec symbole SVG + texte FIELDZ - SÉPARÉS */}
         <Link to="/" className="navbar__logo">
-          <img src={logoSymbol} alt="FIELDZ" className="navbar__logo-symbol" />
           <span className="navbar__logo-text">FIELDZ</span>
         </Link>
 

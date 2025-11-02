@@ -1,4 +1,4 @@
-/* Navbar.css - Logo à la même taille que le texte */
+/* Navbar.css - Logo et texte séparés et ajustables indépendamment */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&family=Inter:wght@400;500;600&display=swap');
 
 .navbar {
@@ -37,18 +37,18 @@
   transform: scale(1.05);
 }
 
-/* Symbole SVG - MÊME HAUTEUR QUE LE TEXTE */
+/* === LOGO SYMBOLE SVG - AJUSTABLE INDÉPENDAMMENT === */
 .navbar__logo-symbol {
-  height: 4.5rem;         /* ✅ VRAIMENT GRAND maintenant */
+  height: 2.2rem;         /* 🔧 Logo plus grand */
   width: auto;
   object-fit: contain;
 }
 
-/* Texte FIELDZ */
+/* === TEXTE FIELDZ - AJUSTABLE INDÉPENDAMMENT === */
 .navbar__logo-text {
   font-family: 'Poppins', sans-serif;
   font-weight: 800;
-  font-size: 4.5rem;      /* ✅ VRAIMENT GRAND maintenant */
+  font-size: 2.2rem;      /* 🔧 Texte FIELDZ beaucoup plus grand */
   line-height: 1;
   color: #05612B;
   white-space: nowrap;
@@ -187,25 +187,25 @@
     font-size: 0.8125rem;
   }
 
-  /* Logo légèrement plus petit sur tablette */
+  /* Logo et texte tablette */
   .navbar__logo-symbol {
-    height: 4rem;      /* ✅ Proportionnel au texte */
+    height: 1.375rem;
   }
 
   .navbar__logo-text {
-    font-size: 4rem;
+    font-size: 1.375rem;
   }
 }
 
-/* Tablette (768px) - Symbole uniquement */
+/* Tablette (768px) - Logo ET texte visibles */
 @media (max-width: 768px) {
-  /* Cache le texte FIELDZ */
+  /* Garde le texte FIELDZ visible */
   .navbar__logo-text {
-    display: none;
+    font-size: 1.8rem;      /* ✅ Texte visible sur tablette */
   }
 
   .navbar__logo-symbol {
-    height: 3.5rem;       /* ✅ Plus visible quand seul */
+    height: 1.8rem;         /* ✅ Logo visible sur tablette */
   }
 
   .navbar__actions-desktop {
@@ -274,10 +274,10 @@
   }
 
   .navbar__logo-symbol {
-    height: 3rem;      /* ✅ Reste bien visible */
+    height: 1.5rem;         /* ✅ Logo visible sur mobile */
   }
 
   .navbar__logo-text {
-    display: none;
+    font-size: 1.5rem;      /* ✅ Texte visible sur mobile */
   }
 }

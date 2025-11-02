@@ -28,7 +28,7 @@ const SportsCarousel = () => {
       emoji: "🏀"
     },
     {
-      image: "https://images.unsplash.com/photo-1595435742656-5272d0c0dc80?w=1400&q=80",
+      image: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=1400&q=80",
       sport: "Tennis",
       location: "Annaba",
       price: "3000 DZD/h",
