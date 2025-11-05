@@ -2,7 +2,8 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import "./style/completeProfile.css"
+import "./style/CompleteProfile.css";
+
 
 // Liste des indicatifs téléphoniques principaux
 const COUNTRY_CODES = [
