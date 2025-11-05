@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+
 import com.fieldz.mapper.ReservationMapper;
 
 import com.fieldz.exception.CreneauDejaReserveException;
@@ -17,13 +18,11 @@ import com.fieldz.exception.ReservationDejaAnnuleeException;
 import com.fieldz.exception.ReservationIntrouvableException;
 import com.fieldz.exception.AnnulationNonAutoriseeException;
 
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.format.DateTimeFormatter;
-
 import java.time.Duration;
 
-
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -40,8 +39,11 @@ public class ReservationService {
 
     private static final Duration NO_SHOW_GRACE = Duration.ofMinutes(15);
 
-
-
+    /**
+     * Patch: transaction + emails déplacés APRÈS la persistance,
+     * et protégés par try/catch pour ne JAMAIS casser la réservation.
+     */
+    @Transactional
     public Reservation reserver(Long creneauId, Authentication authentication) {
         String email = authentication.getName();
         Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
@@ -54,31 +56,42 @@ public class ReservationService {
         Creneau creneau = creneauRepository.findById(creneauId)
                 .orElseThrow(() -> new RuntimeException("Créneau non trouvé"));
 
-        // ✅ Ce bloc suffit pour vérifier la disponibilité
+        // Vérif disponibilité
         if (!creneau.getStatut().equals(Statut.LIBRE)) {
             throw new CreneauDejaReserveException("Créneau déjà réservé");
         }
 
+        // Met à jour le créneau
         creneau.setStatut(Statut.RESERVE);
         creneau.setDisponible(false);
+        creneauRepository.save(creneau);
 
+        // Crée la réservation
         Reservation reservation = new Reservation();
         reservation.setCreneau(creneau);
         reservation.setJoueur(joueur);
         reservation.setDateReservation(LocalDateTime.now());
         reservation.setStatut(Statut.RESERVE);
-        notificationService.envoyerEmailConfirmationReservation(joueur.getEmail(), creneau);
+        Reservation saved = reservationRepository.save(reservation);
 
-        notificationService.envoyerEmailAuClubReservation(creneau.getTerrain().getClub(), joueur, creneau);
+        log.info("Nouvelle réservation créée pour le joueur : {} (id={})", joueur.getEmail(), saved.getId());
 
-        log.info("Nouvelle réservation créée pour le joueur : {}", joueur.getEmail());
+        // ---- Effets de bord NON bloquants : on ne casse jamais l’API si ça échoue ----
+        try {
+            notificationService.envoyerEmailConfirmationReservation(joueur.getEmail(), creneau);
+        } catch (Exception ex) {
+            log.warn("Email confirmation joueur non envoyé (res {}): {}", saved.getId(), ex.getMessage());
+        }
 
-        // ✅ Sauvegarde du créneau mis à jour
-        creneauRepository.save(creneau);
+        try {
+            notificationService.envoyerEmailAuClubReservation(creneau.getTerrain().getClub(), joueur, creneau);
+        } catch (Exception ex) {
+            log.warn("Email notification club non envoyé (res {}): {}", saved.getId(), ex.getMessage());
+        }
+        // -------------------------------------------------------------------------------
 
-        return reservationRepository.save(reservation);
+        return saved;
     }
-
 
     public List<Reservation> getReservationsDuClub(Authentication authentication) {
         String email = authentication.getName();
@@ -104,8 +117,6 @@ public class ReservationService {
         log.info("Joueur {} a {} réservations", joueur.getEmail(), reservations.size());
         return reservations;
     }
-
-
 
     public String annulerReservation(Long reservationId, Authentication authentication, String motif) {
         String email = authentication.getName();
@@ -151,23 +162,27 @@ public class ReservationService {
 
         reservationRepository.save(reservation);
 
-        // -- Notifications
+        // -- Notifications (non bloquantes)
         if (estClub) {
-            // ✅ ICI : notification email + in-app au joueur (annulation par le club)
-            notificationService.notifierAnnulationReservationParClub(reservation,
-                    motif != null && !motif.isBlank() ? motif : "Annulée par le club");
+            try {
+                notificationService.notifierAnnulationReservationParClub(reservation,
+                        motif != null && !motif.isBlank() ? motif : "Annulée par le club");
+            } catch (Exception e) {
+                log.warn("Notif annulation club non envoyée (res {}): {}", reservation.getId(), e.getMessage());
+            }
         } else {
-            // Annulation par le joueur -> prévenir le club (tu le faisais déjà)
             if (reservation.getJoueur() != null && creneau != null) {
-                notificationService.envoyerEmailAuClubAnnulation(
-                        creneau.getTerrain().getClub(), reservation.getJoueur(), creneau);
+                try {
+                    notificationService.envoyerEmailAuClubAnnulation(
+                            creneau.getTerrain().getClub(), reservation.getJoueur(), creneau);
+                } catch (Exception e) {
+                    log.warn("Email annulation vers club non envoyé (res {}): {}", reservation.getId(), e.getMessage());
+                }
             }
         }
 
         return "Réservation annulée et historisée avec succès.";
     }
-
-
 
     public List<Reservation> getReservationsParDate(LocalDate parsedDate, Authentication authentication) {
         String email = authentication.getName();
@@ -192,19 +207,9 @@ public class ReservationService {
         return reservations;
     }
 
-
     public List<Reservation> getReservationsAnnuleesPourJoueur(String email) {
-        // 🔍 On récupère le joueur à partir de l'email
         Joueur joueur = joueurService.getByEmail(email);
-
-        // 🏷️ On définit les statuts considérés comme "annulés"
-        List<Statut> statutsAnnules = List.of(
-                Statut.ANNULE,
-                Statut.ANNULE_PAR_JOUEUR,
-                Statut.ANNULE_PAR_CLUB
-        );
-
-        // 📄 On récupère les réservations annulées pour ce joueur
+        List<Statut> statutsAnnules = List.of(Statut.ANNULE, Statut.ANNULE_PAR_JOUEUR, Statut.ANNULE_PAR_CLUB);
         return reservationRepository.findAnnuleesByJoueurId(statutsAnnules, joueur.getId());
     }
 
@@ -219,17 +224,14 @@ public class ReservationService {
         reservation.setStatut(Statut.CONFIRMEE);
         reservationRepository.save(reservation);
 
-        // (Optionnel) Envoyer un email
-        Utilisateur joueur = reservation.getJoueur();
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy à HH:mm");
-        String dateFormatee = reservation.getCreneau().getDateDebut().format(formatter);
-
-        notificationService.envoyerEmailConfirmationPresence(
-                joueur.getEmail(),
-                reservation.getCreneau()
-        );
-
+        try {
+            notificationService.envoyerEmailConfirmationPresence(
+                    reservation.getJoueur().getEmail(),
+                    reservation.getCreneau()
+            );
+        } catch (Exception e) {
+            log.warn("Email confirmation présence non envoyé (res {}): {}", reservation.getId(), e.getMessage());
+        }
     }
 
     public String marquerAbsent(Long reservationId, Authentication authentication, String motif) {
@@ -244,7 +246,6 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new ReservationIntrouvableException("Réservation introuvable."));
 
-        // Vérifier que la réservation appartient bien à ce club
         if (reservation.getCreneau() == null ||
                 reservation.getCreneau().getTerrain() == null ||
                 reservation.getCreneau().getTerrain().getClub() == null ||
@@ -252,13 +253,11 @@ public class ReservationService {
             throw new RuntimeException("Action non autorisée pour ce club.");
         }
 
-        // Transitions autorisées : RESERVE -> ABSENT, CONFIRMEE -> ABSENT (optionnel)
         Statut s = reservation.getStatut();
         if (!(s == Statut.RESERVE || s == Statut.CONFIRMEE)) {
             throw new IllegalStateException("Transition vers ABSENT non autorisée depuis " + s);
         }
 
-        // Règle de timing : après l'heure de début + marge (15 min)
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime start = reservation.getCreneau().getDateDebut();
         if (now.isBefore(start.plus(NO_SHOW_GRACE))) {
@@ -268,26 +267,16 @@ public class ReservationService {
         }
 
         reservation.setStatut(Statut.ABSENT);
-        reservation.setDateAnnulation(now); // on historise la date du no-show
-        if (motif != null && !motif.isBlank()) {
-            reservation.setMotifAnnulation(motif);
-        } else {
-            reservation.setMotifAnnulation("Absence constatée par le club");
-        }
-
-        // ⚠️ On ne libère PAS le créneau : l'événement est passé, l'historique doit refléter la réalité
+        reservation.setDateAnnulation(now);
+        reservation.setMotifAnnulation((motif != null && !motif.isBlank()) ? motif : "Absence constatée par le club");
         reservationRepository.save(reservation);
 
-        // (Optionnel) notification au joueur
         try {
-            notificationService.notifierAbsenceReservationParClub(reservation,
-                    reservation.getMotifAnnulation() != null ? reservation.getMotifAnnulation() : "Absence");
+            notificationService.notifierAbsenceReservationParClub(reservation, reservation.getMotifAnnulation());
         } catch (Exception e) {
-            log.warn("Notification absence non envoyée: {}", e.getMessage());
+            log.warn("Notification absence non envoyée (res {}): {}", reservation.getId(), e.getMessage());
         }
 
         return "Réservation marquée comme ABSENT.";
     }
-
-
 }

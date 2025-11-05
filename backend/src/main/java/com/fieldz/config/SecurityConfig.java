@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -15,12 +16,13 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.header.writers.StaticHeadersWriter;
 
 import static org.springframework.security.config.Customizer.withDefaults;
-import org.springframework.http.HttpMethod;
 
 @Configuration
 @EnableWebSecurity
@@ -39,48 +41,65 @@ public class SecurityConfig {
     SecurityFilterChain api(HttpSecurity http) throws Exception {
         http
                 .securityMatcher("/api/**")
+                // Utilise le bean CORS (CorsFilter) défini dans CorsConfig
                 .cors(withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
-                .headers(h -> h.frameOptions(f -> f.disable()))
+
+                // Headers de sécurité (API)
+                .headers(h -> h
+                        .xssProtection(HeadersConfigurer.XXssConfig::disable)  // obsolète, on désactive explicitement
+                        .frameOptions(f -> f.deny())
+                        .addHeaderWriter(new StaticHeadersWriter("Referrer-Policy", "same-origin"))
+                        .addHeaderWriter(new StaticHeadersWriter("X-Content-Type-Options", "nosniff"))
+                )
+
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
                 .exceptionHandling(e -> e
                         .authenticationEntryPoint((req, res, ex) -> {
-                            res.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401
+                            res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                             res.setContentType("application/json");
                             res.getWriter().write("{\"error\":\"Unauthorized\"}");
                         })
                         .accessDeniedHandler((req, res, ex) -> {
-                            res.setStatus(HttpServletResponse.SC_FORBIDDEN); // 403
+                            res.setStatus(HttpServletResponse.SC_FORBIDDEN);
                             res.setContentType("application/json");
                             res.getWriter().write("{\"error\":\"Forbidden\"}");
                         })
                 )
+
                 .authorizeHttpRequests(auth -> auth
-                        // publiques API
+                        // Preflight CORS sur l’API
+                        .requestMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
+
+                        // Endpoints publics API
                         .requestMatchers(
                                 "/api/auth/**",
                                 "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html",
-                                "/api/contact", // formulaire de partenariat
-                                "/h2-console/**"
+                                "/api/contact"
                         ).permitAll()
 
-                        // 👉 rends les recherches publiques si tu veux
+                        // Consultation publique
                         .requestMatchers("/api/club/search/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/club/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/creneaux/club/*").permitAll()
-                        // rôles API
+
+                        // Rôles API
                         .requestMatchers("/api/joueur/**").hasRole("JOUEUR")
                         .requestMatchers("/api/club/**").hasRole("CLUB")
+
                         .anyRequest().authenticated()
                 )
-                // IMPORTANT: PAS de oauth2Login() sur l'API
-                .authenticationProvider(authenticationProvider)
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
-        // Pas de formLogin/basic/logout ici
-        http.formLogin(AbstractHttpConfigurer::disable);
-        http.httpBasic(AbstractHttpConfigurer::disable);
-        http.logout(AbstractHttpConfigurer::disable);
+                // Auth/JWT
+                .authenticationProvider(authenticationProvider)
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+
+                // Pas de formLogin/basic/logout sur l'API
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .formLogin(AbstractHttpConfigurer::disable)
+                .logout(AbstractHttpConfigurer::disable);
+
         return http.build();
     }
 
@@ -91,12 +110,33 @@ public class SecurityConfig {
         http
                 .cors(withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
-                .headers(h -> h.frameOptions(f -> f.disable()))
+
+                // Headers de sécurité (WEB)
+                .headers(h -> h
+                        .xssProtection(HeadersConfigurer.XXssConfig::disable)
+                        .frameOptions(f -> f.sameOrigin()) // autorise /h2-console en dev
+                        .addHeaderWriter(new StaticHeadersWriter("Referrer-Policy", "same-origin"))
+                        .addHeaderWriter(new StaticHeadersWriter("X-Content-Type-Options", "nosniff"))
+                )
+
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/oauth2/**", "/login/**").permitAll()
+                        .requestMatchers(
+                                "/oauth2/**", "/login/**",
+                                "/h2-console/**",            // H2 console (désactive en prod)
+                                "/error", "/favicon.ico",    // utilitaires
+                                "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html"
+                        ).permitAll()
+
+                        // L’app React/HTML statique éventuelle
+                        .requestMatchers("/", "/index.html", "/assets/**").permitAll()
+
+                        // OPTIONS global si nécessaire pour certaines routes web
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
                         .anyRequest().permitAll()
                 )
-                // Garder l’OAuth2 pour le site
+
+                // OAuth2 Google
                 .oauth2Login(oauth -> oauth
                         .defaultSuccessUrl("http://localhost:5173/oauth-success", true)
                         .userInfoEndpoint(userInfo -> userInfo.userService(oauth2UserService))
@@ -106,6 +146,7 @@ public class SecurityConfig {
         return http.build();
     }
 
+    // -------- AUTH MANAGER --------
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();

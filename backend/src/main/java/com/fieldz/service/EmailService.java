@@ -20,7 +20,7 @@ public class EmailService {
         // Pour test en local sur PC
         // String resetLink = "http://localhost:5173/reset-password?token=" + token;
         // Pour tester en local sur le réseaux
-        String resetLink = "http://10.188.124.180:5173/reset-password?token=" + token;
+        String resetLink = "http://192.168.100.16:5173/reset-password?token=" + token;
 
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("contact.fieldz@gmail.com");
