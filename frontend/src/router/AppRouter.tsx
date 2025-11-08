@@ -1,25 +1,18 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
-import Login from "../pages/Log-auth/Login";
-import Register from "../pages/Log-auth/Register";
-import AdminLogin from "../components/admin/AdminLogin";
 
+// Auth Feature
+import Login from "../features/auth/pages/Login";
+import Register from "../features/auth/pages/Register";
+import ResetPassword from "../features/auth/pages/ResetPassword";
+import ForgotPassword from "../features/auth/pages/ForgotPassword";
+import OAuthSuccess from "../features/auth/pages/oauth-success";
+import CompleteProfile from "../features/auth/pages/CompleteProfile";
+
+// Club Feature
 import ClubDashboard from "../features/club/pages/ClubDashboard";
 import ClubDashboard2 from "../features/club/pages/ClubDashboard2";
-
-import JoueurDashboard from "../pages/JoueurDashboard";
-import JoueurDashboard2 from "../pages/JoueurDashboard2";
-
-import ProtectedRoute from "../components/ProtectedRoute";
-import LandingPage from "../pages/LandingPage";
-import NotFound from "../pages/NotFound";
-import ResetPassword from "../pages/Log-auth/ResetPassword";
-import ForgotPassword from "../pages/ForgotPassword";
-import OAuthSuccess from "../pages/Log-auth/oauth-success";
-import CompleteProfile from "../pages/CompleteProfile";
-import ProfilJoueur from "../pages/ProfilJoueur";
 import ProfilClub from "../features/club/pages/ProfilClub";
-
 import AccueilClub from "../features/club/pages/VueClub/AccueilClub";
 import Club from "../features/club/pages/Club";
 import { NavigationProvider } from "../features/club/pages/VueClub/Context/NavigationContext";
@@ -27,13 +20,25 @@ import { LoginClub } from "../features/club/pages/VueClub/LoginClub";
 import { MailSent } from "../features/club/pages/VueClub/MailSent";
 import { ForgotPasswordPageClub } from "../features/club/pages/VueClub/ForgotPasswordClub";
 
-// Admin
-import AdminLayout from "../components/admin/AdminLayout";
-import AdminDashboard from "../pages/admin/AdminDashboard";
-import AdminClubs from "../pages/admin/AdminClubs";
-import AdminJoueurs from "../pages/admin/AdminJoueurs";
+// Joueur Feature
+import JoueurDashboard from "../features/joueur/pages/JoueurDashboard";
+import JoueurDashboard2 from "../features/joueur/pages/JoueurDashboard2";
+import ProfilJoueur from "../features/joueur/pages/ProfilJoueur";
+import ClubDetailsJoueur from "../features/joueur/pages/ClubDetailsJoueur";
 
-import ClubDetailsJoueur from "../pages/ClubDetailsJoueur";
+// Admin Feature
+import AdminLayout from "../features/admin/components/AdminLayout";
+import AdminLogin from "../features/admin/pages/AdminLogin";
+import AdminDashboard from "../features/admin/pages/AdminDashboard";
+import AdminClubs from "../features/admin/pages/AdminClubs";
+import AdminJoueurs from "../features/admin/pages/AdminJoueurs";
+
+// Shared
+import ProtectedRoute from "../shared/components/ProtectedRoute";
+
+// Public Pages
+import LandingPage from "../pages/LandingPage";
+import NotFound from "../pages/NotFound";
 
 export default function AppRouter() {
   return (

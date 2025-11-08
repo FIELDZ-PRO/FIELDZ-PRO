@@ -1,14 +1,14 @@
 import React from 'react';
-import Navbar from '../components/organisms/Navbar';
-import HeroSection from '../components/organisms/HeroSection';
-import SportsCarousel from '../components/organisms/SportCarousel';
-import DigitalizeSport from '../components/organisms/DigitalizeSport';
+import Navbar from '../shared/components/organisms/landing/Navbar';
+import HeroSection from '../shared/components/organisms/landing/HeroSection';
+import SportsCarousel from '../shared/components/organisms/landing/SportCarousel';
+import DigitalizeSport from '../shared/components/organisms/landing/DigitalizeSport';
 import HowItWorks from '../components/organisms/HowItWorks';
-import WhyFIELdZ from '../components/organisms/WhyFIELdZ';
-import TestezFieldz from '../components/organisms/TestezFieldz';
-import MobileApp from '../components/organisms/MobileApp';
-import ClubsPartnership from '../components/organisms/ClubsPartnership';
-import Footer from '../components/organisms/Footer';
+import WhyFIELdZ from '../shared/components/organisms/landing/WhyFIELdZ';
+import TestezFieldz from '../shared/components/organisms/landing/TestezFieldz';
+import MobileApp from '../shared/components/organisms/landing/MobileApp';
+import ClubsPartnership from '../shared/components/organisms/landing/ClubsPartnership';
+import Footer from '../shared/components/organisms/landing/Footer';
 
 interface LandingPageProps {
   onNavigate: (view: 'landing' | 'player' | 'club') => void;
