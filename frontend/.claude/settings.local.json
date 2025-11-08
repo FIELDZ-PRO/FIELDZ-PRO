@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cat:*)",
+      "Bash(xargs:*)",
+      "Bash(mkdir:*)",
+      "Bash(mv:*)",
+      "Bash(tree:*)",
+      "Bash(npm run build:*)",
+      "Bash(find:*)",
+      "Bash(while read file)",
+      "Bash(do sed -i 's|from \"\"\"\"../../molecules/ReservationCard\"\"\"\"|from \"\"\"\"../../shared/components/molecules/ReservationCard\"\"\"\"|g' \"$file\")",
+      "Bash(done)",
+      "Bash(1)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

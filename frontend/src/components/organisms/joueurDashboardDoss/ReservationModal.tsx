@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Creneau } from "../../../types";
-import { useAuth } from "../../../context/AuthContext";
+import { Creneau } from "../../../shared/types";
+import { useAuth } from "../../../shared/context/AuthContext";
 import FullscreenModal from "./FullscreenModal";
 import { AlertTriangle } from "lucide-react";
 import "./style/ReservationModal.css";
@@ -12,11 +12,11 @@ type Props = {
   politiqueClub?: string;
 };
 
-const ReservationModal: React.FC<Props> = ({ 
-  creneau, 
-  onClose, 
-  onReservation, 
-  politiqueClub 
+const ReservationModal: React.FC<Props> = ({
+  creneau,
+  onClose,
+  onReservation,
+  politiqueClub
 }) => {
   const { token } = useAuth();
   const [loading, setLoading] = useState(false);
@@ -25,7 +25,7 @@ const ReservationModal: React.FC<Props> = ({
   const confirmer = async () => {
     setLoading(true);
     setError("");
-    
+
     try {
       const res = await fetch(
         `http://localhost:8080/api/reservations/creneau/${creneau.id}`,
@@ -34,11 +34,11 @@ const ReservationModal: React.FC<Props> = ({
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      
+
       if (!res.ok) {
         throw new Error("Erreur lors de la réservation");
       }
-      
+
       await onReservation();
     } catch (e: any) {
       console.error("Erreur réservation:", e);
@@ -91,8 +91,8 @@ const ReservationModal: React.FC<Props> = ({
 
         {/* Boutons d'action */}
         <div className="modal-actions">
-          <button 
-            onClick={onClose} 
+          <button
+            onClick={onClose}
             className="btn-cancel"
             disabled={loading}
           >

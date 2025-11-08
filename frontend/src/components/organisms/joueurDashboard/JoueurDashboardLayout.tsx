@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { Creneau, Reservation, Joueur } from "../../../types";
-import CreneauCard from "../../molecules/CreneauCard";
-import ReservationCard from "../../molecules/ReservationCard";
+import { Creneau, Reservation, Joueur } from "../../../shared/types";
+import CreneauCard from "../../../shared/components/molecules/CreneauCard";
+import ReservationCard from "../../../shared/components/molecules/ReservationCard";
 import ReservationGroupByStatut from "./ReservationGroupByStatut";
 import ReservationModal from "./ReservationModal";
 import CreneauxDisponiblesGroup from "./CreneauxDisponiblesGroup";
@@ -15,14 +15,14 @@ type Props = {
 };
 
 const JoueurDashboardLayout: React.FC<Props> = ({
-    
+
   joueur,
   reservations,
   creneauxLibres,
   onRefresh,
 }) => {
   const [creneauSelectionne, setCreneauSelectionne] = useState<Creneau | null>(null);
-  
+
 
   const groupByStatut = (statut: string) =>
     reservations.filter((r) => r.statut === statut);
@@ -31,11 +31,11 @@ const JoueurDashboardLayout: React.FC<Props> = ({
 
 
     <div className="p-4 space-y-6">
-              <h2 className="text-xl font-bold mb-4 text-green-500">[TEST] Fonctionnalités du JoueurDashboard</h2>
+      <h2 className="text-xl font-bold mb-4 text-green-500">[TEST] Fonctionnalités du JoueurDashboard</h2>
 
       {/* Header */}
       <div className="flex justify-between items-center mb-4">
-        
+
         <h1 className="text-2xl font-semibold text-blue-700">
           🎾 FIELDZ Joueur
           {joueur && (
@@ -55,23 +55,23 @@ const JoueurDashboardLayout: React.FC<Props> = ({
       {/* Créneaux disponibles */}
       <h2 className="text-xl font-bold mb-4">📅 Créneaux disponibles</h2>
       <CreneauxDisponiblesGroup
-  creneaux={creneauxLibres}
-  
-  onReserver={(c) => {
-    console.log("✅ Clic sur réserver, créneau sélectionné :", c);
-    setCreneauSelectionne(c);
-  }}
-/>
+        creneaux={creneauxLibres}
+
+        onReserver={(c) => {
+          console.log("✅ Clic sur réserver, créneau sélectionné :", c);
+          setCreneauSelectionne(c);
+        }}
+      />
 
 
       {/* Mes réservations groupées par statut */}
       <h2 className="text-lg font-semibold text-gray-800 mt-6 mb-2">📖 Mes réservations</h2>
 
       <ReservationGroupByStatut
-  titre="✅ Confirmées / à venir"
-  reservations={groupByStatut("RESERVE")}
-  onUpdate={onRefresh}
-/>
+        titre="✅ Confirmées / à venir"
+        reservations={groupByStatut("RESERVE")}
+        onUpdate={onRefresh}
+      />
 
       <ReservationGroupByStatut
         titre="❌ Annulées par vous"

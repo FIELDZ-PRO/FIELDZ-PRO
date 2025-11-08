@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { Calendar, Clock, MapPin, XCircle, AlertCircle } from "lucide-react";
-import { Reservation } from "../../../types";
+import { Reservation } from "../../../shared/types";
 import "./style/ReservationAnnulee.css";
 
 type Props = {
@@ -103,8 +103,8 @@ const ReservationAnnulees: React.FC<Props> = ({ reservations }) => {
             {filterStatus === "all"
               ? "Vous n'avez pas de réservations annulées"
               : filterStatus === "ANNULE_PAR_JOUEUR"
-              ? "Aucune réservation annulée par vous"
-              : "Aucune réservation annulée par le club"}
+                ? "Aucune réservation annulée par vous"
+                : "Aucune réservation annulée par le club"}
           </p>
         </div>
       ) : (

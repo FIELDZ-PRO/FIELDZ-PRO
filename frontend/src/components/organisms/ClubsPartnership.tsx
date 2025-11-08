@@ -8,7 +8,7 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'
 
 // ---- Mapping UI -> enum backend ----
 const SPORT_LABELS = [
-  'Foot 5',
+  'Foot',
   'Padel',
   'Tennis',
   'Basket',
@@ -23,7 +23,7 @@ type SportEnum = 'FOOT5' | 'PADEL' | 'TENNIS' | 'BASKET' | 'HANDBALL' | 'VOLLEY'
 
 // Table de correspondance labels → enum
 const MAP_LABEL_TO_ENUM: Record<SportLabel, SportEnum> = {
-  'Foot 5': 'FOOT5',
+  'Foot': 'FOOT5',
   'Padel': 'PADEL',
   'Tennis': 'TENNIS',
   'Basket': 'BASKET',
@@ -98,45 +98,45 @@ const ClubsPartnership: React.FC = () => {
     }
 
     try {
-  // Appel API
-  const { data } = await axios.post(`${API_BASE}/api/contact`, payload, {
-    headers: { 'Content-Type': 'application/json' },
-  })
+      // Appel API
+      const { data } = await axios.post(`${API_BASE}/api/contact`, payload, {
+        headers: { 'Content-Type': 'application/json' },
+      })
 
-  // Si la requête réussit
-  setSubmitMessage(`✅ Demande envoyée avec succès ! Nous vous contacterons sous 24h.`)
+      // Si la requête réussit
+      setSubmitMessage(`✅ Demande envoyée avec succès ! Nous vous contacterons sous 24h.`)
 
-  // Réinitialise le formulaire
-  setFormData({
-    nomClub: '',
-    ville: '',
-    nomResponsable: '',
-    email: '',
-    telephone: '',
-    sportsUI: [],
-    message: '',
-  })
-} catch (error: any) {
-  // Si une erreur survient (réseau, 500, 429, etc.)
-  console.error("Erreur lors de l'envoi:", error)
+      // Réinitialise le formulaire
+      setFormData({
+        nomClub: '',
+        ville: '',
+        nomResponsable: '',
+        email: '',
+        telephone: '',
+        sportsUI: [],
+        message: '',
+      })
+    } catch (error: any) {
+      // Si une erreur survient (réseau, 500, 429, etc.)
+      console.error("Erreur lors de l'envoi:", error)
 
-  const status = error?.response?.status
+      const status = error?.response?.status
 
-  if (status === 429) {
-    setSubmitMessage('❌ Vous avez atteint la limite : 2 demandes par 24h avec cette adresse.')
-  } else {
-    const msg =
-      error?.response?.data?.message ||
-      error?.response?.data?.error ||
-      `Erreur ${status ?? ''}`.trim()
+      if (status === 429) {
+        setSubmitMessage('❌ Vous avez atteint la limite : 2 demandes par 24h avec cette adresse.')
+      } else {
+        const msg =
+          error?.response?.data?.message ||
+          error?.response?.data?.error ||
+          `Erreur ${status ?? ''}`.trim()
 
-    setSubmitMessage('❌ ' + (msg || "Une erreur s'est produite."))
-  }
-} finally {
-  // Ce code s'exécute TOUJOURS, succès ou erreur
-  // Ici, on désactive le spinner/bouton de chargement
-  setIsSubmitting(false)
-}
+        setSubmitMessage('❌ ' + (msg || "Une erreur s'est produite."))
+      }
+    } finally {
+      // Ce code s'exécute TOUJOURS, succès ou erreur
+      // Ici, on désactive le spinner/bouton de chargement
+      setIsSubmitting(false)
+    }
 
   }
 

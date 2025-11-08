@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Creneau } from "../../../types";
-import { useAuth } from "../../../context/AuthContext";
+import { Creneau } from "../../../shared/types";
+import { useAuth } from "../../../shared/context/AuthContext";
 import FullscreenModal from "./FullscreenModal";
 
 type Props = {

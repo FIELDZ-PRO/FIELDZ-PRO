@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../shared/context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import JoueurDashboardLayout from "../components/organisms/joueurDashboardDoss/JoueurDashboardLayout";
-import { Creneau, Reservation, Joueur } from "../types";
+import { Creneau, Reservation, Joueur } from "../shared/types";
 
 const JoueurDashboard: React.FC = () => {
   const { logout, token } = useAuth();

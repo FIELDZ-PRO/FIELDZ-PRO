@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Reservation } from "../../../types";
-import ReservationCard from "../../molecules/ReservationCard";
+import { Reservation } from "../../../shared/types";
+import ReservationCard from "../../../shared/components/molecules/ReservationCard";
 
 type Props = {
   titre: string;

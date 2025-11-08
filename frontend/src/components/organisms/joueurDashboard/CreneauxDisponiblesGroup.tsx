@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Creneau } from "../../../types";
-import CreneauCard from "../../molecules/CreneauCard";
+import { Creneau } from "../../../shared/types";
+import CreneauCard from "../../../shared/components/molecules/CreneauCard";
 
 type Props = {
   creneaux: Creneau[];

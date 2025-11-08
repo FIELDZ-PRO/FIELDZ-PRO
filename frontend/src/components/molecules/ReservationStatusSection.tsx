@@ -1,6 +1,6 @@
 // components/molecules/ReservationStatusSection.tsx
 import React, { useState } from "react";
-import { Reservation } from "../../types";
+import { Reservation } from "../../shared/types";
 import { formatDateFr, formatHour } from "../../utils/dateUtils"; // ✅ À adapter selon ton projet
 
 type Props = {

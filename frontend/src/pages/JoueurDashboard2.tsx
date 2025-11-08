@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { Joueur, Reservation, Creneau } from '../types';
+import { useAuth } from '../shared/context/AuthContext';
+import { Joueur, Reservation, Creneau } from '../shared/types';
 import JoueurDashboardLayout from '../components/organisms/joueurDashboard/JoueurDashboardLayout';
 
 const JoueurDashboard2: React.FC = () => {
@@ -40,14 +40,14 @@ const JoueurDashboard2: React.FC = () => {
   }, [token]);
 
   return (
-    
+
     <JoueurDashboardLayout
       joueur={joueur}
       reservations={reservations}
       creneauxLibres={creneauxLibres}
       onRefresh={fetchData}
     />
-    
+
   );
 };
 
