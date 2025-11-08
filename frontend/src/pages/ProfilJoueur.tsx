@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../shared/context/AuthContext';
 import './style/ProfilJoueur.css';
 
 // L'interface correspond au JoueurDto du backend
@@ -87,9 +87,9 @@ const ProfilJoueur = () => {
           {/* Header avec photo et infos */}
           <div className="profil-header">
             {playerData.photoProfilUrl ? (
-              <img 
-                src={playerData.photoProfilUrl} 
-                alt="Profil" 
+              <img
+                src={playerData.photoProfilUrl}
+                alt="Profil"
                 className="profil-photo"
               />
             ) : (
@@ -99,7 +99,7 @@ const ProfilJoueur = () => {
                 </span>
               </div>
             )}
-            
+
             <div className="profil-header-info">
               <h2>{playerData.prenom} {playerData.nom}</h2>
               <p className="email-display">{playerData.email}</p>
@@ -114,10 +114,10 @@ const ProfilJoueur = () => {
                   <span className="field-icon">👤</span>
                   Prénom
                 </label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   id="prenom"
-                  value={playerData.prenom || ''} 
+                  value={playerData.prenom || ''}
                   disabled
                   className="readonly-field"
                 />
@@ -128,10 +128,10 @@ const ProfilJoueur = () => {
                   <span className="field-icon">👤</span>
                   Nom
                 </label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   id="nom"
-                  value={playerData.nom || ''} 
+                  value={playerData.nom || ''}
                   disabled
                   className="readonly-field"
                 />
@@ -142,10 +142,10 @@ const ProfilJoueur = () => {
                   <span className="field-icon">✉️</span>
                   Email
                 </label>
-                <input 
-                  type="email" 
+                <input
+                  type="email"
                   id="email"
-                  value={playerData.email || ''} 
+                  value={playerData.email || ''}
                   disabled
                   className="readonly-field"
                 />
@@ -156,10 +156,10 @@ const ProfilJoueur = () => {
                   <span className="field-icon">📞</span>
                   Téléphone
                 </label>
-                <input 
-                  type="tel" 
+                <input
+                  type="tel"
                   id="telephone"
-                  value={playerData.telephone || 'Non renseigné'} 
+                  value={playerData.telephone || 'Non renseigné'}
                   disabled
                   className="readonly-field"
                 />

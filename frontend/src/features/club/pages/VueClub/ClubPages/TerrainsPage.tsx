@@ -1,0 +1,321 @@
+import React, { useEffect, useState } from 'react';
+import { Plus, Edit, Trash2, MapPin, Dumbbell, Goal } from 'lucide-react';
+import './style/TerrainsPage.css';
+import { Terrain } from '../../../../../shared/types';
+import { ClubService } from '../../../services/ClubService';
+import { useModal } from '../../../../../shared/context/ModalContext';
+
+export type TypeDeSport = 'Padel' | 'Football';
+
+const TerrainsPage = () => {
+    const [terrains, setTerrains] = useState<Terrain[]>([]);
+    const token = localStorage.getItem("token");
+    const [DataLoaded, setDataLoaded] = useState(false);
+    const [showAddForm, setShowAddForm] = useState(false);
+    const [showEditForm, setShowEditForm] = useState(false);
+    const [editTerrain, setEditTerrain] = useState<Terrain>({
+        id: 0,
+        nomTerrain: '',
+        typeSurface: '',
+        ville: '',
+        sport: '',
+        politiqueClub: '',
+    });
+    const [newTerrain, setNewTerrain] = useState<Omit<Terrain, "id">>({
+        nomTerrain: '',
+        typeSurface: '',
+        ville: '',
+        sport: '',
+        politiqueClub: '',
+    });
+
+    const { setIsModalOpen } = useModal();
+
+    // Fetch terrains
+    const fetchTerrains = async () => {
+        try {
+            const res = await fetch('http://localhost:8080/api/terrains', {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = await res.json();
+            setDataLoaded(data.length > 0);
+            setTerrains(data);
+        } catch (err) {
+            console.error('Erreur lors du chargement des terrains', err);
+        }
+    };
+
+    useEffect(() => {
+        fetchTerrains();
+    }, [token]);
+
+    // Add terrain
+    const handleAjouterTerrain = async (terrain: Omit<Terrain, 'id'>) => {
+        try {
+            const res = await fetch('http://localhost:8080/api/terrains', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(terrain),
+            });
+
+            if (!res.ok) throw new Error(await res.text());
+            const newTerrain = await res.json();
+            setTerrains((prev) => [...prev, newTerrain]);
+            closeAddForm();
+        } catch (err) {
+            alert("❌ Erreur lors de l'ajout du terrain.");
+            console.error(err);
+        }
+    };
+
+    const handleMAJTerrain = async () => {
+        const ret = await ClubService.ModifyTerrain(
+            editTerrain.id,
+            editTerrain.nomTerrain,
+            editTerrain.typeSurface,
+            editTerrain.ville,
+            editTerrain.sport,
+            editTerrain.politiqueClub
+        );
+        if (ret) {
+            setTerrains(prev =>
+                prev.map(t => t.id === editTerrain.id ? { ...editTerrain } : t)
+            );
+            closeEditForm();
+        } else {
+            alert("Erreur lors de la modification du terrain.");
+        }
+    };
+
+    const handleDeleteTerrain = async (id: number) => {
+        const checkDelete = await ClubService.DeleteTerrain(id);
+        if (checkDelete) {
+            setTerrains(prev => prev.filter(t => t.id !== id));
+        } else {
+            alert("Le terrain n'a pas été supprimé avec succès");
+        }
+    };
+
+    const openAddForm = () => {
+        setShowAddForm(true);
+        setIsModalOpen(true);
+    };
+
+    const closeAddForm = () => {
+        setShowAddForm(false);
+        setIsModalOpen(false);
+    };
+
+    const openEditForm = (terrain: Terrain) => {
+        setEditTerrain(terrain);
+        setShowEditForm(true);
+        setIsModalOpen(true);
+    };
+
+    const closeEditForm = () => {
+        setShowEditForm(false);
+        setIsModalOpen(false);
+    };
+
+    return (
+        <div className="terrains-page">
+            <div className="page-header">
+                <h1>Gestion des terrains</h1>
+                <button className="btn-add btn-primary" onClick={openAddForm}>
+                    <Plus size={16} /> Ajouter un terrain
+                </button>
+            </div>
+
+            {!DataLoaded && (
+                <div className="empty-state">
+                    <div className="empty-state-icon">
+                        <MapPin size={48} />
+                    </div>
+                    <h3>Aucun terrain trouvé</h3>
+                    <p>Commencez par ajouter votre premier terrain.</p>
+                </div>
+            )}
+
+            {DataLoaded && (
+                <div className="terrains-grid">
+                    {terrains.map((terrain) => (
+                        <div key={terrain.id} className="terrain-card">
+                            <div className="terrain-card-header">
+                                <h3>{terrain.nomTerrain}</h3>
+                                <div className="terrain-actions">
+                                    <button className="action-btn edit" onClick={() => openEditForm(terrain)}>
+                                        <Edit size={16} />
+                                    </button>
+                                    <button
+                                        className="action-btn delete"
+                                        onClick={() => handleDeleteTerrain(terrain.id)}
+                                    >
+                                        <Trash2 size={16} />
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="terrain-info">
+                                <div className="info-item">
+                                    <Goal size={16} />
+                                    <span>{terrain.typeSurface}</span>
+                                </div>
+                                <div className="info-item">
+                                    <Dumbbell size={16} />
+                                    <span>{terrain.sport}</span>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+
+            {showAddForm && (
+                <div className="modal-overlay">
+                    <div className="modal">
+                        <div className="modal-header">
+                            <h2>Ajouter un terrain</h2>
+                            <button className="close-btn" onClick={closeAddForm}>×</button>
+                        </div>
+
+                        <form
+                            onSubmit={(e) => {
+                                e.preventDefault();
+                                handleAjouterTerrain(newTerrain);
+                            }}
+                            className="terrain-form"
+                        >
+                            <div className="form-group">
+                                <label>Nom du terrain</label>
+                                <input
+                                    type="text"
+                                    name="nomTerrain"
+                                    value={newTerrain.nomTerrain}
+                                    onChange={(e) =>
+                                        setNewTerrain({ ...newTerrain, [e.target.name]: e.target.value })
+                                    }
+                                    required
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label>Sport</label>
+                                <select
+                                    name="sport"
+                                    value={newTerrain.sport}
+                                    onChange={(e) =>
+                                        setNewTerrain({ ...newTerrain, [e.target.name]: e.target.value })
+                                    }
+                                    required
+                                >
+                                    <option value="" disabled>Sélectionner un sport</option>
+                                    <option value="Padel">Padel</option>
+                                    <option value="Football">Football</option>
+                                </select>
+                            </div>
+
+                            <div className="form-group">
+                                <label>Type de surface</label>
+                                <input
+                                    type="text"
+                                    name="typeSurface"
+                                    value={newTerrain.typeSurface}
+                                    onChange={(e) =>
+                                        setNewTerrain({ ...newTerrain, [e.target.name]: e.target.value })
+                                    }
+                                    required
+                                />
+                            </div>
+
+                            <div className="form-actions">
+                                <button type="button" className="btn btn-secondary" onClick={closeAddForm}>
+                                    Annuler
+                                </button>
+                                <button type="submit" className="btn btn-primary">
+                                    Ajouter
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {showEditForm && (
+                <div className="modal-overlay">
+                    <div className="modal">
+                        <div className="modal-header">
+                            <h2>Modifier le terrain</h2>
+                            <button className="close-btn" onClick={closeEditForm}>×</button>
+                        </div>
+
+                        <form
+                            onSubmit={(e) => {
+                                e.preventDefault();
+                                handleMAJTerrain();
+                            }}
+                            className="terrain-form"
+                        >
+                            <div className="form-group">
+                                <label>Nom du terrain</label>
+                                <input
+                                    type="text"
+                                    name="nomTerrain"
+                                    value={editTerrain.nomTerrain}
+                                    onChange={(e) =>
+                                        setEditTerrain({ ...editTerrain, [e.target.name]: e.target.value })
+                                    }
+                                    required
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label>Sport</label>
+                                <select
+                                    name="sport"
+                                    value={editTerrain.sport}
+                                    onChange={(e) =>
+                                        setEditTerrain({ ...editTerrain, [e.target.name]: e.target.value })
+                                    }
+                                    required
+                                >
+                                    <option value="" disabled>Sélectionner un sport</option>
+                                    <option value="Padel">Padel</option>
+                                    <option value="Football">Football</option>
+                                </select>
+                            </div>
+
+                            <div className="form-group">
+                                <label>Type de surface</label>
+                                <input
+                                    type="text"
+                                    name="typeSurface"
+                                    value={editTerrain.typeSurface}
+                                    onChange={(e) =>
+                                        setEditTerrain({ ...editTerrain, [e.target.name]: e.target.value })
+                                    }
+                                    required
+                                />
+                            </div>
+
+                            <div className="form-actions">
+                                <button type="button" className="btn btn-secondary" onClick={closeEditForm}>
+                                    Annuler
+                                </button>
+                                <button type="submit" className="btn btn-primary">
+                                    Modifier
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
+
+export default TerrainsPage;

@@ -1,8 +1,8 @@
 import React, { useMemo, useState } from "react";
 import { Calendar, Clock, MapPin, CheckCircle, Loader } from "lucide-react";
-import { Reservation } from "../../../types";
+import { Reservation } from "../../../shared/types";
 import { ReservationService } from "../../../services/ReservationService";
-import MotifAnnulationModal from "../../molecules/MotifAnnulationModal";
+import MotifAnnulationModal from "../../../shared/components/molecules/MotifAnnulationModal";
 import "./style/ReservationAvenir.css";
 
 type Props = {
@@ -40,18 +40,18 @@ const ReservationAVenir: React.FC<Props> = ({ reservations, onUpdate }) => {
     try {
       setLoadingCancel(reservationToCancel);
       await ReservationService.cancelReservation(reservationToCancel, motif);
-      
+
       alert("Réservation annulée avec succès !");
       closeMotifModal();
-      
+
       if (onUpdate) {
         onUpdate();
       }
     } catch (error: any) {
       console.error("Erreur lors de l'annulation:", error);
-      
+
       const errorMessage = error.message || "Erreur inconnue";
-      
+
       if (errorMessage.includes("déjà annulée") || errorMessage.includes("already cancelled")) {
         alert("Cette réservation est déjà annulée.");
         closeMotifModal();
@@ -147,8 +147,8 @@ const ReservationAVenir: React.FC<Props> = ({ reservations, onUpdate }) => {
             {filterStatus === "all"
               ? "Recherchez un terrain pour réserver"
               : filterStatus === "CONFIRMEE"
-              ? "Aucune réservation passée"
-              : "Aucune réservation à venir"}
+                ? "Aucune réservation passée"
+                : "Aucune réservation à venir"}
           </p>
         </div>
       ) : (

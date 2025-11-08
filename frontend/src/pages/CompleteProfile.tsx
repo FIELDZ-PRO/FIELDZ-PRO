@@ -1,9 +1,8 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import "./style/CompleteProfile.css";
-
+import { useAuth } from '../shared/context/AuthContext';
+import "./style/CompleteProfile.css"
 
 // Liste des indicatifs téléphoniques principaux
 const COUNTRY_CODES = [
@@ -104,10 +103,10 @@ const CompleteProfile = () => {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify({ 
-          nom: nom.trim(), 
-          prenom: prenom.trim(), 
-          telephone: fullPhoneNumber 
+        body: JSON.stringify({
+          nom: nom.trim(),
+          prenom: prenom.trim(),
+          telephone: fullPhoneNumber
         })
       });
 
@@ -193,7 +192,7 @@ const CompleteProfile = () => {
         <div className="form-group">
           <label className="form-label">Téléphone *</label>
           <div className="phone-input-wrapper">
-            <select 
+            <select
               className="country-code-select"
               value={countryCode}
               onChange={(e) => setCountryCode(e.target.value)}

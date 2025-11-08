@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../shared/context/AuthContext";
 import "../../pages/Log-auth/style/Login.css";
 import React from "react";
 
@@ -32,7 +32,7 @@ export default function AdminLogin() {
       login(token);
 
       const role = jwtDecode<JwtPayload>(token)?.role;
-      
+
       if (role === "ADMIN") {
         navigate("/admin");
       } else {

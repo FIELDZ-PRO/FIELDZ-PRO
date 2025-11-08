@@ -1,11 +1,11 @@
 import React, { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./style/JoueurDashboardLayout.css";
-import { Creneau, Reservation, Joueur } from "../../../types";
+import { Creneau, Reservation, Joueur } from "../../../shared/types";
 import ReservationModal from "./ReservationModal";
 import ReservationAVenir from "./ReservationAvenir";
 import ReservationAnnulees from "./ReservationAnnulee";
-import { ClubService, ClubDto } from "../../../services/ClubService";
+import { ClubService, ClubDto } from "../../../features/club/services/ClubService";
 import { Search, MapPin, Calendar, LogOut, User } from "lucide-react";
 
 const SPORTS = ["Tous les sports", "PADEL", "FOOT5", "TENNIS", "BASKET", "VOLLEY"];
@@ -75,7 +75,7 @@ const JoueurDashboardLayout: React.FC<Props> = ({
   const reservationsActives = reservations.filter(
     (r) => r.statut === "RESERVE" || r.statut === "CONFIRMEE"
   );
-  
+
   const reservationsAnnulees = reservations.filter(
     (r) => r.statut === "ANNULE_PAR_JOUEUR" || r.statut === "ANNULE_PAR_CLUB"
   );
@@ -173,9 +173,9 @@ const JoueurDashboardLayout: React.FC<Props> = ({
                   </div>
 
                   {/* Bouton de recherche */}
-                  <button 
-                    className="search-button" 
-                    type="submit" 
+                  <button
+                    className="search-button"
+                    type="submit"
                     disabled={!canSearch || loadingSearch}
                   >
                     <Search className="button-icon" />
@@ -242,7 +242,7 @@ const JoueurDashboardLayout: React.FC<Props> = ({
                     {/* Contenu de la carte */}
                     <div className="club-card-content">
                       <h3 className="club-card-title">{club.nom}</h3>
-                      
+
                       <div className="club-card-location">
                         <MapPin className="location-icon" />
                         <span>{club.ville || "Ville non spécifiée"}</span>
@@ -267,7 +267,7 @@ const JoueurDashboardLayout: React.FC<Props> = ({
                       )}
 
                       {/* Bouton d'action */}
-                      <button 
+                      <button
                         className="club-card-button"
                         onClick={() => navigate(`/club/${club.id}`)}
                       >
@@ -306,8 +306,8 @@ const JoueurDashboardLayout: React.FC<Props> = ({
               <h2 className="section-title">Mes réservations</h2>
               <span className="section-badge">{reservationsActives.length}</span>
             </div>
-            
-            <ReservationAVenir 
+
+            <ReservationAVenir
               reservations={reservationsActives}
               onUpdate={onRefresh}
             />
@@ -335,8 +335,8 @@ const JoueurDashboardLayout: React.FC<Props> = ({
               <h2 className="section-title">Réservations annulées</h2>
               <span className="section-badge">{reservationsAnnulees.length}</span>
             </div>
-            
-            <ReservationAnnulees 
+
+            <ReservationAnnulees
               reservations={reservationsAnnulees}
             />
 
@@ -371,8 +371,8 @@ const JoueurDashboardLayout: React.FC<Props> = ({
           </div>
 
           <div className="header-actions">
-            <button 
-              className="user-profile-button" 
+            <button
+              className="user-profile-button"
               onClick={onNavigateToProfile}
               aria-label="Mon profil"
             >
@@ -387,8 +387,8 @@ const JoueurDashboardLayout: React.FC<Props> = ({
               </div>
             </button>
 
-            <button 
-              onClick={onLogout} 
+            <button
+              onClick={onLogout}
               className="logout-button"
               aria-label="Déconnexion"
             >

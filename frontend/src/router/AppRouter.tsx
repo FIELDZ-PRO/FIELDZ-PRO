@@ -4,8 +4,8 @@ import Login from "../pages/Log-auth/Login";
 import Register from "../pages/Log-auth/Register";
 import AdminLogin from "../components/admin/AdminLogin";
 
-import ClubDashboard from "../pages/ClubDashboard";
-import ClubDashboard2 from "../pages/ClubDashboard2";
+import ClubDashboard from "../features/club/pages/ClubDashboard";
+import ClubDashboard2 from "../features/club/pages/ClubDashboard2";
 
 import JoueurDashboard from "../pages/JoueurDashboard";
 import JoueurDashboard2 from "../pages/JoueurDashboard2";
@@ -18,14 +18,14 @@ import ForgotPassword from "../pages/ForgotPassword";
 import OAuthSuccess from "../pages/Log-auth/oauth-success";
 import CompleteProfile from "../pages/CompleteProfile";
 import ProfilJoueur from "../pages/ProfilJoueur";
-import ProfilClub from "../pages/ProfilClub";
+import ProfilClub from "../features/club/pages/ProfilClub";
 
-import AccueilClub from "../pages/VueClub/AccueilClub";
-import Club from "../pages/Club";
-import { NavigationProvider } from "../pages/VueClub/Context/NavigationContext";
-import { LoginClub } from "../pages/VueClub/LoginClub";
-import { MailSent } from "../pages/VueClub/MailSent";
-import { ForgotPasswordPageCLub } from "../pages/VueClub/ForgotPasswordClub";
+import AccueilClub from "../features/club/pages/VueClub/AccueilClub";
+import Club from "../features/club/pages/Club";
+import { NavigationProvider } from "../features/club/pages/VueClub/Context/NavigationContext";
+import { LoginClub } from "../features/club/pages/VueClub/LoginClub";
+import { MailSent } from "../features/club/pages/VueClub/MailSent";
+import { ForgotPasswordPageClub } from "../features/club/pages/VueClub/ForgotPasswordClub";
 
 // Admin
 import AdminLayout from "../components/admin/AdminLayout";
@@ -51,10 +51,18 @@ export default function AppRouter() {
       <Route path="/oauth-success" element={<OAuthSuccess />} />
       <Route path="/complete-profile" element={<CompleteProfile />} />
       <Route path="/profil-joueur" element={<ProfilJoueur />} />
+      <Route
+        path="/profil-club"
+        element={
+          <ProtectedRoute requiredRole="CLUB">
+            <ProfilClub />
+          </ProtectedRoute>
+        }
+      />
 
       {/* Club pages (publique) */}
       <Route path="/MailSent" element={<MailSent />} />
-      <Route path="/ForgotPasswordClub" element={<ForgotPasswordPageCLub />} />
+      <Route path="/ForgotPasswordClub" element={<ForgotPasswordPageClub />} />
       <Route
         path="/LoginClub"
         element={
