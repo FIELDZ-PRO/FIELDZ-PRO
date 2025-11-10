@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import { useAuth } from '../../../../shared/context/AuthContext';
-import { ClubService } from '../../services/ClubService';
+import { ClubService } from '../../../../shared/services/ClubService';
 import './LoginClub.css';
 
 type JwtPayload = { role?: 'CLUB' | 'JOUEUR' | 'ADMIN' };

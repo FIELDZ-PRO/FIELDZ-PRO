@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Plus, Edit, Trash2, MapPin, Dumbbell, Goal } from 'lucide-react';
 import './style/TerrainsPage.css';
 import { Terrain } from '../../../../../shared/types';
-import { ClubService } from '../../../services/ClubService';
+import { ClubService } from '../../../../../shared/services/ClubService';
 import { useModal } from '../../../../../shared/context/ModalContext';
 
 export type TypeDeSport = 'Padel' | 'Football';

@@ -1,7 +1,7 @@
 // src/pages/ClubDetailsJoueur.tsx
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ClubService, ClubDto } from "../../club/services/ClubService";
+import { ClubService, ClubDto } from "../../../shared/services/ClubService";
 import ReservationModal from "../components/organisms/joueurDashboardDoss/ReservationModal";
 import { Creneau } from "../../../shared/types";
 import "./style/ClubDetailsJoueur.css";

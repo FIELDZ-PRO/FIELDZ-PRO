@@ -8,7 +8,7 @@ import {
   confirmReservations,
   cancelReservationByClub,
   markReservationAbsent,
-} from '../../../services/ClubService';
+} from '../../../../../shared/services/ClubService';
 
 const GRACE_MINUTES = 15;
 
@@ -110,61 +110,61 @@ const ReservationsPage = () => {
 
   type Action = 'confirm' | 'cancel' | 'absent';
 
-const handleReservationAction = async (id: number, action: Action) => {
-  const res = reservations.find(r => r.id === id);
-  if (!res) return;
+  const handleReservationAction = async (id: number, action: Action) => {
+    const res = reservations.find(r => r.id === id);
+    if (!res) return;
 
-  // Garde-fous UX (ne lancent PAS d'appel réseau)
-  if (action === 'confirm' && !hasStartedLocal(res)) {
-    alert(`“Présent” sera disponible au début du créneau (${startAtLocalString(res)}).`);
-    return;
-  }
+    // Garde-fous UX (ne lancent PAS d'appel réseau)
+    if (action === 'confirm' && !hasStartedLocal(res)) {
+      alert(`“Présent” sera disponible au début du créneau (${startAtLocalString(res)}).`);
+      return;
+    }
 
-  if (action === 'absent' && !canUsePostStartAction(res)) {
-    alert(`“Absent” sera disponible à partir de ${allowedAtLocalString(res)} (soit ${GRACE_MINUTES} min après le début).`);
-    return;
-  }
+    if (action === 'absent' && !canUsePostStartAction(res)) {
+      alert(`“Absent” sera disponible à partir de ${allowedAtLocalString(res)} (soit ${GRACE_MINUTES} min après le début).`);
+      return;
+    }
 
-  // Branche ANNULER : confirmations AVANT le spinner / l'API
-  if (action === 'cancel') {
-    const confirmed = window.confirm("Confirmer l’annulation de cette réservation ?");
-    if (!confirmed) return;
+    // Branche ANNULER : confirmations AVANT le spinner / l'API
+    if (action === 'cancel') {
+      const confirmed = window.confirm("Confirmer l’annulation de cette réservation ?");
+      if (!confirmed) return;
 
-    const motifInput = window.prompt("Motif d'annulation (visible par le joueur) :");
-    if (motifInput === null) return; // l'utilisateur a annulé le prompt → on sort
-    const motif = motifInput.trim() || "Annulé par le club";
+      const motifInput = window.prompt("Motif d'annulation (visible par le joueur) :");
+      if (motifInput === null) return; // l'utilisateur a annulé le prompt → on sort
+      const motif = motifInput.trim() || "Annulé par le club";
 
+      setLoadingId(id);
+      try {
+        await cancelReservationByClub(id, motif);
+        updateReservationStatus(id, 'ANNULE_PAR_CLUB');
+      } catch (error) {
+        console.error('Erreur lors de l’annulation :', error);
+        alert((error as Error).message || 'Une erreur est survenue lors de l’annulation.');
+      } finally {
+        setLoadingId(null);
+      }
+      return; // on sort : on a géré l’action cancel
+    }
+
+    // Autres actions (confirm / absent)
     setLoadingId(id);
     try {
-      await cancelReservationByClub(id, motif);
-      updateReservationStatus(id, 'ANNULE_PAR_CLUB');
+      if (action === 'confirm') {
+        await confirmReservations(id);
+        updateReservationStatus(id, 'CONFIRMEE');
+      } else if (action === 'absent') {
+        const motif = window.prompt("Motif d'absence (optionnel) :") || "Le joueur ne s'est pas présenté.";
+        await markReservationAbsent(id, motif);
+        updateReservationStatus(id, 'ABSENT');
+      }
     } catch (error) {
-      console.error('Erreur lors de l’annulation :', error);
-      alert((error as Error).message || 'Une erreur est survenue lors de l’annulation.');
+      console.error('Erreur lors de la mise à jour de la réservation :', error);
+      alert((error as Error).message || 'Une erreur est survenue. Veuillez réessayer.');
     } finally {
       setLoadingId(null);
     }
-    return; // on sort : on a géré l’action cancel
-  }
-
-  // Autres actions (confirm / absent)
-  setLoadingId(id);
-  try {
-    if (action === 'confirm') {
-      await confirmReservations(id);
-      updateReservationStatus(id, 'CONFIRMEE');
-    } else if (action === 'absent') {
-      const motif = window.prompt("Motif d'absence (optionnel) :") || "Le joueur ne s'est pas présenté.";
-      await markReservationAbsent(id, motif);
-      updateReservationStatus(id, 'ABSENT');
-    }
-  } catch (error) {
-    console.error('Erreur lors de la mise à jour de la réservation :', error);
-    alert((error as Error).message || 'Une erreur est survenue. Veuillez réessayer.');
-  } finally {
-    setLoadingId(null);
-  }
-};
+  };
 
 
 
@@ -322,23 +322,23 @@ const handleReservationAction = async (id: number, action: Action) => {
                 {reservation.status === 'RESERVE' && (
                   <>
                     <button
-  className="btn2 btn2-success"
-  disabled={loadingId === reservation.id}  // ❌ on ne bloque plus avant le début
-  onClick={() => handleReservationAction(reservation.id, 'confirm')}
-  title={
-    !hasStartedLocal(reservation)
-      ? `Disponible au début du créneau (${startAtLocalString(reservation)})`
-      : undefined
-  }
->
-  {loadingId === reservation.id ? (
-    <span className="btn2-loading">
-      <span className="spinner-club"></span> Envoi...
-    </span>
-  ) : (
-    'Présent'
-  )}
-</button>
+                      className="btn2 btn2-success"
+                      disabled={loadingId === reservation.id}  // ❌ on ne bloque plus avant le début
+                      onClick={() => handleReservationAction(reservation.id, 'confirm')}
+                      title={
+                        !hasStartedLocal(reservation)
+                          ? `Disponible au début du créneau (${startAtLocalString(reservation)})`
+                          : undefined
+                      }
+                    >
+                      {loadingId === reservation.id ? (
+                        <span className="btn2-loading">
+                          <span className="spinner-club"></span> Envoi...
+                        </span>
+                      ) : (
+                        'Présent'
+                      )}
+                    </button>
 
 
 
@@ -362,18 +362,18 @@ const handleReservationAction = async (id: number, action: Action) => {
                     </button>
 
                     <button
-  className="btn2 btn2-warning"
-  disabled={loadingId === reservation.id}
-  onClick={() => handleReservationAction(reservation.id, 'cancel')}
->
-  {loadingId === reservation.id ? (
-    <span className="btn2-loading">
-      <span className="spinner-club"></span> Envoi...
-    </span>
-  ) : (
-    'Annuler'
-  )}
-</button>
+                      className="btn2 btn2-warning"
+                      disabled={loadingId === reservation.id}
+                      onClick={() => handleReservationAction(reservation.id, 'cancel')}
+                    >
+                      {loadingId === reservation.id ? (
+                        <span className="btn2-loading">
+                          <span className="spinner-club"></span> Envoi...
+                        </span>
+                      ) : (
+                        'Annuler'
+                      )}
+                    </button>
 
                   </>
                 )}

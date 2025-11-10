@@ -1,8 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Settings, User, MapPin, Mail, Phone, Image as ImageIcon, Loader2, Text, ShieldCheck } from 'lucide-react';
 import './style/ClubManagement.css';
-import { getClubMe, modifyInfoClub, uploadClubImage } from '../../../services/ClubService';
-import { ClubDto } from '../../../services/ClubService';
+import { getClubMe, modifyInfoClub, uploadClubImage, ClubDto } from '../../../../../shared/services/ClubService';
 
 /** ====== Limites centralisées ====== */
 const MAX_DESC = 4000;     // limite description

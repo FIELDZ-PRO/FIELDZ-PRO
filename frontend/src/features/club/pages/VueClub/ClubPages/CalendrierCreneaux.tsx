@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from 'lucide-react';
 import './style/CalendrierCreneaux.css';
-import { fetchCreneaux } from '../../../services/ClubService';
-import { Creneau, Terrain } from '../../../../../../shared/types';
+import { fetchCreneaux } from '../../../../../shared/services/ClubService';
+import { Creneau, Terrain } from '../../../../../shared/types';
 
 const CalendrierCreneaux: React.FC = () => {
   const [creneaux, setCreneaux] = useState<Creneau[]>([]);
@@ -15,7 +15,7 @@ const CalendrierCreneaux: React.FC = () => {
   const getWeekDays = (date: Date) => {
     const days = [];
     const current = new Date(date);
-    
+
     // Trouver le dimanche de la semaine
     const day = current.getDay();
     const diff = current.getDate() - day;
@@ -50,11 +50,11 @@ const CalendrierCreneaux: React.FC = () => {
         const res = await fetch('http://localhost:8080/api/terrains', {
           headers: { Authorization: `Bearer ${token}` }
         });
-        
+
         if (!res.ok) throw new Error('Erreur chargement terrains');
         const terrainsData = await res.json();
         setTerrains(terrainsData);
-        
+
         // Charger les créneaux
         const creneauxData = await fetchCreneaux(terrainsData);
         setCreneaux(creneauxData);
@@ -76,9 +76,9 @@ const CalendrierCreneaux: React.FC = () => {
   };
 
   const formatDayHeader = (date: Date) => {
-    return date.toLocaleDateString('fr-FR', { 
-      weekday: 'short', 
-      day: 'numeric' 
+    return date.toLocaleDateString('fr-FR', {
+      weekday: 'short',
+      day: 'numeric'
     });
   };
 
@@ -109,10 +109,10 @@ const CalendrierCreneaux: React.FC = () => {
   const getTimePart = (isoDateTime: string) => {
     if (!isoDateTime) return '';
     const date = new Date(isoDateTime);
-    return date.toLocaleTimeString('fr-FR', { 
-      hour: '2-digit', 
+    return date.toLocaleTimeString('fr-FR', {
+      hour: '2-digit',
       minute: '2-digit',
-      hour12: false 
+      hour12: false
     });
   };
 
@@ -126,7 +126,7 @@ const CalendrierCreneaux: React.FC = () => {
   const getWeekCreneaux = () => {
     const startDate = formatDate(weekDays[0]);
     const endDate = formatDate(weekDays[6]);
-    
+
     return creneaux.filter(c => {
       const creneauDate = getDatePart(c.dateDebut);
       return creneauDate >= startDate && creneauDate <= endDate;
@@ -139,17 +139,17 @@ const CalendrierCreneaux: React.FC = () => {
   const getCreneauxForSlot = (date: Date, hour: string) => {
     const dateStr = formatDate(date);
     const slotHour = timeToNumber(hour);
-    
+
     return weekCreneaux.filter(c => {
       const creneauDate = getDatePart(c.dateDebut);
       if (creneauDate !== dateStr) return false;
-      
+
       const debutTime = getTimePart(c.dateDebut);
       const finTime = getTimePart(c.dateFin);
-      
+
       const debutHour = timeToNumber(debutTime);
       const finHour = timeToNumber(finTime);
-      
+
       return slotHour >= debutHour && slotHour < finHour;
     });
   };
@@ -173,21 +173,21 @@ const CalendrierCreneaux: React.FC = () => {
       {/* Header avec navigation */}
       <div className="calendar-header">
         <h1>Planning hebdomadaire</h1>
-        
+
         <div className="calendar-navigation">
           <button className="btn-nav" onClick={previousWeek}>
             <ChevronLeft size={20} />
           </button>
-          
+
           <button className="btn-today" onClick={goToToday}>
             <CalendarIcon size={16} />
             Aujourd'hui
           </button>
-          
+
           <button className="btn-nav" onClick={nextWeek}>
             <ChevronRight size={20} />
           </button>
-          
+
           <span className="week-range">
             {weekDays[0].toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}
             {' - '}
@@ -225,7 +225,7 @@ const CalendrierCreneaux: React.FC = () => {
                 {/* Colonnes des jours */}
                 {weekDays.map((day, dayIdx) => {
                   const creneauxInSlot = getCreneauxForSlot(day, hour);
-                  
+
                   return (
                     <div key={dayIdx} className="day-cell">
                       {creneauxInSlot.map(creneau => {
@@ -233,7 +233,7 @@ const CalendrierCreneaux: React.FC = () => {
                         if (!isCreneauStart(creneau, hour)) return null;
 
                         const height = calculateCreneauHeight(creneau);
-                        
+
                         return (
                           <div
                             key={creneau.id}

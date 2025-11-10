@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './style/StatsCards.css';
-import { getReservations, ReservationSummary } from '../../../services/ClubService';
+import { getReservations, ReservationSummary } from '../../../../../shared/services/ClubService';
 
 const StatsCards = () => {
     const [reservations, setReservations] = useState<ReservationSummary[]>([]);

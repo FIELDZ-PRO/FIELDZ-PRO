@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { adminService, JoueurAdmin, RegisterRequest } from '../services/adminService';
+import { adminService, JoueurAdmin, RegisterRequest } from '../../../shared/services/adminService';
 import { Search, Plus, Eye, X, User, Mail, Phone, Calendar, ToggleLeft, ToggleRight } from 'lucide-react';
 import '../components/AdminLayout.css';
 

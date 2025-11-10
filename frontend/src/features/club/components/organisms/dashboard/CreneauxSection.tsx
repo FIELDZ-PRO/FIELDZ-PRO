@@ -6,7 +6,7 @@ import { useAuth } from '../../../../../shared/context/AuthContext';
 import { Creneau } from '../../../../../shared/types/index';
 import CreneauGroup from './CreneauGroup';
 import './CreneauxSection.css';
-import { fetchCreneaux } from '../../../services/ClubService';
+import { fetchCreneaux } from '../../../../../shared/services/ClubService';
 import { Search, CalendarDays, Filter } from 'lucide-react';
 
 type Props = {

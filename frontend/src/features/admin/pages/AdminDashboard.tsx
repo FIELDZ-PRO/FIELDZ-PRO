@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { adminService, AdminStats } from '../services/adminService';
+import { adminService, AdminStats } from '../../../shared/services/adminService';
 import { Users, Building2, Calendar, TrendingUp } from 'lucide-react';
 import '../components/AdminLayout.css';
 

@@ -5,7 +5,7 @@ import { Creneau, Reservation, Joueur } from "../../../../../shared/types";
 import ReservationModal from "./ReservationModal";
 import ReservationAVenir from "./ReservationAvenir";
 import ReservationAnnulees from "./ReservationAnnulee";
-import { ClubService, ClubDto } from "../../../../club/services/ClubService";
+import { ClubService, ClubDto } from "../../../../../shared/services/ClubService";
 import { Search, MapPin, Calendar, LogOut, User } from "lucide-react";
 
 const SPORTS = ["Tous les sports", "PADEL", "FOOT5", "TENNIS", "BASKET", "VOLLEY"];

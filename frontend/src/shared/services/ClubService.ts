@@ -1,5 +1,5 @@
 import { InvalidTokenError, jwtDecode } from "jwt-decode";
-import { Terrain, Creneau } from "../../../shared/types";
+import { Terrain, Creneau } from "../types";
 
 const UrlService = "http://localhost:8080/api";
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";

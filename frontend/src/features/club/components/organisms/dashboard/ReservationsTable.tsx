@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './style/Reservations.css';
-import { getReservations, ReservationSummary } from '../../../services/ClubService';
+import { getReservations, ReservationSummary } from '../../../../../shared/services/ClubService';
 
 const ReservationsTable = () => {
   const [todayReservations, setTodayReservations] = useState<ReservationSummary[]>([]);

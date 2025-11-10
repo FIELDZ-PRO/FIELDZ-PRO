@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { adminService, ClubAdmin, CreateClubRequest } from '../services/adminService';
+import { adminService, ClubAdmin, CreateClubRequest } from '../../../shared/services/adminService';
 import { Search, Plus, Eye, X, MapPin, Phone, Mail, User } from 'lucide-react';
 import '../components/AdminLayout.css';
 
@@ -81,15 +81,15 @@ export default function AdminClubs() {
     }
   };
 
- const getClubInitials = (nomClub?: string | null) => {
-  const s = (nomClub ?? "").trim();
-  if (!s) return "CL"; // fallback par défaut
-  const parts = s.split(/\s+/);
-  const a = parts[0]?.[0] ?? "";
-  // si pas de 2e mot : prendre 2e lettre du 1er mot si dispo
-  const b = parts[1]?.[0] ?? parts[0]?.[1] ?? "";
-  return (a + b).toUpperCase();
-};
+  const getClubInitials = (nomClub?: string | null) => {
+    const s = (nomClub ?? "").trim();
+    if (!s) return "CL"; // fallback par défaut
+    const parts = s.split(/\s+/);
+    const a = parts[0]?.[0] ?? "";
+    // si pas de 2e mot : prendre 2e lettre du 1er mot si dispo
+    const b = parts[1]?.[0] ?? parts[0]?.[1] ?? "";
+    return (a + b).toUpperCase();
+  };
 
   if (loading) {
     return (

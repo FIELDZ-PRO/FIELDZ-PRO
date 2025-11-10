@@ -6,7 +6,7 @@ import MainContent from './VueClub/MainContent';
 import { NavigationProvider } from './VueClub/Context/NavigationContext';
 import { ModalProvider, useModal } from '../../../shared/context/ModalContext';
 import './Club.css';
-import { isTokenValid } from '../services/ClubService';
+import { isTokenValid } from '../../../shared/services/ClubService';
 
 function ClubLayout() {
     const { isModalOpen } = useModal();
