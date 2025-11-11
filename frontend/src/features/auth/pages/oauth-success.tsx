@@ -9,14 +9,11 @@ const OAuthSuccess = () => {
   const { login } = useAuth();
 
   useEffect(() => {
-    // 1) Récupère le token depuis le FRAGMENT (#token=...), puis fallback query (?token=...)
+    // 1) Récupérer le token (#token=... puis ?token=...)
     const fromHash = new URLSearchParams(window.location.hash.replace(/^#/, "")).get("token");
     const fromQuery = new URLSearchParams(window.location.search).get("token");
-
-    // 2) Fallback stockage (si le handler back l'a déjà écrit côté 8080 ou via compat)
     const fromSession = sessionStorage.getItem("fieldz_access") || undefined;
     const fromLocal = localStorage.getItem("fieldz_access") || undefined;
-
     const token = fromHash || fromQuery || fromSession || fromLocal;
 
     if (!token) {
@@ -25,25 +22,25 @@ const OAuthSuccess = () => {
     }
 
     try {
-      // Enregistre via ton contexte (écrit dans localStorage selon ta logique actuelle)
+      // 2) Enregistrer le token côté front
       login(token);
 
-      // Petit log utile en dev
+      // Optionnel: log dev
       const decoded: any = jwtDecode(token);
       console.log("✅ Utilisateur connecté via Google :", decoded);
 
-      // Nettoie l'URL (retire #token ou ?token)
-      const cleanUrl = window.location.pathname + window.location.search.replace(/(\?|&)token=[^&]*/,"").replace(/\?&/,"?").replace(/\?$/,"");
+      // Nettoyer l'URL (retire #token ou ?token)
+      const cleanUrl =
+        window.location.pathname +
+        window.location.search.replace(/(\?|&)token=[^&]*/, "").replace(/\?&/, "?").replace(/\?$/, "");
       window.history.replaceState(null, "", cleanUrl);
 
-      // 3) Charge le profil et redirige selon le rôle
+      // 3) Appeler /api via le proxy Vite (évite CORS) — SANS header Cache-Control
       setTimeout(() => {
-        fetch("http://localhost:8080/api/utilisateur/me", {
+        fetch("/api/utilisateur/me", {
           method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Cache-Control": "no-cache",
-          },
+          headers: { Authorization: `Bearer ${token}` }, // garde l'Authorization
+          // credentials: "include" // optionnel: cookies envoyés par défaut en same-origin
         })
           .then((res) => {
             if (!res.ok) throw new Error("Erreur lors de la récupération du profil");
@@ -51,15 +48,10 @@ const OAuthSuccess = () => {
           })
           .then((user) => {
             console.log("👤 Données utilisateur :", user);
-            if (!user.profilComplet) {
-              navigate("/complete-profile");
-            } else if (user.role === "JOUEUR") {
-              navigate("/joueur");
-            } else if (user.role === "CLUB") {
-              navigate("/club");
-            } else {
-              navigate("/");
-            }
+            if (!user.profilComplet) navigate("/complete-profile");
+            else if (user.role === "JOUEUR") navigate("/joueur");
+            else if (user.role === "CLUB") navigate("/club");
+            else navigate("/");
           })
           .catch((err) => {
             console.error("❌ Erreur de récupération utilisateur :", err);

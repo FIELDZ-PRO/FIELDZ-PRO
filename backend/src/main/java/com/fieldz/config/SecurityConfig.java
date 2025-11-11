@@ -21,6 +21,11 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.header.writers.StaticHeadersWriter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -35,26 +40,36 @@ public class SecurityConfig {
     private final CustomOAuth2UserService oauth2UserService;
     private final OAuth2SuccessHandler oauth2SuccessHandler;
 
-    // -------- CHAIN API --------
+    // =======================
+    // ⚙️ CHAIN API
+    // =======================
     @Bean
     @Order(1)
     SecurityFilterChain api(HttpSecurity http) throws Exception {
         http
                 .securityMatcher("/api/**")
-                // Utilise le bean CORS (CorsFilter) défini dans CorsConfig
                 .cors(withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
 
-                // Headers de sécurité (API)
+                // ---------- HEADERS ----------
                 .headers(h -> h
-                        .xssProtection(HeadersConfigurer.XXssConfig::disable)  // obsolète, on désactive explicitement
+                        .xssProtection(HeadersConfigurer.XXssConfig::disable)
                         .frameOptions(f -> f.deny())
                         .addHeaderWriter(new StaticHeadersWriter("Referrer-Policy", "same-origin"))
                         .addHeaderWriter(new StaticHeadersWriter("X-Content-Type-Options", "nosniff"))
+                        .addHeaderWriter(new StaticHeadersWriter("Permissions-Policy",
+                                "geolocation=(), microphone=(), camera=()"))
+                        .addHeaderWriter(new StaticHeadersWriter("Strict-Transport-Security",
+                                "max-age=31536000; includeSubDomains"))
+                        .addHeaderWriter(new StaticHeadersWriter("Content-Security-Policy",
+                                "default-src 'self'; " +
+                                        "img-src 'self' data: https:; " +
+                                        "script-src 'self' 'unsafe-inline' 'unsafe-eval' http://localhost:5173 http://127.0.0.1:5173; " +
+                                        "style-src 'self' 'unsafe-inline' http://localhost:5173; " +
+                                        "connect-src 'self' http://localhost:8080 http://192.168.100.16:8080 http://localhost:5173;"))
                 )
 
-                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
+                // ---------- EXCEPTIONS ----------
                 .exceptionHandling(e -> e
                         .authenticationEntryPoint((req, res, ex) -> {
                             res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -68,34 +83,48 @@ public class SecurityConfig {
                         })
                 )
 
+                // ---------- SESSIONS ----------
+                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+                // ---------- ROUTES ----------
                 .authorizeHttpRequests(auth -> auth
-                        // Preflight CORS sur l’API
+                        // Préflight
                         .requestMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
 
-                        // Endpoints publics API
+                        // Auth publique
                         .requestMatchers(
-                                "/api/auth/**",
-                                "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html",
+                                "/api/auth/login",
+                                "/api/auth/register",
+                                "/api/auth/refresh",
+                                "/api/auth/logout",
+                                "/api/auth/forgot-password",
+                                "/api/auth/reset-password/**"
+                        ).permitAll()
+
+                        // Docs & utilitaires
+                        .requestMatchers(
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui.html",
                                 "/api/contact"
                         ).permitAll()
 
-                        // Consultation publique
+                        // Accès public
                         .requestMatchers("/api/club/search/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/club/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/creneaux/club/*").permitAll()
 
-                        // Rôles API
+                        // Rôles protégés
                         .requestMatchers("/api/joueur/**").hasRole("JOUEUR")
                         .requestMatchers("/api/club/**").hasRole("CLUB")
 
                         .anyRequest().authenticated()
                 )
 
-                // Auth/JWT
+                // ---------- AUTH ----------
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
 
-                // Pas de formLogin/basic/logout sur l'API
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable);
@@ -103,7 +132,9 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // -------- CHAIN WEB --------
+    // =======================
+    // 🌐 CHAIN WEB
+    // =======================
     @Bean
     @Order(2)
     SecurityFilterChain web(HttpSecurity http) throws Exception {
@@ -111,32 +142,40 @@ public class SecurityConfig {
                 .cors(withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
 
-                // Headers de sécurité (WEB)
+                // ---------- HEADERS ----------
                 .headers(h -> h
                         .xssProtection(HeadersConfigurer.XXssConfig::disable)
-                        .frameOptions(f -> f.sameOrigin()) // autorise /h2-console en dev
+                        .frameOptions(f -> f.sameOrigin()) // autorise H2-console
                         .addHeaderWriter(new StaticHeadersWriter("Referrer-Policy", "same-origin"))
                         .addHeaderWriter(new StaticHeadersWriter("X-Content-Type-Options", "nosniff"))
+                        .addHeaderWriter(new StaticHeadersWriter("Permissions-Policy",
+                                "geolocation=(), microphone=(), camera=()"))
+                        .addHeaderWriter(new StaticHeadersWriter("Strict-Transport-Security",
+                                "max-age=31536000; includeSubDomains"))
+                        .addHeaderWriter(new StaticHeadersWriter("Content-Security-Policy",
+                                "default-src 'self'; " +
+                                        "img-src 'self' data: https:; " +
+                                        "script-src 'self' 'unsafe-inline' 'unsafe-eval' http://localhost:5173 http://127.0.0.1:5173; " +
+                                        "style-src 'self' 'unsafe-inline' http://localhost:5173; " +
+                                        "connect-src 'self' http://localhost:8080 http://192.168.100.16:8080 http://localhost:5173;"))
                 )
 
+                // ---------- ROUTES WEB ----------
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/oauth2/**", "/login/**",
-                                "/h2-console/**",            // H2 console (désactive en prod)
-                                "/error", "/favicon.ico",    // utilitaires
+                                "/oauth2/**",
+                                "/login/**",
+                                "/h2-console/**",
+                                "/error", "/favicon.ico",
                                 "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html"
                         ).permitAll()
 
-                        // L’app React/HTML statique éventuelle
                         .requestMatchers("/", "/index.html", "/assets/**").permitAll()
-
-                        // OPTIONS global si nécessaire pour certaines routes web
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-
                         .anyRequest().permitAll()
                 )
 
-                // OAuth2 Google
+                // ---------- OAUTH2 GOOGLE ----------
                 .oauth2Login(oauth -> oauth
                         .defaultSuccessUrl("http://localhost:5173/oauth-success", true)
                         .userInfoEndpoint(userInfo -> userInfo.userService(oauth2UserService))
@@ -146,7 +185,24 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // -------- AUTH MANAGER --------
+    // =======================
+    // 🌍 CORS (frontend 5173)
+    // =======================
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration cfg = new CorsConfiguration();
+        cfg.setAllowedOriginPatterns(List.of("http://localhost:5173", "http://127.0.0.1:5173"));
+        cfg.setAllowedMethods(List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
+        cfg.setAllowedHeaders(List.of("*"));
+        cfg.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource src = new UrlBasedCorsConfigurationSource();
+        src.registerCorsConfiguration("/**", cfg);
+        return src;
+    }
+
+    // =======================
+    // 🔑 AUTH MANAGER
+    // =======================
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();

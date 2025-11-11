@@ -174,6 +174,7 @@
 					<include>**/*.properties</include>
 					<include>**/*.yml</include>
 					<include>**/*.yaml</include>
+					<include>**/*.pem</include>
 				</includes>
 			</resource>
 		</resources>

@@ -1,59 +1,60 @@
 package com.fieldz.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Configuration
 public class CorsConfig {
 
+    // 🧩 Ces valeurs viennent de application.properties ou .env
+    @Value("${cors.allowed-origins:http://localhost:5173}")
+    private String allowedOrigins;
+
+    @Value("${cors.allowed-methods:GET,POST,PUT,DELETE,PATCH,OPTIONS}")
+    private String allowedMethods;
+
+    @Value("${cors.allowed-headers:Authorization,Content-Type,Cache-Control,Pragma,Expires,Accept,Accept-Language,X-Requested-With,If-None-Match,If-Modified-Since,X-CSRF-Token}")
+    private String allowedHeaders;
+
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration cfg = new CorsConfiguration();
 
-        // 🔒 Origines strictes — pour dev & tests, ajoute ici ton IP si besoin
-        cfg.setAllowedOrigins(List.of(
-                "http://localhost:5173",
-                "http://127.0.0.1:5173"
-        ));
+        // 🔓 Lis les origines depuis les variables
+        List<String> origins = Arrays.stream(allowedOrigins.split(","))
+                .map(String::trim)
+                .toList();
+        cfg.setAllowedOrigins(origins);
 
-        // Autoriser l’envoi des cookies ou credentials (si besoin JWT Cookie)
+        // ✅ Autorise les cookies (indispensable pour refresh_token HttpOnly)
         cfg.setAllowCredentials(true);
 
-        // Méthodes HTTP autorisées
-        cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+        // 🔧 Méthodes et headers
+        cfg.setAllowedMethods(Arrays.asList(allowedMethods.split(",")));
+        cfg.setAllowedHeaders(Arrays.asList(allowedHeaders.split(",")));
 
-        // ✅ Headers autorisés (inclut Cache-Control + tout le nécessaire)
-        cfg.setAllowedHeaders(List.of(
-                "Authorization",
-                "Content-Type",
-                "Cache-Control",
-                "Pragma",
-                "Expires",
-                "Accept",
-                "Accept-Language",
-                "X-Requested-With",
-                "If-None-Match",
-                "If-Modified-Since",
-                "X-CSRF-Token"
-        ));
-
-        // Headers que le front peut lire dans la réponse (optionnel mais utile)
+        // ✅ Headers visibles côté front (cookie + pagination)
         cfg.setExposedHeaders(List.of(
                 "Location",
                 "Content-Disposition",
-                "ETag"
+                "ETag",
+                "Set-Cookie"
         ));
 
-        // Durée du cache du préflight (en secondes)
+        // ⏱ Cache du préflight
         cfg.setMaxAge(3600L);
 
+        // Appliquer sur toutes les routes
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", cfg);
+
         return new CorsFilter(source);
     }
 }

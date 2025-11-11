@@ -1,9 +1,6 @@
 package com.fieldz.security.jwt;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtBuilder;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,94 +8,75 @@ import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.time.Instant;
 import java.util.Date;
 import java.util.Map;
-import java.util.function.Function;
 
 @Service
 public class JwtService {
 
-    private final Key hmacKey;
-    private final long expiresMinutes;
+    @Value("${jwt.alg:HS256}") private String alg;
+    @Value("${jwt.access.expMinutes:10}") private long expiresMinutes; // 5-15 min recommandé
+    @Value("${jwt.hs256.secret:change-me}") private String hsSecret;
+    @Value("${jwt.rs256.private:keys/private.pem}") private String privPath;
+    @Value("${jwt.rs256.public:keys/public.pem}") private String pubPath;
 
-    public JwtService(
-            @Value("${jwt.secret}") String secret,
-            @Value("${jwt.expires-min:10}") long expiresMinutes
-    ) {
-        if (secret == null || secret.length() < 32) {
-            throw new IllegalStateException("jwt.secret must be at least 32 chars.");
+    private Key hmacKey;
+    private PrivateKey rsaPriv;
+    private PublicKey rsaPub;
+
+    private synchronized void ensureKeys() {
+        if ("RS256".equalsIgnoreCase(alg) && rsaPriv == null) {
+            rsaPriv = KeyLoader.loadPrivateKeyPem(privPath);
+            rsaPub  = KeyLoader.loadPublicKeyPem(pubPath);
+        } else if (!"RS256".equalsIgnoreCase(alg) && hmacKey == null) {
+            hmacKey = Keys.hmacShaKeyFor(hsSecret.getBytes(StandardCharsets.UTF_8));
         }
-        this.hmacKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
-        this.expiresMinutes = Math.max(1, expiresMinutes); // clamp ≥ 1
     }
-
-    // ====== Generate tokens ======
-
-    public String generateToken(UserDetails userDetails) {
-        // Si UserDetails est ton Utilisateur, on peut mettre le rôle
-        String role = null;
-        if (userDetails instanceof com.fieldz.model.Utilisateur u && u.getTypeRole() != null) {
-            role = u.getTypeRole().name();
-        }
-        return generateToken(userDetails.getUsername(),
-                role == null ? Map.of() : Map.of("role", role));
-    }
-
-    public String generateToken(String subject, Map<String, Object> extraClaims) {
-        Instant now = Instant.now();
-        Instant exp = now.plusSeconds(expiresMinutes * 60);
-
-        JwtBuilder builder = Jwts.builder()
-                .setSubject(subject)
-                .setIssuedAt(Date.from(now))
-                .setExpiration(Date.from(exp))
-                .signWith(hmacKey, SignatureAlgorithm.HS256);
-
-        if (extraClaims != null && !extraClaims.isEmpty()) {
-            builder.addClaims(extraClaims);
-        }
-        return builder.compact();
-    }
-
-    // Variante utilitaire
-    public String generateTokenWithEmailAndRole(String email, String role) {
-        return generateToken(email, Map.of("role", role));
-    }
-
-    // ====== Parse / validate ======
 
     public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
+        return extractAllClaims(token).getSubject();
     }
 
-    public <T> T extractClaim(String token, Function<Claims, T> resolver) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(hmacKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-        return resolver.apply(claims);
-    }
-
-    public boolean isTokenValid(String token, UserDetails expectedUser) {
+    public boolean isTokenValid(String token, UserDetails userDetails) {
         try {
-            final String username = extractUsername(token);
-            return username != null
-                    && username.equals(expectedUser.getUsername())
-                    && !isTokenExpired(token);
-        } catch (Exception e) {
-            return false;
-        }
+            String username = extractUsername(token);
+            return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+        } catch (Exception e) { return false; }
     }
 
     public boolean isTokenExpired(String token) {
-        Date exp = extractClaim(token, Claims::getExpiration);
-        return exp.before(new Date());
+        return extractAllClaims(token).getExpiration().before(new Date());
     }
 
-    // ====== Note migration RS256 (plus tard) ======
-    // Remplacer hmacKey par PrivateKey/PublicKey et:
-    // .signWith(privateKey, SignatureAlgorithm.RS256)
-    // parserBuilder().setSigningKey(publicKey)
+    public String generateToken(UserDetails user, Map<String,Object> extraClaims) {
+        return generateToken(user.getUsername(), extraClaims);
+    }
+
+    public String generateToken(String subject, Map<String,Object> extraClaims) {
+        ensureKeys();
+        Instant now = Instant.now();
+        Instant exp = now.plusSeconds(expiresMinutes * 60);
+        JwtBuilder b = Jwts.builder()
+                .setSubject(subject)
+                .setIssuedAt(Date.from(now))
+                .setExpiration(Date.from(exp))
+                .addClaims(extraClaims == null ? Map.of() : extraClaims);
+
+        if ("RS256".equalsIgnoreCase(alg)) {
+            return b.signWith(rsaPriv, SignatureAlgorithm.RS256).compact();
+        } else {
+            return b.signWith(hmacKey, SignatureAlgorithm.HS256).compact();
+        }
+    }
+
+    private Claims extractAllClaims(String token) {
+        ensureKeys();
+        JwtParserBuilder pb = Jwts.parserBuilder();
+        if ("RS256".equalsIgnoreCase(alg)) pb.setSigningKey(rsaPub);
+        else pb.setSigningKey(hmacKey);
+        return pb.build().parseClaimsJws(token).getBody();
+    }
 }

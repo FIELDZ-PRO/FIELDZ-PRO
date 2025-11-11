@@ -1,86 +1,94 @@
-import axios from 'axios';
+import axios from "axios";
 
-const API_BASE_URL = 'http://localhost:8080/api/reservations';
+// Utilise le proxy Vite → pas d'URL absolue
+const API_BASE_URL = "/api/reservations";
+
+// Helper: récupère le token où qu'il soit (nouveau + ancien code)
+const getToken = () =>
+  sessionStorage.getItem("access_token") || localStorage.getItem("token") || null;
+
+// Helper: vérifie qu'on a bien un JWT "a.b.c"
+const isJwt = (t: string | null) => !!t && t.split(".").length === 3;
+
+// Construit les headers d'auth uniquement si on a un vrai JWT
+const authHeaders = () => {
+  const t = getToken();
+  return isJwt(t) ? { Authorization: `Bearer ${t}` } : {};
+};
 
 export const ReservationService = {
   // Annuler une réservation avec motif
   cancelReservation: async (reservationId: number, motif?: string): Promise<string> => {
     try {
-      const token = localStorage.getItem('token');
-      
-      console.log('🔵 Annulation réservation:', reservationId);
-      console.log('📝 Motif:', motif);
-      
-      // ⚠️ Utiliser PUT au lieu de DELETE (backend utilise @PutMapping)
+      const token = getToken();
+
+      console.log("🔵 Annulation réservation:", reservationId);
+      console.log("📝 Motif:", motif);
+
+      if (!isJwt(token)) {
+        // On évite d'envoyer "Bearer null/undefined" au back
+        throw new Error("Vous n'êtes pas connecté ou la session a expiré.");
+      }
+
       const response = await axios.put(
         `${API_BASE_URL}/${reservationId}/annuler`,
-        // Body avec le motif
         motif ? { motif } : {},
         {
           headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
+            "Content-Type": "application/json",
+            ...authHeaders(),
           },
-          // Accepter tous les status codes
-          validateStatus: () => true
+          withCredentials: true, // important pour le refresh cookie si 401
         }
       );
-      
-      console.log('📡 Réponse status:', response.status);
-      console.log('📡 Réponse data:', response.data);
-      
-      // Si la réponse est OK (200-299)
+
+      console.log("📡 Réponse status:", response.status);
+      console.log("📡 Réponse data:", response.data);
+
       if (response.status >= 200 && response.status < 300) {
-        return response.data;
+        return typeof response.data === "string" ? response.data : "Annulation effectuée.";
       }
-      
-      // Sinon, c'est une erreur
-      let errorMessage = "Erreur lors de l'annulation";
-      
-      // Parser la réponse d'erreur
-      if (typeof response.data === 'string') {
-        errorMessage = response.data;
-      } else if (response.data?.message) {
-        errorMessage = response.data.message;
-      }
-      
-      throw new Error(errorMessage);
-      
+
+      const message =
+        (typeof response.data === "string" && response.data) ||
+        response.data?.message ||
+        `Erreur ${response.status}`;
+      throw new Error(message);
     } catch (error: any) {
-      console.error('❌ Erreur annulation:', error);
-      
-      // Si c'est notre erreur custom, la relancer
-      if (error.message && !error.response) {
-        throw error;
+      console.error("❌ Erreur annulation:", error);
+      if (error?.response) {
+        const message =
+          error.response.data?.message || error.response.data || `Erreur ${error.response.status}`;
+        throw new Error(message);
       }
-      
-      // Gérer les erreurs Axios
-      if (error.response) {
-        const errorMessage = error.response.data?.message 
-          || error.response.data 
-          || `Erreur ${error.response.status}`;
-        throw new Error(errorMessage);
-      }
-      
-      throw new Error("Erreur de connexion au serveur");
+      throw new Error(error?.message || "Erreur de connexion au serveur");
     }
   },
 
   // Récupérer les réservations d'un joueur
   getReservationsByJoueur: async (): Promise<any[]> => {
     try {
-      const token = localStorage.getItem('token');
-      
+      const token = getToken();
+      if (!isJwt(token)) {
+        throw new Error("Vous n'êtes pas connecté ou la session a expiré.");
+      }
+
       const response = await axios.get(`${API_BASE_URL}/mes`, {
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          ...authHeaders(),
+        },
+        withCredentials: true,
       });
-      
+
       return response.data;
     } catch (error: any) {
-      console.error('Erreur récupération réservations:', error);
-      throw error;
+      console.error("Erreur récupération réservations:", error);
+      if (error?.response) {
+        const message =
+          error.response.data?.message || error.response.data || `Erreur ${error.response.status}`;
+        throw new Error(message);
+      }
+      throw new Error(error?.message || "Erreur de connexion au serveur");
     }
-  }
+  },
 };
