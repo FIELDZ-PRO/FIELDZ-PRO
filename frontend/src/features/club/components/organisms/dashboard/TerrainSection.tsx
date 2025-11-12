@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Plus, Calendar, MapPin } from 'lucide-react';
 import './style/TerrainSection.css';
-import { Terrain } from '../../../shared/types';
-import { useAuth } from '../../../shared/context/AuthContext';
+import { Terrain } from '../../../../../shared/types';
+import { useAuth } from '../../../../../shared/context/AuthContext';
+import apiClient from '../../../../../shared/api/axiosClient';
 
 
 interface TerrainResponse {
@@ -22,30 +23,15 @@ interface TerrainResponse {
 
 const TerrainSection = () => {
     const [terrains, setTerrains] = useState<Omit<Terrain, 'id'>[]>([]);
-    const token = localStorage.getItem("token");
 
     const handleAjouterTerrain = async (terrain: Omit<Terrain, 'id'>) => {
         try {
-            const res = await fetch('http://localhost:8080/api/terrains', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify(terrain),
-            });
-
-            if (!res.ok) {
-                const error = await res.text();
-                alert("❌ Erreur : " + error);
-                return;
-            }
-
-            const newTerrain = await res.json();
-            alert(`✅ Terrain ajouté (ID: ${newTerrain.id})`);
-            setTerrains((prev) => [...prev, newTerrain]);
-        } catch (err) {
-            alert("❌ Erreur réseau ou serveur.");
+            const res = await apiClient.post<Terrain>('/api/terrains', terrain);
+            alert(`✅ Terrain ajouté (ID: ${res.data.id})`);
+            setTerrains((prev) => [...prev, res.data]);
+        } catch (err: any) {
+            const errorMsg = err?.response?.data?.message || err?.message || "Erreur réseau ou serveur.";
+            alert("❌ Erreur : " + errorMsg);
             console.error(err);
         }
     };
@@ -53,23 +39,16 @@ const TerrainSection = () => {
     useEffect(() => {
         const fetchTerrains = async () => {
             try {
-                const res = await fetch('http://localhost:8080/api/terrains', {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                const data = await res.json();
-                console.log(data);
-                setTerrains(data);
+                const res = await apiClient.get<Terrain[]>('/api/terrains');
+                console.log(res.data);
+                setTerrains(res.data);
             } catch (err) {
                 console.error('Erreur lors du chargement des terrains', err);
             }
         };
 
         fetchTerrains();
-    }, [token]);
+    }, []);
 
     return (
         <div className="terrain-section">

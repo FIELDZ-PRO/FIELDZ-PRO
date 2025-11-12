@@ -9,15 +9,20 @@ const http = axios.create({
 
 // Auth: ajoute le token si présent
 http.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
+  const token = sessionStorage.getItem("access_token");
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
 
-// Log des erreurs (pour voir le vrai message 500)
+// Log des erreurs (pour voir le vrai message 500) et gestion 401
 http.interceptors.response.use(
   (res) => res,
   (err) => {
+    if (err.response?.status === 401) {
+      // Token expired or invalid - dispatch custom event for AuthContext to handle
+      window.dispatchEvent(new CustomEvent("auth:session-expired"));
+    }
+
     console.error("API ERROR:", {
       url: err.config?.url,
       method: err.config?.method,

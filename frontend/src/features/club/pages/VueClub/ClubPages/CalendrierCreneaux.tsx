@@ -3,13 +3,13 @@ import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from 'lucide-reac
 import './style/CalendrierCreneaux.css';
 import { fetchCreneaux } from '../../../../../shared/services/ClubService';
 import { Creneau, Terrain } from '../../../../../shared/types';
+import apiClient from '../../../../../shared/api/axiosClient';
 
 const CalendrierCreneaux: React.FC = () => {
   const [creneaux, setCreneaux] = useState<Creneau[]>([]);
   const [terrains, setTerrains] = useState<Terrain[]>([]);
   const [selectedWeek, setSelectedWeek] = useState<Date>(new Date());
   const [loading, setLoading] = useState(false);
-  const token = localStorage.getItem('token');
 
   // Générer les 7 jours de la semaine (Dimanche à Samedi)
   const getWeekDays = (date: Date) => {
@@ -47,16 +47,11 @@ const CalendrierCreneaux: React.FC = () => {
     const loadData = async () => {
       setLoading(true);
       try {
-        const res = await fetch('http://localhost:8080/api/terrains', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-
-        if (!res.ok) throw new Error('Erreur chargement terrains');
-        const terrainsData = await res.json();
-        setTerrains(terrainsData);
+        const res = await apiClient.get<Terrain[]>('/api/terrains');
+        setTerrains(res.data);
 
         // Charger les créneaux
-        const creneauxData = await fetchCreneaux(terrainsData);
+        const creneauxData = await fetchCreneaux(res.data);
         setCreneaux(creneauxData);
       } catch (error) {
         console.error('Erreur:', error);
@@ -66,7 +61,7 @@ const CalendrierCreneaux: React.FC = () => {
     };
 
     loadData();
-  }, [token]);
+  }, []);
 
   const formatDate = (date: Date) => {
     const year = date.getFullYear();

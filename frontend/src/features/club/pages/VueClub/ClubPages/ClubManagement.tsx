@@ -84,7 +84,6 @@ const ClubManagementPage = () => {
     sports: [],
   });
 
-  const token = localStorage.getItem('token');
   const [isEditing, setIsEditing] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -105,7 +104,7 @@ const ClubManagementPage = () => {
     fetchClubInfo();
     // console.log('This is the club info : ', clubInfo);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token]);
+  }, []);
 
   /** Garde-fou: empêcher l’envoi si on dépasse la limite */
   const overDesc = (clubInfo.description ?? '').length > MAX_DESC;

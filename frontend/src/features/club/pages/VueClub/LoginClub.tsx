@@ -11,6 +11,7 @@ export const LoginClub = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPwd, setShowPwd] = useState(false);
+  const [remember, setRemember] = useState(false);
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -33,12 +34,14 @@ export const LoginClub = () => {
 
       const token = extractToken(data);
       if (!token) {
-        setMessage("Réponse inattendue du serveur (token manquant).");
+        setMessage("Réponse inattenante du serveur (token manquant).");
         return;
       }
 
+      try { localStorage.setItem("remember_me", String(remember)); } catch { }
+
       // ✅ 1) Enregistrer le token via le contexte (met aussi localStorage)
-      login(token);
+      login(token, { remember });
 
       // ✅ 2) Router selon le rôle décodé
       let role: JwtPayload['role'] = undefined;
@@ -149,6 +152,15 @@ export const LoginClub = () => {
                 </button>
               </div>
             </div>
+
+            <label className="remember-row">
+              <input
+                type="checkbox"
+                checked={remember}
+                onChange={(e) => setRemember(e.target.checked)}
+              />
+              Se souvenir de moi
+            </label>
 
             <a
               className="forgot-link"

@@ -1,8 +1,10 @@
 import { InvalidTokenError, jwtDecode } from "jwt-decode";
 import { Terrain, Creneau } from "../types";
+import apiClient from "../api/axiosClient";
 
 const UrlService = "http://localhost:8080/api";
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
+const ACCESS_TOKEN_KEY = "access_token";
 
 /* =======================
  * Types
@@ -132,14 +134,6 @@ export function isTokenValid(token: string | null) {
   }
 }
 
-function getAuthHeaders(): HeadersInit {
-  const token = localStorage.getItem("token");
-  if (token) {
-    return { Authorization: `Bearer ${token}` };
-  }
-  return {};
-}
-
 async function jsonOrThrow(res: Response) {
   const text = await res.text();
   const data = text ? JSON.parse(text) : null;
@@ -170,7 +164,7 @@ async function Login(email: string, motDePasse: string): Promise<LoginResponse> 
     if (decoded.role !== "CLUB") {
       throw new InvalidTokenError("You don't have the authorization to access this side");
     } else {
-      localStorage.setItem("token", data.token);
+      //localStorage.setItem("token", data.token);
       return data;
     }
   } catch (error) {
@@ -181,13 +175,7 @@ async function Login(email: string, motDePasse: string): Promise<LoginResponse> 
 
 async function DeleteTerrain(terrainId: number): Promise<boolean> {
   try {
-    await fetch(`${UrlService}/terrains/${terrainId}`, {
-      method: "DELETE",
-      headers: {
-        Accept: "*/*",
-        ...getAuthHeaders(),
-      },
-    });
+    await apiClient.delete(`/api/terrains/${terrainId}`);
     return true;
   } catch (error) {
     console.error("The delete process didn't work check the logs");
@@ -204,14 +192,12 @@ async function ModifyTerrain(
   politiqueClub?: string
 ): Promise<boolean> {
   try {
-    await fetch(`${UrlService}/terrains/${id}`, {
-      method: "PUT",
-      headers: {
-        Accept: "*/*",
-        "Content-Type": "application/json",
-        ...getAuthHeaders(),
-      },
-      body: JSON.stringify({ nomTerrain, typeSurface, ville, sport, politiqueClub }),
+    await apiClient.put(`/api/terrains/${id}`, {
+      nomTerrain,
+      typeSurface,
+      ville,
+      sport,
+      politiqueClub
     });
     return true;
   } catch (error) {
@@ -254,15 +240,8 @@ async function getClubById(id: number): Promise<ClubDto> {
 
 async function getTerrains(): Promise<Terrain[]> {
   try {
-    const res = await fetch(`${UrlService}/terrains`, {
-      method: "GET",
-      headers: {
-        Accept: "*/*",
-        ...getAuthHeaders(),
-      },
-    });
-    const data = await res.json();
-    return data;
+    const res = await apiClient.get<Terrain[]>("/api/terrains");
+    return res.data;
   } catch (error) {
     console.log(error);
     throw error;
@@ -271,22 +250,14 @@ async function getTerrains(): Promise<Terrain[]> {
 
 export async function modifyInfoClub(ClubInfo: Omit<ClubDto, "id">) {
   try {
-    await fetch(`${UrlService}/utilisateur/update`, {
-      method: "PUT",
-      headers: {
-        Accept: "*/*",
-        "Content-Type": "application/json",
-        ...getAuthHeaders(),
-      },
-      body: JSON.stringify({
-        nom: ClubInfo.nom,
-        telephone: ClubInfo.telephone,
-        ville: ClubInfo.ville,
-        adresse: ClubInfo.adresse,
-        banniereUrl: ClubInfo.banniereUrl,
-        description: ClubInfo.description,
-        politique: ClubInfo.politique,
-      }),
+    await apiClient.put("/api/utilisateur/update", {
+      nom: ClubInfo.nom,
+      telephone: ClubInfo.telephone,
+      ville: ClubInfo.ville,
+      adresse: ClubInfo.adresse,
+      banniereUrl: ClubInfo.banniereUrl,
+      description: ClubInfo.description,
+      politique: ClubInfo.politique,
     });
   } catch (error) {
     throw error;
@@ -294,26 +265,21 @@ export async function modifyInfoClub(ClubInfo: Omit<ClubDto, "id">) {
 }
 
 export async function fetchCreneaux(terrains: Terrain[]): Promise<Creneau[]> {
-  const token = localStorage.getItem("token");
   try {
     if (!terrains.length) return [];
 
     const allCreneaux: Creneau[] = [];
     for (const terrain of terrains) {
-      const res = await fetch(`${UrlService}/creneaux/terrains/${terrain.id}/creneaux`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      if (!res.ok) {
-        console.error(`Erreur sur le terrain ${terrain.id}`);
+      try {
+        const res = await apiClient.get<Creneau[]>(`/api/creneaux/terrains/${terrain.id}/creneaux`);
+        const validCreneaux = res.data.filter(
+          (c: Creneau) => c.statut?.toUpperCase() !== "ANNULE"
+        );
+        allCreneaux.push(...validCreneaux);
+      } catch (error) {
+        console.error(`Erreur sur le terrain ${terrain.id}`, error);
         continue;
       }
-
-      const data = await res.json();
-      const validCreneaux = data.filter(
-        (c: Creneau) => c.statut?.toUpperCase() !== "ANNULE"
-      );
-      allCreneaux.push(...validCreneaux);
     }
     return allCreneaux;
   } catch (err) {
@@ -323,15 +289,8 @@ export async function fetchCreneaux(terrains: Terrain[]): Promise<Creneau[]> {
 
 async function getCreneaux(terrains: Terrain[]): Promise<ReservationSummary[]> {
   try {
-    const res = await fetch(`${UrlService}/creneaux/terrains`, {
-      method: "GET",
-      headers: {
-        Accept: "*/*",
-        ...getAuthHeaders(),
-      },
-    });
-    const data = await res.json();
-    return data;
+    const res = await apiClient.get<ReservationSummary[]>("/api/creneaux/terrains");
+    return res.data;
   } catch (error) {
     console.log(error);
     throw error;
@@ -341,21 +300,13 @@ async function getCreneaux(terrains: Terrain[]): Promise<ReservationSummary[]> {
 export const uploadClubImage = async (file: File): Promise<string> => {
   const formData = new FormData();
   formData.append("file", file);
-  const token = localStorage.getItem("token");
   try {
-    const res = await fetch(`${UrlService}/upload-cloud`, {
-      method: "POST",
+    const res = await apiClient.post<{ url: string }>("/api/upload-cloud", formData, {
       headers: {
-        Accept: "*/*",
-        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
       },
-      body: formData,
     });
-
-    if (!res.ok) throw new Error("Image upload failed");
-
-    const data = await res.json();
-    return data.url; // ✅ Cloudinary URL
+    return res.data.url; // ✅ Cloudinary URL
   } catch (error) {
     console.error("❌ Upload failed:", error);
     throw error;
@@ -374,37 +325,17 @@ async function GetCreneauSummary(): Promise<ReservationSummary[]> {
 
 export async function cancelReservationByClub(id: number, motif: string) {
   try {
-    const res = await fetch(`${UrlService}/reservations/${id}/annuler`, {
-      method: "PUT",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        ...getAuthHeaders(),
-      },
-      body: JSON.stringify({ motif }),
-    });
-
-    if (!res.ok) {
-      const errorText = await res.text();
-      throw new Error(`Erreur ${res.status}: ${errorText}`);
-    }
-
+    const res = await apiClient.put(`/api/reservations/${id}/annuler`, { motif });
     return res;
   } catch (error) {
-    console.error("Erreur lors de l’annulation :", error);
+    console.error("Erreur lors de l'annulation :", error);
     throw error;
   }
 }
 
 export async function confirmReservations(id: number) {
   try {
-    const res = await fetch(`${UrlService}/reservations/${id}/confirmer`, {
-      method: "PATCH",
-      headers: {
-        Accept: "*/*",
-        ...getAuthHeaders(),
-      },
-    });
+    const res = await apiClient.patch(`/api/reservations/${id}/confirmer`);
     console.log(res);
   } catch (error) {
     console.log("error is : " + error);
@@ -413,39 +344,20 @@ export async function confirmReservations(id: number) {
 }
 
 export async function markReservationAbsent(id: number, motif?: string) {
-  const res = await fetch(`${UrlService}/reservations/${id}/absent`, {
-    method: "PUT",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      ...getAuthHeaders(), // cohérent avec le reste
-    },
-    body: JSON.stringify({ motif: motif ?? "" }),
-  });
-
-  const text = await res.text(); // l’API renvoie une String
-  if (!res.ok) {
-    throw new Error(text || `HTTP ${res.status}`);
+  try {
+    const res = await apiClient.put<string>(`/api/reservations/${id}/absent`, {
+      motif: motif ?? "",
+    });
+    return res.data; // "Réservation marquée comme ABSENT."
+  } catch (error) {
+    throw error;
   }
-  return text; // “Réservation marquée comme ABSENT.”
 }
 
 export async function getReservations(): Promise<ReservationSummary[]> {
   try {
-    const res = await fetch(`${UrlService}/reservations/reservations`, {
-      method: "GET",
-      headers: {
-        Accept: "*/*",
-        ...getAuthHeaders(),
-      },
-    });
-
-    if (!res.ok) {
-      throw new Error(`Failed to fetch reservations: ${res.status}`);
-    }
-
-    const data = await res.json();
-    const reservations: ReservationSummary[] = (Array.isArray(data) ? data : []).map(
+    const res = await apiClient.get<any[]>("/api/reservations/reservations");
+    const reservations: ReservationSummary[] = (Array.isArray(res.data) ? res.data : []).map(
       normalizeReservationRaw
     );
     return reservations;
@@ -462,20 +374,11 @@ export async function getReservationsByDate(date: string): Promise<ReservationSu
       throw new Error(`Invalid date format: ${date}. Expected YYYY-MM-DD.`);
     }
 
-    const res = await fetch(`${UrlService}/reservations/reservations/date?date=${date}`, {
-      method: "GET",
-      headers: {
-        Accept: "*/*",
-        ...getAuthHeaders(),
-      },
+    const res = await apiClient.get<any[]>(`/api/reservations/reservations/date`, {
+      params: { date }
     });
 
-    if (!res.ok) {
-      throw new Error(`Failed to fetch reservations: ${res.status}`);
-    }
-
-    const data = await res.json();
-    const reservations: ReservationSummary[] = (Array.isArray(data) ? data : []).map(
+    const reservations: ReservationSummary[] = (Array.isArray(res.data) ? res.data : []).map(
       normalizeReservationRaw
     );
     return reservations;
@@ -496,23 +399,13 @@ async function AjouterUnTerrain(
   sport: string
 ) {
   try {
-    const headers: HeadersInit = {
-      "Content-Type": "application/json",
-      Accept: "*/*",
-    };
-
-    const token = localStorage.getItem("token");
-    if (token) {
-      (headers as Record<string, string>)["Authorization"] = `Bearer ${token}`;
-    }
-
-    const res = await fetch(`${UrlService}/terrains`, {
-      method: "POST",
-      headers: headers,
-      body: JSON.stringify({ nomTerrain, typeSurface, ville, sport }),
+    const res = await apiClient.post("/api/terrains", {
+      nomTerrain,
+      typeSurface,
+      ville,
+      sport
     });
-
-    return jsonOrThrow(res);
+    return res.data;
   } catch (error) {
     console.error("AjouterUnTerrain error:", error);
     throw error;
@@ -520,19 +413,8 @@ async function AjouterUnTerrain(
 }
 
 export async function getClubMe(): Promise<ClubDto> {
-  const token = localStorage.getItem("token");
-  const headers: HeadersInit = {
-    Accept: "application/json",
-  };
-
-  if (token) {
-    (headers as Record<string, string>)["Authorization"] = `Bearer ${token}`;
-  }
-
-  const res = await fetch(`${UrlService}/club/me`, {
-    headers: headers,
-  });
-  return jsonOrThrow(res);
+  const res = await apiClient.get<ClubDto>("/api/club/me");
+  return res.data;
 }
 
 /* =======================
@@ -545,16 +427,8 @@ export async function getClubMe(): Promise<ClubDto> {
  * { dateDebut: "2025-12-25T10:00:00", dateFin: "2025-12-25T11:30:00", prix: 7000 }
  */
 async function createCreneau(terrainId: number, payload: CreateCreneauPayload) {
-  const res = await fetch(`${UrlService}/creneaux/terrains/${terrainId}/creneaux`, {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      ...getAuthHeaders(),
-    },
-    body: JSON.stringify(payload),
-  });
-  return jsonOrThrow(res);
+  const res = await apiClient.post(`/api/creneaux/terrains/${terrainId}/creneaux`, payload);
+  return res.data;
 }
 
 /* =======================

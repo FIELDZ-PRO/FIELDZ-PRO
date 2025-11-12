@@ -215,6 +215,32 @@
   display: block;
 }
 
+.remember-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 14px;
+  color: var(--text-primary);
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+}
+
+.remember-row input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+  accent-color: var(--primary);
+}
+
+.remember-row input[type="checkbox"]:focus {
+  outline: 2px solid rgba(31, 90, 47, 0.3);
+  outline-offset: 2px;
+}
+
 .forgot-link {
   font-size: 14px;
   color: var(--primary);

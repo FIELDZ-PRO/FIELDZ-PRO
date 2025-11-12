@@ -4,12 +4,12 @@ import './style/TerrainsPage.css';
 import { Terrain } from '../../../../../shared/types';
 import { ClubService } from '../../../../../shared/services/ClubService';
 import { useModal } from '../../../../../shared/context/ModalContext';
+import apiClient from '../../../../../shared/api/axiosClient';
 
 export type TypeDeSport = 'Padel' | 'Football';
 
 const TerrainsPage = () => {
     const [terrains, setTerrains] = useState<Terrain[]>([]);
-    const token = localStorage.getItem("token");
     const [DataLoaded, setDataLoaded] = useState(false);
     const [showAddForm, setShowAddForm] = useState(false);
     const [showEditForm, setShowEditForm] = useState(false);
@@ -34,14 +34,9 @@ const TerrainsPage = () => {
     // Fetch terrains
     const fetchTerrains = async () => {
         try {
-            const res = await fetch('http://localhost:8080/api/terrains', {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const data = await res.json();
-            setDataLoaded(data.length > 0);
-            setTerrains(data);
+            const res = await apiClient.get<Terrain[]>('/api/terrains');
+            setDataLoaded(res.data.length > 0);
+            setTerrains(res.data);
         } catch (err) {
             console.error('Erreur lors du chargement des terrains', err);
         }
@@ -49,23 +44,13 @@ const TerrainsPage = () => {
 
     useEffect(() => {
         fetchTerrains();
-    }, [token]);
+    }, []);
 
     // Add terrain
     const handleAjouterTerrain = async (terrain: Omit<Terrain, 'id'>) => {
         try {
-            const res = await fetch('http://localhost:8080/api/terrains', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify(terrain),
-            });
-
-            if (!res.ok) throw new Error(await res.text());
-            const newTerrain = await res.json();
-            setTerrains((prev) => [...prev, newTerrain]);
+            const res = await apiClient.post<Terrain>('/api/terrains', terrain);
+            setTerrains((prev) => [...prev, res.data]);
             closeAddForm();
         } catch (err) {
             alert("❌ Erreur lors de l'ajout du terrain.");
