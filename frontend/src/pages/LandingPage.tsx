@@ -3,7 +3,6 @@ import Navbar from '../shared/components/organisms/landing/Navbar';
 import HeroSection from '../shared/components/organisms/landing/HeroSection';
 import SportsCarousel from '../shared/components/organisms/landing/SportCarousel';
 import DigitalizeSport from '../shared/components/organisms/landing/DigitalizeSport';
-import HowItWorks from '../components/organisms/HowItWorks';
 import WhyFIELdZ from '../shared/components/organisms/landing/WhyFIELdZ';
 import TestezFieldz from '../shared/components/organisms/landing/TestezFieldz';
 import MobileApp from '../shared/components/organisms/landing/MobileApp';

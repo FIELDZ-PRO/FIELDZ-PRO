@@ -18,3 +18,4 @@ backend/data/*.trace.db
 *.iml
 .DS_Store
 Thumbs.db
+.claude
