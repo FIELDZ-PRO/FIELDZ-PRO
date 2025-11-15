@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Settings, User, MapPin, Mail, Phone, Image as ImageIcon, Loader2, Text, ShieldCheck } from 'lucide-react';
+import { Settings, User, MapPin, Mail, Phone, Image as ImageIcon, Loader2, Text, ShieldCheck, ChevronLeft, ChevronRight, Trash2, Plus } from 'lucide-react';
 import './style/ClubManagement.css';
-import { getClubMe, modifyInfoClub, uploadClubImage, ClubDto } from '../../../../../shared/services/ClubService';
+import { getClubMe, modifyInfoClub, addClubImage, deleteClubImage, ClubDto } from '../../../../../shared/services/ClubService';
+import { ClubImage } from '../../../../../shared/types';
 
 /** ====== Limites centralisées ====== */
 const MAX_DESC = 4000;     // limite description
@@ -78,7 +79,7 @@ const ClubManagementPage = () => {
     ville: '',
     adresse: '',
     telephone: '',
-    banniereUrl: '',
+    images: [],
     description: '',
     politique: '',
     sports: [],
@@ -86,15 +87,19 @@ const ClubManagementPage = () => {
 
   const [isEditing, setIsEditing] = useState(false);
   const [dragActive, setDragActive] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
+  const [slideDirection, setSlideDirection] = useState<'left' | 'right' | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const fetchClubInfo = async () => {
     try {
       const data = await getClubMe();
       setClubInfo(data);
-      if (data.banniereUrl) setPreviewUrl(data.banniereUrl);
+      // Reset to first image when data is loaded
+      if (data.images && data.images.length > 0) {
+        setCurrentImageIndex(0);
+      }
     } catch (error) {
       alert('Erreur lors de la récupération des informations du club.');
     }
@@ -138,21 +143,60 @@ const ClubManagementPage = () => {
   const handleFile = async (file: File) => {
     setIsUploading(true);
     try {
-      const uploadedUrl = await uploadClubImage(file);
-      const updatedClubInfo = { ...clubInfo, banniereUrl: uploadedUrl };
+      const uploadedImage = await addClubImage(file);
+      const updatedImages = [...(clubInfo.images || []), uploadedImage];
+      const updatedClubInfo = { ...clubInfo, images: updatedImages };
       setClubInfo(updatedClubInfo);
-      setPreviewUrl(uploadedUrl);
-      await modifyInfoClub({
-        ...updatedClubInfo,
-        description: (updatedClubInfo.description ?? '').trim().slice(0, MAX_DESC),
-        politique: (updatedClubInfo.politique ?? '').trim().slice(0, MAX_POLICY),
-      });
+      // Set current index to the newly added image
+      setCurrentImageIndex(updatedImages.length - 1);
     } catch (error) {
       alert("Erreur lors du téléchargement de l'image");
       console.error('Upload failed:', error);
     } finally {
       setIsUploading(false);
     }
+  };
+
+  const handleDeleteImage = async (index: number) => {
+    if (!clubInfo.images || clubInfo.images.length === 0) return;
+
+    const confirmDelete = window.confirm('Êtes-vous sûr de vouloir supprimer cette image ?');
+    if (!confirmDelete) return;
+
+    const imageToDelete = clubInfo.images[index];
+
+    try {
+      // Call backend API to delete the image
+      await deleteClubImage(imageToDelete.id);
+
+      // Update local state after successful deletion
+      const updatedImages = clubInfo.images.filter((_, i) => i !== index);
+      setClubInfo({ ...clubInfo, images: updatedImages });
+
+      // Adjust current index if needed
+      if (currentImageIndex >= updatedImages.length && updatedImages.length > 0) {
+        setCurrentImageIndex(updatedImages.length - 1);
+      } else if (updatedImages.length === 0) {
+        setCurrentImageIndex(0);
+      }
+    } catch (error) {
+      alert("Erreur lors de la suppression de l'image");
+      console.error('Delete failed:', error);
+    }
+  };
+
+  const handlePrevImage = () => {
+    if (!clubInfo.images || clubInfo.images.length === 0) return;
+    setSlideDirection('right');
+    setCurrentImageIndex((prev) => (prev === 0 ? clubInfo.images!.length - 1 : prev - 1));
+    setTimeout(() => setSlideDirection(null), 500);
+  };
+
+  const handleNextImage = () => {
+    if (!clubInfo.images || clubInfo.images.length === 0) return;
+    setSlideDirection('left');
+    setCurrentImageIndex((prev) => (prev === clubInfo.images!.length - 1 ? 0 : prev + 1));
+    setTimeout(() => setSlideDirection(null), 500);
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -189,17 +233,74 @@ const ClubManagementPage = () => {
         </button>
       </div>
 
-      {/* 🖼️ Section image du club */}
+      {/* 🖼️ Section images du club */}
       <div className={`image-section ${isEditing ? 'editing' : ''} ${dragActive ? 'drag-active' : ''}`}>
-        <h2><ImageIcon size={18} /> Bannière du club</h2>
+        <h2><ImageIcon size={18} /> Images du club</h2>
 
         <div className="image-container">
-          {previewUrl ? (
-            <div className="image-preview-container">
-              <img src={previewUrl} alt="Bannière du club" className="image-preview" />
+          {clubInfo.images && clubInfo.images.length > 0 ? (
+            <div className="image-slider-container">
+              <div className="image-preview-wrapper">
+                <img
+                  key={currentImageIndex}
+                  src={clubInfo.images[currentImageIndex].imageUrl}
+                  alt={`Image ${currentImageIndex + 1} du club`}
+                  className={`image-preview ${slideDirection ? `club-image-slide-${slideDirection}` : ''}`}
+                />
+
+                {/* Navigation arrows */}
+                {clubInfo.images.length > 1 && (
+                  <>
+                    <button
+                      className="slider-arrow slider-arrow-left"
+                      onClick={handlePrevImage}
+                      aria-label="Image précédente"
+                    >
+                      <ChevronLeft size={32} />
+                    </button>
+                    <button
+                      className="slider-arrow slider-arrow-right"
+                      onClick={handleNextImage}
+                      aria-label="Image suivante"
+                    >
+                      <ChevronRight size={32} />
+                    </button>
+                  </>
+                )}
+
+                {/* Delete button (only in edit mode) */}
+                {isEditing && (
+                  <button
+                    className="delete-image-btn"
+                    onClick={() => handleDeleteImage(currentImageIndex)}
+                    aria-label="Supprimer cette image"
+                  >
+                    <Trash2 size={20} />
+                  </button>
+                )}
+              </div>
+
+              {/* Image indicators */}
+              {clubInfo.images.length > 1 && (
+                <div className="image-indicators">
+                  {clubInfo.images.map((_, index) => (
+                    <button
+                      key={index}
+                      className={`indicator ${index === currentImageIndex ? 'active' : ''}`}
+                      onClick={() => setCurrentImageIndex(index)}
+                      aria-label={`Aller à l'image ${index + 1}`}
+                    />
+                  ))}
+                </div>
+              )}
+
+              {/* Image counter */}
+              <div className="image-counter">
+                {currentImageIndex + 1} / {clubInfo.images.length}
+              </div>
             </div>
           ) : (
-            <p className="no-image">Aucune bannière disponible</p>
+            <p className="no-image">Aucune image disponible</p>
           )}
 
           {isUploading && (
@@ -217,7 +318,7 @@ const ClubManagementPage = () => {
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
           >
-            <p>Glissez une image ici ou cliquez pour en choisir une</p>
+            <p>Glissez une image ici ou cliquez pour en ajouter</p>
             <input
               type="file"
               accept="image/*"
@@ -229,7 +330,8 @@ const ClubManagementPage = () => {
               className="upload-label"
               onClick={() => fileInputRef.current?.click()}
             >
-              <span className="upload-button">Choisir une image</span>
+              <Plus size={20} style={{ marginRight: '8px' }} />
+              <span className="upload-button">Ajouter une image</span>
             </label>
           </div>
         )}

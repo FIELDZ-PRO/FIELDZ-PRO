@@ -5,8 +5,10 @@ import com.fieldz.dto.UserDto;
 import com.fieldz.mapper.UserMapper;
 import com.fieldz.model.Joueur;
 import com.fieldz.model.Club;
+import com.fieldz.model.ClubImage;
 import com.fieldz.model.Role;
 import com.fieldz.model.Utilisateur;
+import com.fieldz.repository.ClubImageRepository;
 import com.fieldz.repository.UtilisateurRepository;
 
 import jakarta.annotation.security.RolesAllowed;
@@ -27,6 +29,7 @@ public class UtilisateurController {
 
     private final UtilisateurRepository utilisateurRepository;
     private final UserMapper userMapper;
+    private final ClubImageRepository clubImageRepository;
 
     @GetMapping("/me")
     public ResponseEntity<UserDto> getCurrentUser(@AuthenticationPrincipal Utilisateur user) {
@@ -94,10 +97,18 @@ public class UtilisateurController {
                 club.setAdresse(req.getAdresse());
             if (notBlank(req.getTelephone()))
                 club.setTelephone(req.getTelephone());
-            if (notBlank(req.getBanniereUrl()))
-                club.setBanniereUrl(req.getBanniereUrl());
             if (req.getSports() != null && !req.getSports().isEmpty()) {
                 club.setSports(req.getSports());
+            }
+
+            // Ajouter l'image au début de la liste si fournie
+            if (notBlank(req.getImageUrl())) {
+                ClubImage clubImage = ClubImage.builder()
+                        .imageUrl(req.getImageUrl())
+                        .club(club)
+                        .displayOrder(0) // Première position
+                        .build();
+                clubImageRepository.save(clubImage);
             }
 
             // Validation minimale avant de marquer complet
@@ -159,15 +170,21 @@ public class UtilisateurController {
             java.util.function.Predicate<String> hasText = s -> s != null && !s.trim().isEmpty();
 
             // N'écrire que si fourni et non vide (évite d'écraser par "")
-            if (hasText.test(req.getNom()))          managedClub.setNom(clean.apply(req.getNom()));
-            if (hasText.test(req.getVille()))        managedClub.setVille(clean.apply(req.getVille()));
-            if (hasText.test(req.getAdresse()))      managedClub.setAdresse(clean.apply(req.getAdresse()));
-            if (hasText.test(req.getTelephone()))    managedClub.setTelephone(clean.apply(req.getTelephone()));
-            if (hasText.test(req.getBanniereUrl()))  managedClub.setBanniereUrl(clean.apply(req.getBanniereUrl()));
+            if (hasText.test(req.getNom()))
+                managedClub.setNom(clean.apply(req.getNom()));
+            if (hasText.test(req.getVille()))
+                managedClub.setVille(clean.apply(req.getVille()));
+            if (hasText.test(req.getAdresse()))
+                managedClub.setAdresse(clean.apply(req.getAdresse()));
+            if (hasText.test(req.getTelephone()))
+                managedClub.setTelephone(clean.apply(req.getTelephone()));
 
-            // Champs longs : on accepte chaîne vide => efface si tu veux, sinon garde la même logique que dessus
-            if (req.getDescription() != null)        managedClub.setDescription(req.getDescription()); // pas de trim obligatoire
-            if (req.getPolitique() != null)          managedClub.setPolitique(req.getPolitique());
+            // Champs longs : on accepte chaîne vide => efface si tu veux, sinon garde la
+            // même logique que dessus
+            if (req.getDescription() != null)
+                managedClub.setDescription(req.getDescription()); // pas de trim obligatoire
+            if (req.getPolitique() != null)
+                managedClub.setPolitique(req.getPolitique());
 
             if (req.getSports() != null) {
                 managedClub.setSports(req.getSports()); // null => ne touche pas; vide => efface
@@ -184,13 +201,13 @@ public class UtilisateurController {
 
             // Log correct
             System.out.println("Club politique (aperçu) : " +
-                    (managedClub.getPolitique() == null ? "<null>" :
-                            managedClub.getPolitique().substring(0, Math.min(80, managedClub.getPolitique().length())) + "..."));
+                    (managedClub.getPolitique() == null ? "<null>"
+                            : managedClub.getPolitique().substring(0, Math.min(80, managedClub.getPolitique().length()))
+                                    + "..."));
 
             utilisateurRepository.save(managedClub);
             return ResponseEntity.ok("Profil club mis à jour avec succès.");
         }
-
 
         return ResponseEntity.badRequest().body("Type d'utilisateur non pris en charge.");
     }

@@ -199,8 +199,8 @@ const ClubDetailsJoueur: React.FC = () => {
 
       {/* Bannière */}
       <div className="club-banner">
-        {club.banniereUrl ? (
-          <img src={club.banniereUrl} alt={club.nom} />
+        {club.images && club.images.length > 0 ? (
+          <img src={club.images[0].imageUrl} alt={club.nom} />
         ) : (
           <div className="club-banner-placeholder">
             <h2>{club.nom}</h2>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import './style/ProfilClub.css';
 import { useNavigate } from 'react-router-dom'; // IMPORT NÉCESSAIRE
+import { ClubImage } from '../../../shared/types';
 
 // --- Définition des types ---
 type Sport = "FOOTBALL" | "TENNIS" | "PADEL" | "BASKETBALL" | "VOLLEYBALL";
@@ -14,7 +15,7 @@ interface ClubData {
   email: string;
   sports: Sport[];
   photoProfilUrl: string; // Logo
-  banniereUrl: string;
+  images: ClubImage[];    // Changed from imageUrls to images array with IDs
 }
 
 type StatusMessage = {
@@ -51,12 +52,12 @@ const ProfilClub = () => {
           email: 'contact@grandclub.fr',
           sports: ['FOOTBALL', 'TENNIS'],
           photoProfilUrl: 'https://via.placeholder.com/150x150',
-          banniereUrl: 'https://via.placeholder.com/1200x250',
+          images: [{ id: 1, imageUrl: 'https://via.placeholder.com/1200x250', displayOrder: 0 }],
         };
         setClubData(mockData);
         setInitialData(mockData);
         setPreviewLogo(mockData.photoProfilUrl);
-        setPreviewBanner(mockData.banniereUrl);
+        setPreviewBanner(mockData.images[0]?.imageUrl || null);
       } catch (error) {
         setMessage({ text: 'Erreur lors du chargement du profil.', type: 'error' });
       } finally {
@@ -105,7 +106,7 @@ const ProfilClub = () => {
   const handleCancel = () => {
     setClubData(initialData);
     setPreviewLogo(initialData?.photoProfilUrl || null);
-    setPreviewBanner(initialData?.banniereUrl || null);
+    setPreviewBanner(initialData?.images[0]?.imageUrl || null);
     setIsEditing(false);
     setMessage({ text: '', type: '' });
   };

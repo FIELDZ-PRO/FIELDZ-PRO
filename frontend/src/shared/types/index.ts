@@ -1,9 +1,15 @@
+export type ClubImage = {
+  id: number;
+  imageUrl: string;
+  displayOrder: number;
+};
+
 export type Club = {
   id: number;
   nomClub: string;
   adresse?: string;
   telephone?: string;
-  banniereUrl?: string;
+  images?: ClubImage[];  // Changed from imageUrls to images array with IDs
   sports?: string[];
 };
 
@@ -12,7 +18,7 @@ export type ClubData = {
   ville: string;
   adresse: string;
   telephone: string;
-  banniereUrl: string;
+  images: ClubImage[];  // Changed from imageUrls to images array with IDs
   sports: string[];
 };
 
@@ -62,6 +68,7 @@ export interface Terrain {
   typeSurface: string;
   ville: string;
   sport: string;
+  photo?: string;
   politiqueClub?: string;
   club?: {
     id: number;

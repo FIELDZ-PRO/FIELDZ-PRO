@@ -1,5 +1,5 @@
 import { InvalidTokenError, jwtDecode } from "jwt-decode";
-import { Terrain, Creneau } from "../types";
+import { Terrain, Creneau, ClubImage } from "../types";
 import apiClient from "../api/axiosClient";
 
 const UrlService = "http://localhost:8080/api";
@@ -41,7 +41,7 @@ export type ClubDto = {
   ville?: string;
   adresse?: string;
   telephone?: string;
-  banniereUrl?: string;
+  images?: ClubImage[];  // Changed from imageUrls to images array with IDs for deletion
   description?: string;
   politique?: string;
   sport?: string;
@@ -189,7 +189,8 @@ async function ModifyTerrain(
   typeSurface: string,
   ville: string,
   sport: string,
-  politiqueClub?: string
+  politiqueClub?: string,
+  photo?: string
 ): Promise<boolean> {
   try {
     await apiClient.put(`/api/terrains/${id}`, {
@@ -197,7 +198,8 @@ async function ModifyTerrain(
       typeSurface,
       ville,
       sport,
-      politiqueClub
+      politiqueClub,
+      photo
     });
     return true;
   } catch (error) {
@@ -255,7 +257,6 @@ export async function modifyInfoClub(ClubInfo: Omit<ClubDto, "id">) {
       telephone: ClubInfo.telephone,
       ville: ClubInfo.ville,
       adresse: ClubInfo.adresse,
-      banniereUrl: ClubInfo.banniereUrl,
       description: ClubInfo.description,
       politique: ClubInfo.politique,
     });
@@ -297,20 +298,77 @@ async function getCreneaux(terrains: Terrain[]): Promise<ReservationSummary[]> {
   }
 }
 
-export const uploadClubImage = async (file: File): Promise<string> => {
+// ===== Club Image Management =====
+
+/**
+ * Upload a new image to the club's image gallery
+ * @param file - The image file to upload
+ * @returns The ClubImage object with ID and URL
+ */
+export const addClubImage = async (file: File): Promise<ClubImage> => {
   const formData = new FormData();
   formData.append("file", file);
   try {
-    const res = await apiClient.post<{ url: string }>("/api/upload-cloud", formData, {
+    const res = await apiClient.post<ClubImage>("/api/club/images", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
     });
-    return res.data.url; // ✅ Cloudinary URL
+    return res.data;
   } catch (error) {
-    console.error("❌ Upload failed:", error);
+    console.error("❌ Image upload failed:", error);
     throw error;
   }
+};
+
+/**
+ * Get all images for a specific club
+ * @param clubId - The ID of the club
+ * @returns Array of image URLs
+ */
+export const getClubImages = async (clubId: number): Promise<string[]> => {
+  try {
+    const res = await apiClient.get<string[]>(`/api/club/${clubId}/images`);
+    return res.data;
+  } catch (error) {
+    console.error("❌ Failed to fetch club images:", error);
+    throw error;
+  }
+};
+
+/**
+ * Delete a club image
+ * @param imageId - The ID of the image to delete
+ */
+export const deleteClubImage = async (imageId: number): Promise<void> => {
+  try {
+    await apiClient.delete(`/api/club/images/${imageId}`);
+  } catch (error) {
+    console.error("❌ Failed to delete club image:", error);
+    throw error;
+  }
+};
+
+/**
+ * Update the display order of a club image
+ * @param imageId - The ID of the image
+ * @param order - The new display order
+ */
+export const updateClubImageOrder = async (imageId: number, order: number): Promise<void> => {
+  try {
+    await apiClient.put(`/api/club/images/${imageId}/order`, null, {
+      params: { order }
+    });
+  } catch (error) {
+    console.error("❌ Failed to update image order:", error);
+    throw error;
+  }
+};
+
+// Legacy function for backward compatibility - returns just the URL
+export const uploadClubImage = async (file: File): Promise<string> => {
+  const clubImage = await addClubImage(file);
+  return clubImage.imageUrl;
 };
 
 async function GetCreneauSummary(): Promise<ReservationSummary[]> {

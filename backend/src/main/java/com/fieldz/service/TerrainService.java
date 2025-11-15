@@ -60,20 +60,23 @@ public class TerrainService {
     }
 
     public List<Terrain> getTerrainsParVille(String ville) {
-        if (!StringUtils.hasText(ville)) return List.of();
+        if (!StringUtils.hasText(ville))
+            return List.of();
         return terrainRepository.findByVilleIgnoreCase(ville.trim());
     }
 
     // (Optionnel) recherche partielle : "alg" => "Alger", "Alger Centre"
     public List<Terrain> searchVilleContient(String fragment) {
-        if (!StringUtils.hasText(fragment)) return List.of();
+        if (!StringUtils.hasText(fragment))
+            return List.of();
         // nécessite la requête LIKE dans le repository
         return terrainRepository.findByVilleContainingIgnoreCase(fragment.trim());
     }
 
     // 2) Multi-villes via CSV: "Alger,Oran"
     public List<Terrain> getTerrainsParVillesCsv(String villesCsv) {
-        if (!StringUtils.hasText(villesCsv)) return List.of();
+        if (!StringUtils.hasText(villesCsv))
+            return List.of();
 
         List<String> villesNorm = Arrays.stream(villesCsv.split(","))
                 .map(String::trim)
@@ -82,7 +85,8 @@ public class TerrainService {
                 .distinct()
                 .collect(Collectors.toList());
 
-        if (villesNorm.isEmpty()) return List.of();
+        if (villesNorm.isEmpty())
+            return List.of();
         return terrainRepository.findByVillesIgnoreCase(villesNorm);
     }
 
@@ -106,11 +110,18 @@ public class TerrainService {
             throw new RuntimeException("Ce terrain ne vous appartient pas.");
         }
 
-        if (req.getNomTerrain() != null)   terrain.setNomTerrain(req.getNomTerrain());
-        if (req.getTypeSurface() != null)  terrain.setTypeSurface(req.getTypeSurface());
-        if (req.getVille() != null)        terrain.setVille(req.getVille());
-        if (req.getSport() != null)        terrain.setSport(req.getSport());
-        if (req.getPolitiqueClub() != null) terrain.setPolitiqueClub(req.getPolitiqueClub());
+        if (req.getNomTerrain() != null)
+            terrain.setNomTerrain(req.getNomTerrain());
+        if (req.getTypeSurface() != null)
+            terrain.setTypeSurface(req.getTypeSurface());
+        if (req.getVille() != null)
+            terrain.setVille(req.getVille());
+        if (req.getSport() != null)
+            terrain.setSport(req.getSport());
+        if (req.getPolitiqueClub() != null)
+            terrain.setPolitiqueClub(req.getPolitiqueClub());
+        if (req.getPhoto() != null)
+            terrain.setPhoto(req.getPhoto());
 
         com.fieldz.model.Terrain saved = terrainRepository.save(terrain);
         log.info("Club {} a modifié le terrain id={} ({})", club.getNom(), saved.getId(), saved.getNomTerrain());
@@ -149,14 +160,16 @@ public class TerrainService {
                         notificationService.envoyerEmailAnnulationCreneau(r.getJoueur().getEmail(), r.getCreneau());
                     }
                 } catch (Exception ex) {
-                    log.warn("Notif annulation (terrain supprimé) échouée pour réservation {}: {}", r.getId(), ex.getMessage());
+                    log.warn("Notif annulation (terrain supprimé) échouée pour réservation {}: {}", r.getId(),
+                            ex.getMessage());
                 }
             }
             reservationRepository.saveAll(actives);
             annulees = actives.size();
         }
 
-        // Déréférencer toutes les réservations (actives + historiques) liées aux créneaux du terrain
+        // Déréférencer toutes les réservations (actives + historiques) liées aux
+        // créneaux du terrain
         var toutes = reservationRepository.findByCreneau_TerrainId(terrainId);
         if (!toutes.isEmpty()) {
             for (com.fieldz.model.Reservation r : toutes) {
@@ -165,13 +178,15 @@ public class TerrainService {
             reservationRepository.saveAll(toutes);
         }
 
-// 1) Annuler les résa
-// 2) Déréférencer toutes les résa
-// 3) Supprimer tous les créneaux du terrain (évite la FK CRENEAU -> TERRAIN)
+        // 1) Annuler les résa
+        // 2) Déréférencer toutes les résa
+        // 3) Supprimer tous les créneaux du terrain (évite la FK CRENEAU -> TERRAIN)
         creneauRepository.deleteByTerrainId(terrainId);
 
-        // Supprimer le terrain (si pas de cascade sur Terrain->Creneaux, supprime les créneaux d'abord via repo si besoin)
-        // Si tu veux forcer côté JPA : ajoute cascade = CascadeType.REMOVE + orphanRemoval = true sur @OneToMany
+        // Supprimer le terrain (si pas de cascade sur Terrain->Creneaux, supprime les
+        // créneaux d'abord via repo si besoin)
+        // Si tu veux forcer côté JPA : ajoute cascade = CascadeType.REMOVE +
+        // orphanRemoval = true sur @OneToMany
         terrainRepository.delete(terrain);
         log.info("Terrain {} (id={}) supprimé par le club {} (réservations annulées: {}).",
                 terrain.getNomTerrain(), terrain.getId(), club.getNom(), annulees);

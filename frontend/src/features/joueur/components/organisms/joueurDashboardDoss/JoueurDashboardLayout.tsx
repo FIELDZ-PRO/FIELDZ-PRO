@@ -223,8 +223,8 @@ const JoueurDashboardLayout: React.FC<Props> = ({
                   <div key={club.id} className="club-card-modern">
                     {/* Image du club */}
                     <div className="club-card-image">
-                      {club.banniereUrl ? (
-                        <img src={club.banniereUrl} alt={club.nom} />
+                      {club.images && club.images.length > 0 ? (
+                        <img src={club.images[0].imageUrl} alt={club.nom} />
                       ) : (
                         <div className="club-card-placeholder">
                           <MapPin className="placeholder-icon" />
