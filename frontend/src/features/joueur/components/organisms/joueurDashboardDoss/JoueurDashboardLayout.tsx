@@ -312,19 +312,6 @@ const JoueurDashboardLayout: React.FC<Props> = ({
               onUpdate={onRefresh}
             />
 
-            {reservationsActives.length === 0 && (
-              <div className="empty-state-modern">
-                <div className="empty-icon-container">
-                  <div className="empty-icon-circle">
-                    <Calendar className="empty-icon" />
-                  </div>
-                </div>
-                <h3 className="empty-title">Aucune réservation</h3>
-                <p className="empty-description">
-                  Tu n'as aucune réservation active pour le moment. Commence par rechercher un terrain !
-                </p>
-              </div>
-            )}
           </div>
         );
 

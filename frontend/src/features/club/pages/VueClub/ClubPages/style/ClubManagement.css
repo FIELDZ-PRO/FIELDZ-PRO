@@ -392,6 +392,57 @@
     cursor: not-allowed;
 }
 
+/* ===== Sports Selector ===== */
+.sports-selector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.sport-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 2px solid #d1d5db;
+    background-color: #ffffff;
+    color: #374151;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.sport-chip:hover:not(:disabled) {
+    border-color: #2563eb;
+    background-color: #eff6ff;
+    transform: translateY(-2px);
+}
+
+.sport-chip.selected {
+    border-color: #2E7D32;
+    background-color: #2E7D32;
+    color: white;
+}
+
+.sport-chip.selected:hover:not(:disabled) {
+    background-color: #235e26;
+    border-color: #235e26;
+}
+
+.sport-chip:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.sports-hint {
+    margin-top: 8px;
+    font-size: 13px;
+    color: #9ca3af;
+    font-style: italic;
+}
+
 /* ===== Buttons ===== */
 .btn-add {
     display: flex;

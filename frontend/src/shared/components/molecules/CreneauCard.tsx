@@ -39,6 +39,7 @@ const CreneauCard: React.FC<Props> = ({ creneau, onReserver, onUpdate, role }) =
   const terrainNom = creneau.terrain?.nomTerrain || "Terrain inconnu";
   const typeSurface = creneau.terrain?.typeSurface;
   const taille = creneau.terrain?.taille;
+  const terrainPhoto = (creneau.terrain as any)?.photo;
 
   const dateStr = creneau.dateDebut
     ? new Date(creneau.dateDebut).toLocaleDateString("fr-FR")
@@ -55,41 +56,70 @@ const CreneauCard: React.FC<Props> = ({ creneau, onReserver, onUpdate, role }) =
       })}`
       : "Heure inconnue";
 
+  const getSportEmoji = (sport: string) => {
+    const s = (sport || "").toLowerCase();
+    const emojis: Record<string, string> = {
+      padel: "🎾",
+      tennis: "🎾",
+      foot: "⚽",
+      football: "⚽",
+      foot5: "⚽",
+      basket: "🏀",
+      basketball: "🏀",
+      volley: "🏐",
+      volleyball: "🏐",
+    };
+    return emojis[s] || "🏅";
+  };
+
   return (
     <div className="creneau-card">
-      {/* 🔹 Titre : TERRAIN (plus de club ici) */}
-      <div className="card-title">
-        {terrainNom}
-        {typeSurface && <span className="card-subtitle"> • {typeSurface}</span>}
-      </div>
+      {/* 🔹 Terrain Image */}
+      {terrainPhoto ? (
+        <div className="creneau-card-image">
+          <img src={terrainPhoto} alt={terrainNom} />
+        </div>
+      ) : (
+        <div className="creneau-card-image-placeholder">
+          <span className="sport-emoji">{getSportEmoji((creneau.terrain as any)?.sport || "")}</span>
+        </div>
+      )}
+
+      <div className="creneau-card-content">
+        {/* 🔹 Titre : TERRAIN (plus de club ici) */}
+        <div className="card-title">
+          {terrainNom}
+          {typeSurface && <span className="card-subtitle"> • {typeSurface}</span>}
+        </div>
 
 
 
-      {/* 🔹 Date */}
-      <div className="card-info"> {dateStr}</div>
+        {/* 🔹 Date */}
+        <div className="card-info"> {dateStr}</div>
 
-      {/* 🔹 Heure */}
-      <div className="card-info"> {heureStr}</div>
+        {/* 🔹 Heure */}
+        <div className="card-info"> {heureStr}</div>
 
-      {/* 🔹 Prix */}
-      <div className="card-prix">
-        {creneau.prix != null ? `${creneau.prix} Da` : "Prix non défini"}
-      </div>
+        {/* 🔹 Prix */}
+        <div className="card-prix">
+          {creneau.prix != null ? `${creneau.prix} Da` : "Prix non défini"}
+        </div>
 
-      {/* 🔹 Actions */}
-      <div className="card-actions">
-        {role === "joueur" && onReserver && (
-          <button onClick={onReserver} className="jd-btn-primary">
-            Réserver
-          </button>
-        )}
-
-        {role === "club" &&
-          (creneau.statut === "LIBRE" || creneau.statut === "RESERVE") && (
-            <button onClick={handleAnnulerCreneau} className="jd-btn-danger">
-              ❌ Annuler ce créneau
+        {/* 🔹 Actions */}
+        <div className="card-actions">
+          {role === "joueur" && onReserver && (
+            <button onClick={onReserver} className="jd-btn-primary">
+              Réserver
             </button>
           )}
+
+          {role === "club" &&
+            (creneau.statut === "LIBRE" || creneau.statut === "RESERVE") && (
+              <button onClick={handleAnnulerCreneau} className="jd-btn-danger">
+                ❌ Annuler ce créneau
+              </button>
+            )}
+        </div>
       </div>
     </div>
   );

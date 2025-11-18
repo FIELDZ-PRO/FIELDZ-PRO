@@ -12,11 +12,21 @@ type Props = {
 
 type FilterStatus = "all" | "CONFIRMEE" | "RESERVE";
 
+const GRACE_MINUTES = 15;
+
 const ReservationAVenir: React.FC<Props> = ({ reservations, onUpdate }) => {
   const [filterStatus, setFilterStatus] = useState<FilterStatus>("all");
   const [loadingCancel, setLoadingCancel] = useState<number | null>(null);
   const [showMotifModal, setShowMotifModal] = useState(false);
   const [reservationToCancel, setReservationToCancel] = useState<number | null>(null);
+
+  // Vérifier si l'annulation est autorisée (jusqu'à 15 min avant le début)
+  const canCancelReservation = (reservation: Reservation): boolean => {
+    if (!reservation.creneau?.dateDebut) return false;
+    const startTime = new Date(reservation.creneau.dateDebut).getTime();
+    const cutoffTime = startTime - GRACE_MINUTES * 60 * 1000;
+    return Date.now() <= cutoffTime;
+  };
 
   // Filtrer les réservations
   const filteredReservations = useMemo(() => {
@@ -25,6 +35,25 @@ const ReservationAVenir: React.FC<Props> = ({ reservations, onUpdate }) => {
   }, [reservations, filterStatus]);
 
   const openMotifModal = (reservationId: number) => {
+    const reservation = reservations.find(r => r.id === reservationId);
+    if (!reservation) return;
+
+    // Vérifier si l'annulation est autorisée
+    if (!canCancelReservation(reservation)) {
+      const startTime = new Date(reservation.creneau?.dateDebut || '').getTime();
+      const cutoffTime = new Date(startTime - GRACE_MINUTES * 60 * 1000);
+      const cutoffStr = cutoffTime.toLocaleString('fr-FR', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+      alert(`L'annulation n'est plus possible. Vous pouviez annuler jusqu'à ${cutoffStr} (soit ${GRACE_MINUTES} minutes avant le début du créneau).`);
+      return;
+    }
+
     setReservationToCancel(reservationId);
     setShowMotifModal(true);
   };
@@ -228,7 +257,12 @@ const ReservationAVenir: React.FC<Props> = ({ reservations, onUpdate }) => {
                       <button
                         onClick={() => openMotifModal(reservation.id)}
                         disabled={loadingCancel === reservation.id}
-                        className="btn-cancel"
+                        className={`btn-cancel ${!canCancelReservation(reservation) ? 'btn-disabled' : ''}`}
+                        title={
+                          !canCancelReservation(reservation)
+                            ? `L'annulation n'est possible que jusqu'à ${GRACE_MINUTES} minutes avant le début`
+                            : undefined
+                        }
                       >
                         {loadingCancel === reservation.id
                           ? "Annulation..."

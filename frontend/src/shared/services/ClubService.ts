@@ -26,6 +26,7 @@ export interface ReservationSummary {
   terrain: string;
   heureDebut: string;
   heureFin: string;
+  nomReservant?: string; // For manual reservations without a player account
 }
 
 interface TokenPayload {
@@ -119,6 +120,7 @@ function normalizeReservationRaw(item: any): ReservationSummary {
     terrain,
     heureDebut,
     heureFin,
+    nomReservant: item.nomReservant ?? null,
   };
 }
 
@@ -240,6 +242,31 @@ async function getClubById(id: number): Promise<ClubDto> {
   return jsonOrThrow(res);
 }
 
+/**
+ * Get available creneaux for a club by date and sport
+ * @param clubId - The club ID
+ * @param date - Date in YYYY-MM-DD format
+ * @param sport - Sport name (optional)
+ * @returns Array of available creneaux
+ */
+export async function getCreneauxByClubDateSport(
+  clubId: number,
+  date?: string,
+  sport?: string
+): Promise<Creneau[]> {
+  try {
+    const params: Record<string, string> = {};
+    if (date) params.date = date;
+    if (sport) params.sport = sport;
+
+    const res = await apiClient.get<Creneau[]>(`/api/creneaux/club/${clubId}`, { params });
+    return res.data;
+  } catch (error) {
+    console.error("Error fetching creneaux:", error);
+    return [];
+  }
+}
+
 async function getTerrains(): Promise<Terrain[]> {
   try {
     const res = await apiClient.get<Terrain[]>("/api/terrains");
@@ -259,6 +286,7 @@ export async function modifyInfoClub(ClubInfo: Omit<ClubDto, "id">) {
       adresse: ClubInfo.adresse,
       description: ClubInfo.description,
       politique: ClubInfo.politique,
+      sports: ClubInfo.sports,
     });
   } catch (error) {
     throw error;

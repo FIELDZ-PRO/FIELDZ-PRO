@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import ReservationGroup from '../../../components/organisms/dashboard/ReservationGroup';
-import { useAuth } from '../../../../../shared/context/AuthContext';
 import { Reservation, Terrain } from '../../../../../shared/types';
 import CreneauxSection from '../../../components/organisms/dashboard/CreneauxSection';
+import apiClient from '../../../../../shared/api/axiosClient';
 import './style/CreateReservation.css';
 
 export const CreateReservationPage: React.FC = () => {
-    const { token } = useAuth();
     const [reservations, setReservations] = useState<Reservation[]>([]);
     const [reservationsDate, setReservationsDate] = useState<Reservation[]>([]);
     const [terrains, setTerrains] = useState<Terrain[]>([]);
@@ -20,16 +19,9 @@ export const CreateReservationPage: React.FC = () => {
     // 🔍 Fetch reservations for a given date
     const handleVoirReservationsDate = async () => {
         try {
-            const res = await fetch(
-                `http://localhost:8080/api/reservations/reservations/date?date=${date}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
+            const { data } = await apiClient.get(
+                `/api/reservations/reservations/date?date=${date}`
             );
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const data = await res.json();
             setReservationsDate(data);
         } catch (err) {
             console.error("Erreur lors du chargement des réservations à la date :", err);
@@ -40,13 +32,7 @@ export const CreateReservationPage: React.FC = () => {
     useEffect(() => {
         const fetchClub = async () => {
             try {
-                const res = await fetch('http://localhost:8080/api/club/me', {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-                if (!res.ok) throw new Error(`Erreur HTTP ${res.status}`);
-                const data = await res.json();
+                const { data } = await apiClient.get('/api/club/me');
                 setClub(data);
             } catch (err) {
                 console.error("Erreur lors du chargement du club :", err);
@@ -54,20 +40,13 @@ export const CreateReservationPage: React.FC = () => {
         };
 
         fetchClub();
-    }, [token]);
+    }, []);
 
     // 🏟️ Fetch terrains
     useEffect(() => {
         const fetchTerrains = async () => {
             try {
-                const res = await fetch('http://localhost:8080/api/terrains', {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                const data = await res.json();
+                const { data } = await apiClient.get('/api/terrains');
                 console.log(data);
                 setTerrains(data);
             } catch (err) {
@@ -78,20 +57,13 @@ export const CreateReservationPage: React.FC = () => {
         };
 
         fetchTerrains();
-    }, [token]);
+    }, []);
 
     // 📅 Fetch all reservations
     useEffect(() => {
         const fetchReservations = async () => {
             try {
-                const res = await fetch("http://localhost:8080/api/reservations/reservations", {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                const data = await res.json();
+                const { data } = await apiClient.get("/api/reservations/reservations");
                 setReservations(data);
             } catch (err) {
                 console.error("Erreur lors du chargement des réservations :", err);
@@ -99,7 +71,7 @@ export const CreateReservationPage: React.FC = () => {
         };
 
         fetchReservations();
-    }, [token]);
+    }, []);
 
     if (loading) {
         return (

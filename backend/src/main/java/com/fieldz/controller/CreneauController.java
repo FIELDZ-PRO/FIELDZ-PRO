@@ -106,13 +106,14 @@ public class CreneauController {
     }
 
     /**
-     * GET /api/creneaux/club/{clubId}?date=YYYY-MM-DD
-     * Créneaux disponibles d'un club pour une date donnée (PUBLIC)
+     * GET /api/creneaux/club/{clubId}?date=YYYY-MM-DD&sport=PADEL
+     * Créneaux disponibles d'un club pour une date donnée et optionnellement un sport (PUBLIC)
      */
     @GetMapping("/club/{clubId}")
     public ResponseEntity<List<CreneauDto>> getCreneauxDisponiblesParClub(@PathVariable Long clubId,
-                                                                          @RequestParam(required = false) String date) {
-        List<CreneauDto> dtos = creneauService.getCreneauxDisponiblesParClub(clubId, date)
+                                                                          @RequestParam(required = false) String date,
+                                                                          @RequestParam(required = false) String sport) {
+        List<CreneauDto> dtos = creneauService.getCreneauxDisponiblesParClub(clubId, date, sport)
                 .stream().map(CreneauMapper::toDto).toList();
         return ResponseEntity.ok(dtos);
     }

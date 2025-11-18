@@ -13,4 +13,6 @@ public class CreneauRecurrentDto {
     private int dureeMinutes;        // ex : 60
     private double prix;
     private Long terrainId;
+    private String nomReservant;     // Nom du réservant (optionnel)
+    private Boolean autoReserver;    // Si true, créer automatiquement des réservations
 }

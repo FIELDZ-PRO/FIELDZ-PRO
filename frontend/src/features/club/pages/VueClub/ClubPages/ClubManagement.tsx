@@ -1,8 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Settings, User, MapPin, Mail, Phone, Image as ImageIcon, Loader2, Text, ShieldCheck, ChevronLeft, ChevronRight, Trash2, Plus } from 'lucide-react';
+import { Settings, User, MapPin, Mail, Phone, Image as ImageIcon, Loader2, Text, ShieldCheck, ChevronLeft, ChevronRight, Trash2, Plus, Dumbbell, X } from 'lucide-react';
 import './style/ClubManagement.css';
 import { getClubMe, modifyInfoClub, addClubImage, deleteClubImage, ClubDto } from '../../../../../shared/services/ClubService';
 import { ClubImage } from '../../../../../shared/types';
+
+// Available sports list
+const AVAILABLE_SPORTS = ['PADEL', 'FOOT5', 'TENNIS', 'BASKET', 'HANDBALL', 'VOLLEY'] as const;
 
 /** ====== Limites centralisées ====== */
 const MAX_DESC = 4000;     // limite description
@@ -379,6 +382,45 @@ const ClubManagementPage = () => {
                 onChange={(e) => setClubInfo({ ...clubInfo, telephone: e.target.value })}
                 disabled={!isEditing}
               />
+            </div>
+
+            {/* ===== Sports Management ===== */}
+            <div className="form-group">
+              <label><Dumbbell size={16} /> Sports proposés</label>
+              <div className="sports-selector">
+                {AVAILABLE_SPORTS.map((sport) => {
+                  const isSelected = clubInfo.sports?.includes(sport);
+                  return (
+                    <button
+                      key={sport}
+                      type="button"
+                      className={`sport-chip ${isSelected ? 'selected' : ''}`}
+                      onClick={() => {
+                        if (!isEditing) return;
+                        const currentSports = clubInfo.sports || [];
+                        if (isSelected) {
+                          setClubInfo({
+                            ...clubInfo,
+                            sports: currentSports.filter(s => s !== sport)
+                          });
+                        } else {
+                          setClubInfo({
+                            ...clubInfo,
+                            sports: [...currentSports, sport]
+                          });
+                        }
+                      }}
+                      disabled={!isEditing}
+                    >
+                      {sport}
+                      {isSelected && isEditing && <X size={14} style={{ marginLeft: '4px' }} />}
+                    </button>
+                  );
+                })}
+              </div>
+              {!clubInfo.sports || clubInfo.sports.length === 0 ? (
+                <p className="sports-hint">Aucun sport sélectionné</p>
+              ) : null}
             </div>
 
             {/* ===== Textareas avec compteur & limites ===== */}

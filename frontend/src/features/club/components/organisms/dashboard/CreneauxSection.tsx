@@ -8,6 +8,7 @@ import CreneauGroup from './CreneauGroup';
 import './CreneauxSection.css';
 import { fetchCreneaux } from '../../../../../shared/services/ClubService';
 import { Search, CalendarDays, Filter } from 'lucide-react';
+import apiClient from '../../../../../shared/api/axiosClient';
 
 type Props = {
   terrains: Terrain[];
@@ -186,29 +187,15 @@ const CreneauxSection: React.FC<Props> = ({ terrains, reservations, setReservati
   /* ========= Ajout récurrent ========= */
   const handleAddCreneauxRecurrents = async (data: any) => {
     try {
-      const res = await fetch('http://localhost:8080/api/creneaux/recurrent', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(data),
-      });
-
-      const text = await res.text();
-      const response = JSON.parse(text);
-
-      alert(
-        `✅ ${response.message ?? 'Créneaux traités'}\n` +
-        `📅 Demandés : ${response.totalDemandes}\n` +
-        `✔️ Créés : ${response.totalCrees}\n` +
-        `❗ Déjà existants : ${response.dejaExistants}`
-      );
+      const { data: response } = await apiClient.post('/api/creneaux/recurrent', data);
 
       await waitCreneaux();
+
+      // Return the response for the custom alert
+      return response;
     } catch (err) {
       console.error(err);
-      alert('❌ Erreur lors de la création des créneaux récurrents');
+      throw err;
     }
   };
 
