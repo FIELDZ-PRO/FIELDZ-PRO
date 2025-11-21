@@ -36,6 +36,7 @@ public abstract class Utilisateur implements UserDetails {
     @Column(name = "type_role")
     private Role typeRole;
 
+    @Builder.Default
     private LocalDateTime dateInscription = LocalDateTime.now();
 
     @Override
@@ -81,6 +82,7 @@ public abstract class Utilisateur implements UserDetails {
     private LocalDateTime accountBlockedUntil;
 
     @Column(name = "profil_complet")
+    @Builder.Default
     private boolean profilComplet = false;
 
 }
