@@ -21,6 +21,7 @@ public class ReservationMapper {
 
         dto.setDateAnnulation(reservation.getDateAnnulation());
         dto.setMotifAnnulation(reservation.getMotifAnnulation());
+        dto.setNomReservant(reservation.getNomReservant());
 
         Joueur joueur = reservation.getJoueur();
 

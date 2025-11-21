@@ -1,7 +1,7 @@
 // src/pages/ClubDetailsJoueur.tsx
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ClubService, ClubDto } from "../../../shared/services/ClubService";
+import { ClubService, ClubDto, getCreneauxByClubDateSport } from "../../../shared/services/ClubService";
 import ReservationModal from "../components/organisms/joueurDashboardDoss/ReservationModal";
 import { Creneau } from "../../../shared/types";
 import "./style/ClubDetailsJoueur.css";
@@ -73,13 +73,12 @@ const ClubDetailsJoueur: React.FC = () => {
     const fetchCreneaux = async () => {
       if (!id || !selectedDate || !selectedSport) return;
       try {
-        const url = `http://localhost:8080/api/creneaux/club/${id}?date=${selectedDate}&sport=${encodeURIComponent(
+        const data = await getCreneauxByClubDateSport(
+          parseInt(id, 10),
+          selectedDate,
           selectedSport
-        )}`;
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
-        setCreneaux(data || []);
+        );
+        setCreneaux(data);
       } catch (err: any) {
         console.error("Erreur chargement créneaux:", err);
         setCreneaux([]);
@@ -148,18 +147,21 @@ const ClubDetailsJoueur: React.FC = () => {
 
   const handleReserver = (creneau: Creneau) => setSelectedCreneau(creneau);
 
-  const handleReservationSuccess = () => {
+  const handleReservationSuccess = async () => {
     setSelectedCreneau(null);
     // refresh des créneaux
-    const url = `http://localhost:8080/api/creneaux/club/${id}?date=${selectedDate}&sport=${encodeURIComponent(
-      selectedSport
-    )}`;
-    fetch(url)
-      .then((r) => r.json())
-      .then((data) => setCreneaux(data || []))
-      .catch((err) => console.error("Erreur rechargement:", err));
+    if (!id) return;
+    try {
+      const data = await getCreneauxByClubDateSport(
+        parseInt(id, 10),
+        selectedDate,
+        selectedSport
+      );
+      setCreneaux(data || []);
+    } catch (err) {
+      console.error("Erreur rechargement:", err);
+    }
   };
-
   const truncateText = (text: string, maxLength = 200) =>
     !text || text.length <= maxLength ? text : text.slice(0, maxLength) + "...";
 
@@ -187,6 +189,7 @@ const ClubDetailsJoueur: React.FC = () => {
       </div>
     );
   }
+  console.log(creneaux)
 
   return (
     <div className="club-details-container">
@@ -199,8 +202,8 @@ const ClubDetailsJoueur: React.FC = () => {
 
       {/* Bannière */}
       <div className="club-banner">
-        {club.banniereUrl ? (
-          <img src={club.banniereUrl} alt={club.nom} />
+        {club.images && club.images.length > 0 ? (
+          <img src={club.images[0].imageUrl} alt={club.nom} />
         ) : (
           <div className="club-banner-placeholder">
             <h2>{club.nom}</h2>
@@ -323,9 +326,18 @@ const ClubDetailsJoueur: React.FC = () => {
             {creneaux.map((creneau) => (
               <div key={creneau.id} className="creneau-card">
                 <div className="creneau-info">
-                  <div className="creneau-icon">
-                    {getSportEmoji((creneau.terrain as any)?.sport || "sport")}
-                  </div>
+                  {/* Display terrain image */}
+                  {(creneau.terrain as any)?.photo ? (
+                    <img
+                      src={(creneau.terrain as any).photo}
+                      alt={getTerrainName(creneau)}
+                      className="creneau-image"
+                    />
+                  ) : (
+                    <div className="creneau-image-placeholder">
+                      {getSportEmoji((creneau.terrain as any)?.sport || "sport")}
+                    </div>
+                  )}
                   <div className="creneau-details">
                     <h4>{getTerrainName(creneau)}</h4>
 

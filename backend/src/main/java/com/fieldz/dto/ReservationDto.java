@@ -16,4 +16,7 @@ public class ReservationDto {
     private LocalDateTime dateAnnulation;
     private String motifAnnulation;
 
+    // Nom du réservant pour les réservations manuelles (sans compte joueur)
+    private String nomReservant;
+
 }

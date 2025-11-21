@@ -11,6 +11,8 @@ interface Props {
     dateDebut: string;
     dateFin: string;
     prix: string;
+    nomReservant: string;
+    autoReserver: boolean;
   };
   setRecurrent: (r: any) => void;
   onSubmit: () => void;
@@ -133,6 +135,33 @@ const CreneauRecurrentForm: React.FC<Props> = ({
             setRecurrent({ ...recurrent, prix: e.target.value })
           }
         />
+      </div>
+
+      <div className="creneau-form-group">
+        <label>Nom du réservant (optionnel)</label>
+        <input
+          type="text"
+          placeholder="Nom et prénom"
+          value={recurrent.nomReservant}
+          onChange={(e) =>
+            setRecurrent({ ...recurrent, nomReservant: e.target.value })
+          }
+        />
+      </div>
+
+      <div className="creneau-form-group" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <input
+          type="checkbox"
+          id="autoReserver"
+          checked={recurrent.autoReserver}
+          onChange={(e) =>
+            setRecurrent({ ...recurrent, autoReserver: e.target.checked })
+          }
+          style={{ width: 'auto', margin: 0 }}
+        />
+        <label htmlFor="autoReserver" style={{ margin: 0, cursor: 'pointer' }}>
+          Réserver automatiquement avec ce nom
+        </label>
       </div>
 
       <button type="submit">♻️ Générer les créneaux</button>

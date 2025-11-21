@@ -2,14 +2,28 @@ import React, { useEffect, useState } from 'react';
 import { Plus, Edit, Trash2, MapPin, Dumbbell, Goal } from 'lucide-react';
 import './style/TerrainsPage.css';
 import { Terrain } from '../../../../../shared/types';
-import { ClubService } from '../../../../../shared/services/ClubService';
+import { ClubService, uploadClubImage } from '../../../../../shared/services/ClubService';
 import { useModal } from '../../../../../shared/context/ModalContext';
+import apiClient from '../../../../../shared/api/axiosClient';
+import ImageUpload from '../../../../../shared/components/molecules/ImageUpload';
 
 export type TypeDeSport = 'Padel' | 'Football';
 
+// Helper function to convert base64 to File
+const base64ToFile = (base64String: string, filename: string): File => {
+    const arr = base64String.split(',');
+    const mime = arr[0].match(/:(.*?);/)?.[1] || 'image/jpeg';
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], filename, { type: mime });
+};
+
 const TerrainsPage = () => {
     const [terrains, setTerrains] = useState<Terrain[]>([]);
-    const token = localStorage.getItem("token");
     const [DataLoaded, setDataLoaded] = useState(false);
     const [showAddForm, setShowAddForm] = useState(false);
     const [showEditForm, setShowEditForm] = useState(false);
@@ -19,6 +33,7 @@ const TerrainsPage = () => {
         typeSurface: '',
         ville: '',
         sport: '',
+        photo: '',
         politiqueClub: '',
     });
     const [newTerrain, setNewTerrain] = useState<Omit<Terrain, "id">>({
@@ -26,6 +41,7 @@ const TerrainsPage = () => {
         typeSurface: '',
         ville: '',
         sport: '',
+        photo: '',
         politiqueClub: '',
     });
 
@@ -34,14 +50,9 @@ const TerrainsPage = () => {
     // Fetch terrains
     const fetchTerrains = async () => {
         try {
-            const res = await fetch('http://localhost:8080/api/terrains', {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const data = await res.json();
-            setDataLoaded(data.length > 0);
-            setTerrains(data);
+            const res = await apiClient.get<Terrain[]>('/api/terrains');
+            setDataLoaded(res.data.length > 0);
+            setTerrains(res.data);
         } catch (err) {
             console.error('Erreur lors du chargement des terrains', err);
         }
@@ -49,23 +60,25 @@ const TerrainsPage = () => {
 
     useEffect(() => {
         fetchTerrains();
-    }, [token]);
+    }, []);
 
     // Add terrain
     const handleAjouterTerrain = async (terrain: Omit<Terrain, 'id'>) => {
         try {
-            const res = await fetch('http://localhost:8080/api/terrains', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify(terrain),
-            });
+            let photoUrl = terrain.photo;
 
-            if (!res.ok) throw new Error(await res.text());
-            const newTerrain = await res.json();
-            setTerrains((prev) => [...prev, newTerrain]);
+            if (terrain.photo && terrain.photo.startsWith('data:')) {
+                const photoFile = base64ToFile(terrain.photo, `terrain-${Date.now()}.jpg`);
+                photoUrl = await uploadClubImage(photoFile);
+            }
+
+            const terrainData = {
+                ...terrain,
+                photo: photoUrl
+            };
+
+            const res = await apiClient.post<Terrain>('/api/terrains', terrainData);
+            setTerrains((prev) => [...prev, res.data]);
             closeAddForm();
         } catch (err) {
             alert("❌ Erreur lors de l'ajout du terrain.");
@@ -74,21 +87,37 @@ const TerrainsPage = () => {
     };
 
     const handleMAJTerrain = async () => {
-        const ret = await ClubService.ModifyTerrain(
-            editTerrain.id,
-            editTerrain.nomTerrain,
-            editTerrain.typeSurface,
-            editTerrain.ville,
-            editTerrain.sport,
-            editTerrain.politiqueClub
-        );
-        if (ret) {
-            setTerrains(prev =>
-                prev.map(t => t.id === editTerrain.id ? { ...editTerrain } : t)
+        try {
+            let photoUrl = editTerrain.photo;
+
+            if (editTerrain.photo && editTerrain.photo.startsWith('data:')) {
+                const photoFile = base64ToFile(editTerrain.photo, `terrain-${editTerrain.id}-${Date.now()}.jpg`);
+                photoUrl = await uploadClubImage(photoFile);
+            }
+
+            console.log(photoUrl);
+            const ret = await ClubService.ModifyTerrain(
+                editTerrain.id,
+                editTerrain.nomTerrain,
+                editTerrain.typeSurface,
+                editTerrain.ville,
+                editTerrain.sport,
+                editTerrain.politiqueClub,
+                photoUrl
             );
-            closeEditForm();
-        } else {
-            alert("Erreur lors de la modification du terrain.");
+
+            if (ret) {
+                const updatedTerrain = { ...editTerrain, photo: photoUrl };
+                setTerrains(prev =>
+                    prev.map(t => t.id === editTerrain.id ? updatedTerrain : t)
+                );
+                closeEditForm();
+            } else {
+                alert("Erreur lors de la modification du terrain.");
+            }
+        } catch (error) {
+            alert("❌ Erreur lors de la modification du terrain.");
+            console.error(error);
         }
     };
 
@@ -145,29 +174,41 @@ const TerrainsPage = () => {
                 <div className="terrains-grid">
                     {terrains.map((terrain) => (
                         <div key={terrain.id} className="terrain-card">
-                            <div className="terrain-card-header">
-                                <h3>{terrain.nomTerrain}</h3>
-                                <div className="terrain-actions">
-                                    <button className="action-btn edit" onClick={() => openEditForm(terrain)}>
-                                        <Edit size={16} />
-                                    </button>
-                                    <button
-                                        className="action-btn delete"
-                                        onClick={() => handleDeleteTerrain(terrain.id)}
-                                    >
-                                        <Trash2 size={16} />
-                                    </button>
-                                </div>
+                            <div className="terrain-card-image">
+                                {terrain.photo ? (
+                                    <img src={terrain.photo} alt={terrain.nomTerrain} />
+                                ) : (
+                                    <div className="terrain-card-image-placeholder">
+                                        <MapPin size={48} />
+                                        <span>Aucune photo</span>
+                                    </div>
+                                )}
                             </div>
-
-                            <div className="terrain-info">
-                                <div className="info-item">
-                                    <Goal size={16} />
-                                    <span>{terrain.typeSurface}</span>
+                            <div className="terrain-card-content">
+                                <div className="terrain-card-header">
+                                    <h3>{terrain.nomTerrain}</h3>
+                                    <div className="terrain-actions">
+                                        <button className="action-btn edit" onClick={() => openEditForm(terrain)}>
+                                            <Edit size={16} />
+                                        </button>
+                                        <button
+                                            className="action-btn delete"
+                                            onClick={() => handleDeleteTerrain(terrain.id)}
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
+                                    </div>
                                 </div>
-                                <div className="info-item">
-                                    <Dumbbell size={16} />
-                                    <span>{terrain.sport}</span>
+
+                                <div className="terrain-info">
+                                    <div className="info-item">
+                                        <Goal size={16} />
+                                        <span>{terrain.typeSurface}</span>
+                                    </div>
+                                    <div className="info-item">
+                                        <Dumbbell size={16} />
+                                        <span>{terrain.sport}</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -190,6 +231,12 @@ const TerrainsPage = () => {
                             }}
                             className="terrain-form"
                         >
+                            <ImageUpload
+                                value={newTerrain.photo}
+                                onChange={(photo) => setNewTerrain({ ...newTerrain, photo })}
+                                label="Photo du terrain"
+                            />
+
                             <div className="form-group">
                                 <label>Nom du terrain</label>
                                 <input
@@ -260,6 +307,12 @@ const TerrainsPage = () => {
                             }}
                             className="terrain-form"
                         >
+                            <ImageUpload
+                                value={editTerrain.photo}
+                                onChange={(photo) => setEditTerrain({ ...editTerrain, photo })}
+                                label="Photo du terrain"
+                            />
+
                             <div className="form-group">
                                 <label>Nom du terrain</label>
                                 <input

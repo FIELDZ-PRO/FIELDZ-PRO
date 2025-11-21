@@ -10,8 +10,7 @@ import OAuthSuccess from "../features/auth/pages/oauth-success";
 import CompleteProfile from "../features/auth/pages/CompleteProfile";
 
 // Club Feature
-import ClubDashboard from "../features/club/pages/ClubDashboard";
-import ClubDashboard2 from "../features/club/pages/ClubDashboard2";
+
 import ProfilClub from "../features/club/pages/ProfilClub";
 import AccueilClub from "../features/club/pages/VueClub/AccueilClub";
 import Club from "../features/club/pages/Club";
@@ -99,23 +98,7 @@ export default function AppRouter() {
         }
       />
 
-      {/* Dashboards protégés */}
-      <Route
-        path="/club"
-        element={
-          <ProtectedRoute requiredRole="CLUB">
-            <ClubDashboard />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/club2"
-        element={
-          <ProtectedRoute requiredRole="CLUB">
-            <ClubDashboard2 />
-          </ProtectedRoute>
-        }
-      />
+
       <Route
         path="/club/:id"
         element={

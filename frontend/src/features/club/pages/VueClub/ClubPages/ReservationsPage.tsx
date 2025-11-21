@@ -22,37 +22,6 @@ function combineStartDateLocal(res: ReservationSummary): Date {
   return new Date(y, (m ?? 1) - 1, d ?? 1, hh ?? 0, mm ?? 0, 0, 0);
 }
 
-function hasStartedLocal(res: ReservationSummary) {
-  return Date.now() >= combineStartDateLocal(res).getTime();
-}
-
-function startAtLocalString(res: ReservationSummary) {
-  const start = combineStartDateLocal(res);
-  const d = start.toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-  const t = start.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-  return `${d} à ${t}`;
-}
-
-
-function allowedAtLocalString(res: ReservationSummary) {
-  const allowed = new Date(combineStartDateLocal(res).getTime() + GRACE_MINUTES * 60 * 1000);
-  const d = allowed.toLocaleDateString('fr-FR', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
-  const t = allowed.toLocaleTimeString('fr-FR', {
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-  return `${d} à ${t}`;
-}
-
-function canUsePostStartAction(res: ReservationSummary) {
-  const start = combineStartDateLocal(res).getTime();
-  return Date.now() >= start + GRACE_MINUTES * 60 * 1000;
-}
 
 const ReservationsPage = () => {
   const [reservations, setReservations] = useState<ReservationSummary[]>([]);
@@ -101,11 +70,20 @@ const ReservationsPage = () => {
     setReservations(prev => prev.map(r => (r.id === id ? { ...r, status: newStatus } : r)));
   };
 
-  // Boutons "Absent" et "Annuler" actifs à T0+15min
-  const canMarkAbsent = (r: ReservationSummary) => {
+  // Boutons "Présent" et "Absent" actifs à partir de 15 min AVANT le début
+  const canMarkPresenceOrAbsent = (r: ReservationSummary) => {
     if (r.status !== 'RESERVE' && r.status !== 'CONFIRMEE') return false;
     const start = combineStartDateLocal(r).getTime();
-    return Date.now() >= start + GRACE_MINUTES * 60 * 1000;
+    const availableTime = start - GRACE_MINUTES * 60 * 1000; // 15 min avant le début
+    return Date.now() >= availableTime;
+  };
+
+  // Bouton "Annuler" disponible jusqu'à 15 minutes AVANT le début
+  const canCancelReservation = (r: ReservationSummary) => {
+    if (r.status !== 'RESERVE' && r.status !== 'CONFIRMEE') return false;
+    const start = combineStartDateLocal(r).getTime();
+    const cutoffTime = start - GRACE_MINUTES * 60 * 1000; // 15 min avant le début
+    return Date.now() <= cutoffTime;
   };
 
   type Action = 'confirm' | 'cancel' | 'absent';
@@ -115,19 +93,40 @@ const ReservationsPage = () => {
     if (!res) return;
 
     // Garde-fous UX (ne lancent PAS d'appel réseau)
-    if (action === 'confirm' && !hasStartedLocal(res)) {
-      alert(`“Présent” sera disponible au début du créneau (${startAtLocalString(res)}).`);
-      return;
-    }
-
-    if (action === 'absent' && !canUsePostStartAction(res)) {
-      alert(`“Absent” sera disponible à partir de ${allowedAtLocalString(res)} (soit ${GRACE_MINUTES} min après le début).`);
+    if ((action === 'confirm' || action === 'absent') && !canMarkPresenceOrAbsent(res)) {
+      const start = combineStartDateLocal(res);
+      const availableTime = new Date(start.getTime() - GRACE_MINUTES * 60 * 1000);
+      const availableStr = availableTime.toLocaleString('fr-FR', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+      alert(`"Présent" et "Absent" seront disponibles à partir de ${availableStr} (soit ${GRACE_MINUTES} minutes avant le début du créneau).`);
       return;
     }
 
     // Branche ANNULER : confirmations AVANT le spinner / l'API
     if (action === 'cancel') {
-      const confirmed = window.confirm("Confirmer l’annulation de cette réservation ?");
+      // Vérifier si l'annulation est encore autorisée (15 min avant le début)
+      if (!canCancelReservation(res)) {
+        const start = combineStartDateLocal(res);
+        const cutoffTime = new Date(start.getTime() - GRACE_MINUTES * 60 * 1000);
+        const cutoffStr = cutoffTime.toLocaleString('fr-FR', {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+        alert(`L'annulation n'est plus possible. Vous pouviez annuler jusqu'à ${cutoffStr} (soit ${GRACE_MINUTES} minutes avant le début du créneau).`);
+        return;
+      }
+
+      const confirmed = window.confirm("Confirmer l'annulation de cette réservation ?");
       if (!confirmed) return;
 
       const motifInput = window.prompt("Motif d'annulation (visible par le joueur) :");
@@ -139,12 +138,12 @@ const ReservationsPage = () => {
         await cancelReservationByClub(id, motif);
         updateReservationStatus(id, 'ANNULE_PAR_CLUB');
       } catch (error) {
-        console.error('Erreur lors de l’annulation :', error);
-        alert((error as Error).message || 'Une erreur est survenue lors de l’annulation.');
+        console.error("Erreur lors de l'annulation : ", error);
+        alert((error as Error).message || "Une erreur est survenue lors de l'annulation.");
       } finally {
         setLoadingId(null);
       }
-      return; // on sort : on a géré l’action cancel
+      return; // on sort : on a géré l'action cancel
     }
 
     // Autres actions (confirm / absent)
@@ -197,6 +196,8 @@ const ReservationsPage = () => {
       const q = searchTerm.toLowerCase();
       return (
         (reservation.nom?.toLowerCase() ?? '').includes(q) ||
+        (reservation.prenom?.toLowerCase() ?? '').includes(q) ||
+        (reservation.nomReservant?.toLowerCase() ?? '').includes(q) ||
         (reservation.terrain?.toLowerCase() ?? '').includes(q)
       );
     });
@@ -212,7 +213,7 @@ const ReservationsPage = () => {
     () => reservations.filter(r => r.status === 'CONFIRMEE').reduce((sum, r) => sum + (r.prix || 0), 0),
     [reservations]
   );
-
+  console.log(reservations)
   return (
     <div className="reservations-page">
       <div className="page-header">
@@ -287,9 +288,9 @@ const ReservationsPage = () => {
               <div className="client-info">
                 <div className="client-name">
                   <User size={16} />
-                  {reservation.nom} {reservation.prenom}
+                  {reservation.nomReservant || `${reservation.nom} ${reservation.prenom}`}
                 </div>
-                <div className="client-phone">{reservation.telephone}</div>
+                <div className="client-phone">{reservation.telephone || '—'}</div>
               </div>
 
               <div className="reservation-details">
@@ -322,12 +323,12 @@ const ReservationsPage = () => {
                 {reservation.status === 'RESERVE' && (
                   <>
                     <button
-                      className="btn2 btn2-success"
-                      disabled={loadingId === reservation.id}  // ❌ on ne bloque plus avant le début
+                      className={`btn2 btn2-success ${!canMarkPresenceOrAbsent(reservation) ? 'btn2-disabled' : ''}`}
+                      disabled={loadingId === reservation.id}
                       onClick={() => handleReservationAction(reservation.id, 'confirm')}
                       title={
-                        !hasStartedLocal(reservation)
-                          ? `Disponible au début du créneau (${startAtLocalString(reservation)})`
+                        !canMarkPresenceOrAbsent(reservation)
+                          ? `Disponible à partir de ${GRACE_MINUTES} minutes avant le début du créneau`
                           : undefined
                       }
                     >
@@ -343,11 +344,11 @@ const ReservationsPage = () => {
 
 
                     <button
-                      className={`btn2 btn2-danger ${!canUsePostStartAction(reservation) ? 'btn2-disabled' : ''}`}
+                      className={`btn2 btn2-danger ${!canMarkPresenceOrAbsent(reservation) ? 'btn2-disabled' : ''}`}
                       disabled={loadingId === reservation.id}
                       title={
-                        !canUsePostStartAction(reservation)
-                          ? `Disponible à partir de ${allowedAtLocalString(reservation)}`
+                        !canMarkPresenceOrAbsent(reservation)
+                          ? `Disponible à partir de ${GRACE_MINUTES} minutes avant le début du créneau`
                           : undefined
                       }
                       onClick={() => handleReservationAction(reservation.id, 'absent')}
@@ -362,9 +363,14 @@ const ReservationsPage = () => {
                     </button>
 
                     <button
-                      className="btn2 btn2-warning"
+                      className={`btn2 btn2-warning ${!canCancelReservation(reservation) ? 'btn2-disabled' : ''}`}
                       disabled={loadingId === reservation.id}
                       onClick={() => handleReservationAction(reservation.id, 'cancel')}
+                      title={
+                        !canCancelReservation(reservation)
+                          ? `L'annulation n'est possible que jusqu'à ${GRACE_MINUTES} minutes avant le début du créneau`
+                          : undefined
+                      }
                     >
                       {loadingId === reservation.id ? (
                         <span className="btn2-loading">

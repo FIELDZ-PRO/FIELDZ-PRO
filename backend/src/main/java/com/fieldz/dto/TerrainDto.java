@@ -9,9 +9,9 @@ public class TerrainDto {
     private String typeSurface;
     private String ville;
     private String sport;
-    //private Long clubId;    // Pour lier au club sans exposer l'objet Club
+    private String photo;
+    // private Long clubId; // Pour lier au club sans exposer l'objet Club
     private ClubDto club;
     private String politiqueClub;
-
 
 }

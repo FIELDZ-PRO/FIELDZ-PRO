@@ -24,9 +24,6 @@ public class Club extends Utilisateur {
 
     private String telephone;
 
-    @Column(name = "banniere_url")
-    private String banniereUrl;
-
     @ElementCollection(targetClass = Sport.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "club_sports", joinColumns = @JoinColumn(name = "club_id"))
     @Enumerated(EnumType.STRING)
@@ -41,4 +38,7 @@ public class Club extends Utilisateur {
 
     @Column(columnDefinition = "TEXT")
     private String description;
+
+    @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ClubImage> images;
 }

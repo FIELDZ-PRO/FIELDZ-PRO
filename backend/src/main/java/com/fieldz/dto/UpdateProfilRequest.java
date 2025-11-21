@@ -23,7 +23,6 @@ public class UpdateProfilRequest {
     // CLUB uniquement
     private String ville;
     private String adresse;
-    private String banniereUrl;
 
     // Nazim : Champ de description
     private String description;

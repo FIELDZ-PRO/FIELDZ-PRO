@@ -32,7 +32,47 @@ public class CloudService {
 
     public String uploadFile(MultipartFile file) throws IOException {
         Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap(
-                "folder", "clubs_banners"));
+                "folder", "clubs_images"));
         return uploadResult.get("secure_url").toString(); // ✅ Permanent URL
+    }
+
+    public String uploadClubImage(MultipartFile file) throws IOException {
+        Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap(
+                "folder", "clubs_images"));
+        return uploadResult.get("secure_url").toString(); // ✅ Permanent URL
+    }
+
+    public void deleteImage(String imageUrl) throws IOException {
+        // Extraire le public_id de l'URL Cloudinary
+        String publicId = extractPublicId(imageUrl);
+        if (publicId != null) {
+            cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
+        }
+    }
+
+    private String extractPublicId(String imageUrl) {
+        // URL format: https://res.cloudinary.com/{cloud_name}/image/upload/v{version}/{public_id}.{format}
+        if (imageUrl == null || !imageUrl.contains("cloudinary.com")) {
+            return null;
+        }
+        try {
+            String[] parts = imageUrl.split("/upload/");
+            if (parts.length > 1) {
+                String pathAfterUpload = parts[1];
+                // Retirer la version (v123456789/) si présente
+                if (pathAfterUpload.contains("/")) {
+                    String[] pathParts = pathAfterUpload.split("/", 2);
+                    if (pathParts.length > 1) {
+                        String publicIdWithExtension = pathParts[1];
+                        // Retirer l'extension
+                        int lastDot = publicIdWithExtension.lastIndexOf('.');
+                        return lastDot > 0 ? publicIdWithExtension.substring(0, lastDot) : publicIdWithExtension;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            return null;
+        }
+        return null;
     }
 }

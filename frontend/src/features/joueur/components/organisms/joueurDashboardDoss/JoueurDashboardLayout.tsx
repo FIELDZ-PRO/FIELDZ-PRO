@@ -223,8 +223,8 @@ const JoueurDashboardLayout: React.FC<Props> = ({
                   <div key={club.id} className="club-card-modern">
                     {/* Image du club */}
                     <div className="club-card-image">
-                      {club.banniereUrl ? (
-                        <img src={club.banniereUrl} alt={club.nom} />
+                      {club.images && club.images.length > 0 ? (
+                        <img src={club.images[0].imageUrl} alt={club.nom} />
                       ) : (
                         <div className="club-card-placeholder">
                           <MapPin className="placeholder-icon" />
@@ -312,19 +312,6 @@ const JoueurDashboardLayout: React.FC<Props> = ({
               onUpdate={onRefresh}
             />
 
-            {reservationsActives.length === 0 && (
-              <div className="empty-state-modern">
-                <div className="empty-icon-container">
-                  <div className="empty-icon-circle">
-                    <Calendar className="empty-icon" />
-                  </div>
-                </div>
-                <h3 className="empty-title">Aucune réservation</h3>
-                <p className="empty-description">
-                  Tu n'as aucune réservation active pour le moment. Commence par rechercher un terrain !
-                </p>
-              </div>
-            )}
           </div>
         );
 

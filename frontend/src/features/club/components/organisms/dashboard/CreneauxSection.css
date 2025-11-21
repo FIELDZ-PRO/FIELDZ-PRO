@@ -5,7 +5,8 @@
   background-color: #ffffff;
   border-radius: 16px;
   padding: 28px;
-  border: 1px solid #e2e8f0; /* gris clair */
+  border: 1px solid #e2e8f0;
+  /* gris clair */
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
@@ -15,14 +16,15 @@
   transform: translateY(-3px);
 }
 
-.section-wrapper + .section-wrapper {
+.section-wrapper+.section-wrapper {
   margin-top: 40px;
 }
 
 .section-title {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #1f2937; /* gris foncé */
+  color: #1f2937;
+  /* gris foncé */
   margin-bottom: 20px;
 }
 
@@ -57,7 +59,8 @@
   left: 14px;
   top: 50%;
   transform: translateY(-50%);
-  color: #6b7280;              /* gray-500 */
+  color: #6b7280;
+  /* gray-500 */
   pointer-events: none;
 }
 
@@ -66,12 +69,15 @@
 .fz-select {
   width: 100%;
   height: 44px;
-  padding: 10px 14px 10px 42px;  /* place pour l’icône */
+  padding: 10px 14px 10px 42px;
+  /* place pour l’icône */
   font-size: 14px;
-  border: 1px solid #e5e7eb;     /* gray-200 */
+  border: 1px solid #e5e7eb;
+  /* gray-200 */
   background: #fff;
-  border-radius: 14px;           /* arrondi plus généreux */
-  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+  border-radius: 14px;
+  /* arrondi plus généreux */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .06);
   transition:
     border-color .15s ease,
     box-shadow .15s ease,
@@ -83,13 +89,16 @@
 .fz-input:focus,
 .fz-select:focus {
   outline: none;
-  border-color: #10b981;         /* green-500/600 Fieldz */
-  box-shadow: 0 0 0 3px rgba(16,185,129,.16), 0 4px 12px rgba(0,0,0,.06);
+  border-color: #10b981;
+  /* green-500/600 Fieldz */
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, .16), 0 4px 12px rgba(0, 0, 0, .06);
 }
 
 /* petit effet press */
 .fz-input:active,
-.fz-select:active { transform: translateY(1px); }
+.fz-select:active {
+  transform: translateY(1px);
+}
 
 /* bouton Réinitialiser en “super pill” */
 .btn-reset {
@@ -101,14 +110,18 @@
   border: 1px solid #e5e7eb;
   background: #ffffff;
   color: #111827;
-  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .06);
   transition: background .15s ease, box-shadow .15s ease, transform .05s ease;
 }
+
 .btn-reset:hover {
   background: #f9fafb;
-  box-shadow: 0 4px 16px rgba(0,0,0,.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, .08);
 }
-.btn-reset:active { transform: translateY(1px); }
+
+.btn-reset:active {
+  transform: translateY(1px);
+}
 
 /* ajuste la flèche native des <select> (évite qu'elle touche l’icône) */
 .fz-select {
@@ -134,10 +147,15 @@
 
 /* Responsive */
 @media (max-width: 1024px) {
-  .filters-bar { grid-template-columns: 1fr 1fr 1fr; }
+  .filters-bar {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
 }
+
 @media (max-width: 640px) {
-  .filters-bar { grid-template-columns: 1fr; }
+  .filters-bar {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ===============================
@@ -165,7 +183,8 @@
   left: 14px;
   top: 50%;
   transform: translateY(-50%);
-  color: #6b7280;              /* gray-500 */
+  color: #6b7280;
+  /* gray-500 */
   pointer-events: none;
 }
 
@@ -174,12 +193,15 @@
 .fz-select {
   width: 100%;
   height: 44px;
-  padding: 10px 14px 10px 42px;  /* place pour l’icône */
+  padding: 10px 14px 10px 42px;
+  /* place pour l’icône */
   font-size: 14px;
-  border: 1px solid #e5e7eb;     /* gray-200 */
+  border: 1px solid #e5e7eb;
+  /* gray-200 */
   background: #fff;
-  border-radius: 14px;           /* arrondi plus généreux */
-  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+  border-radius: 14px;
+  /* arrondi plus généreux */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .06);
   transition:
     border-color .15s ease,
     box-shadow .15s ease,
@@ -191,13 +213,16 @@
 .fz-input:focus,
 .fz-select:focus {
   outline: none;
-  border-color: #10b981;         /* green-500/600 Fieldz */
-  box-shadow: 0 0 0 3px rgba(16,185,129,.16), 0 4px 12px rgba(0,0,0,.06);
+  border-color: #10b981;
+  /* green-500/600 Fieldz */
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, .16), 0 4px 12px rgba(0, 0, 0, .06);
 }
 
 /* petit effet press */
 .fz-input:active,
-.fz-select:active { transform: translateY(1px); }
+.fz-select:active {
+  transform: translateY(1px);
+}
 
 /* bouton Réinitialiser en “super pill” */
 .btn-reset {
@@ -209,14 +234,18 @@
   border: 1px solid #e5e7eb;
   background: #ffffff;
   color: #111827;
-  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .06);
   transition: background .15s ease, box-shadow .15s ease, transform .05s ease;
 }
+
 .btn-reset:hover {
   background: #f9fafb;
-  box-shadow: 0 4px 16px rgba(0,0,0,.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, .08);
 }
-.btn-reset:active { transform: translateY(1px); }
+
+.btn-reset:active {
+  transform: translateY(1px);
+}
 
 /* ajuste la flèche native des <select> (évite qu'elle touche l’icône) */
 .fz-select {
@@ -242,27 +271,71 @@
 
 /* Responsive */
 @media (max-width: 1024px) {
-  .filters-bar { grid-template-columns: 1fr 1fr 1fr; }
+  .filters-bar {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
 }
+
 @media (max-width: 640px) {
-  .filters-bar { grid-template-columns: 1fr; }
+  .filters-bar {
+    grid-template-columns: 1fr;
+  }
 }
+
 /* ===========================
    CreneauCard — style FIELDZ
    =========================== */
 
 .creneau-card {
   background: #fff;
-  border: 1px solid #e2e8f0;              /* gris clair */
+  border: 1px solid #e2e8f0;
+  /* gris clair */
   border-radius: 16px;
-  padding: 22px 24px;
-  box-shadow: 0 4px 14px rgba(0,0,0,.06);
+  padding: 0;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, .06);
   transition: box-shadow .2s ease, transform .1s ease, border-color .2s ease;
 }
+
 .creneau-card:hover {
   border-color: #dbe3ec;
-  box-shadow: 0 10px 24px rgba(0,0,0,.10);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, .10);
   transform: translateY(-1px);
+}
+
+/* Image du terrain */
+.creneau-card-image {
+  width: 100%;
+  height: 220px;
+  overflow: hidden;
+  background: #f3f4f6;
+}
+
+.creneau-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Placeholder avec emoji sport */
+.creneau-card-image-placeholder {
+  width: 100%;
+  height: 220px;
+  background: linear-gradient(135deg, #05602B 0%, #0A7B3D 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.creneau-card-image-placeholder .sport-emoji {
+  font-size: 80px;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+}
+
+/* Contenu de la carte */
+.creneau-card-content {
+  padding: 22px 24px;
 }
 
 /* Titre : terrain (plus de club/ville) */
@@ -270,13 +343,17 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #0f172a;                          /* slate-900 */
+  color: #0f172a;
+  /* slate-900 */
   font-weight: 800;
-  font-size: 1.125rem;                     /* 18px */
+  font-size: 1.125rem;
+  /* 18px */
   margin-bottom: 6px;
 }
+
 .card-subtitle {
-  color: #64748b;                          /* slate-500 */
+  color: #64748b;
+  /* slate-500 */
   font-weight: 600;
 }
 
@@ -285,7 +362,8 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #475569;                          /* slate-600 */
+  color: #475569;
+  /* slate-600 */
   font-weight: 600;
   margin-top: 6px;
   line-height: 1.4;
@@ -294,9 +372,11 @@
 /* Prix en avant, cohérent avec le reste */
 .card-prix {
   margin-top: 12px;
-  color: #059669;                          /* green-600 */
+  color: #059669;
+  /* green-600 */
   font-weight: 800;
-  font-size: 1.25rem;                      /* 20px */
+  font-size: 1.25rem;
+  /* 20px */
   letter-spacing: .2px;
 }
 
@@ -310,7 +390,8 @@
 }
 
 /* Boutons existants : léger polish */
-.jd-btn-primary, .jd-btn-danger {
+.jd-btn-primary,
+.jd-btn-danger {
   height: 40px;
   padding: 0 16px;
   border-radius: 10px;
@@ -318,15 +399,49 @@
   border: 1px solid transparent;
   transition: filter .15s ease, box-shadow .15s ease, transform .05s ease;
 }
-.jd-btn-primary { box-shadow: 0 6px 12px rgba(16,185,129,.18); }
-.jd-btn-primary:hover { filter: brightness(1.05); }
-.jd-btn-danger  { box-shadow: 0 6px 12px rgba(220,38,38,.18); }
-.jd-btn-danger:hover  { filter: brightness(1.05); }
-.jd-btn-primary:active, .jd-btn-danger:active { transform: translateY(1px); }
+
+.jd-btn-primary {
+  box-shadow: 0 6px 12px rgba(16, 185, 129, .18);
+}
+
+.jd-btn-primary:hover {
+  filter: brightness(1.05);
+}
+
+.jd-btn-danger {
+  box-shadow: 0 6px 12px rgba(220, 38, 38, .18);
+}
+
+.jd-btn-danger:hover {
+  filter: brightness(1.05);
+}
+
+.jd-btn-primary:active,
+.jd-btn-danger:active {
+  transform: translateY(1px);
+}
 
 /* Responsive */
 @media (max-width: 640px) {
-  .creneau-card { padding: 18px; }
-  .card-prix { font-size: 1.125rem; }
-  .card-actions { flex-wrap: wrap; row-gap: 8px; }
+  .creneau-card-image,
+  .creneau-card-image-placeholder {
+    height: 180px;
+  }
+
+  .creneau-card-image-placeholder .sport-emoji {
+    font-size: 64px;
+  }
+
+  .creneau-card-content {
+    padding: 18px;
+  }
+
+  .card-prix {
+    font-size: 1.125rem;
+  }
+
+  .card-actions {
+    flex-wrap: wrap;
+    row-gap: 8px;
+  }
 }

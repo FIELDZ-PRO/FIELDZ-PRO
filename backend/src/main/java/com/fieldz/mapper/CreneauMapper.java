@@ -25,6 +25,7 @@ public class CreneauMapper {
             t.setTypeSurface(c.getTerrain().getTypeSurface());
             t.setVille(c.getTerrain().getVille());
             t.setSport(c.getTerrain().getSport());
+            t.setPhoto(c.getTerrain().getPhoto());
             t.setPolitiqueClub(c.getTerrain().getPolitiqueClub());
 
             // ✅ Ajout du club (id, nom, email, ville...)

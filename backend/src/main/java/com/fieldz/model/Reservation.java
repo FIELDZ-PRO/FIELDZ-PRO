@@ -46,5 +46,8 @@ public class Reservation {
 
     private String motifAnnulation;
 
+    // Nom du réservant pour les réservations manuelles (sans compte joueur)
+    private String nomReservant;
+
 
 }

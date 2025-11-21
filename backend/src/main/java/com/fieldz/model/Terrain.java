@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-
 import java.util.List;
 
 @Entity
@@ -27,12 +26,12 @@ public class Terrain {
     // ✅ Champs ajoutés
     private String ville;
     private String sport;
+    private String photo;
 
     @ManyToOne
     @JoinColumn(name = "club_id")
-    @JsonIgnoreProperties({"terrains", "hibernateLazyInitializer", "handler"})
+    @JsonIgnoreProperties({ "terrains", "hibernateLazyInitializer", "handler" })
     private Club club;
-
 
     @OneToMany(mappedBy = "terrain")
     @JsonIgnore // <-- Ajoute ça, retire le ManagedReference
@@ -40,6 +39,5 @@ public class Terrain {
 
     @Column(columnDefinition = "TEXT") // Pour permettre un texte long
     private String politiqueClub;
-
 
 }

@@ -9,4 +9,5 @@ public class UpdateTerrainRequest {
     private String ville;
     private String sport;
     private String politiqueClub;
+    private String photo;
 }

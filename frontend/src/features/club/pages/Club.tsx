@@ -27,13 +27,6 @@ function ClubLayout() {
 }
 
 function Club() {
-    const token = localStorage.getItem("token");
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        if (!isTokenValid(token)) navigate('/LoginClub');
-    }, [token]);
-
     return (
         <NavigationProvider>
             <ModalProvider>

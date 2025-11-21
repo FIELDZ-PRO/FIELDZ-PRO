@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Creneau } from "../../../../../shared/types";
-import { useAuth } from "../../../../../shared/context/AuthContext";
 import FullscreenModal from "./FullscreenModal";
+import apiClient from "../../../../../shared/api/axiosClient";
 
 type Props = {
   creneau: Creneau;
@@ -10,7 +10,6 @@ type Props = {
 };
 
 const ReservationModal: React.FC<Props> = ({ creneau, onClose, onReservation }) => {
-  const { token } = useAuth();
   const [accepte, setAccepte] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -18,14 +17,11 @@ const ReservationModal: React.FC<Props> = ({ creneau, onClose, onReservation }) 
     if (!accepte) return;
     setLoading(true);
     try {
-      const res = await fetch(`http://localhost:8080/api/reservations/creneau/${creneau.id}`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!res.ok) throw new Error("Erreur");
+      await apiClient.post(`/api/reservations/creneau/${creneau.id}`);
       await onReservation();
     } catch (e) {
-      alert("Erreur");
+      alert("Erreur lors de la réservation");
+      console.error(e);
     } finally {
       setLoading(false);
     }
