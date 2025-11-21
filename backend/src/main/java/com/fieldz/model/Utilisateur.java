@@ -74,6 +74,7 @@ public abstract class Utilisateur implements UserDetails {
     }
 
     @Column(name = "failed_login_attempts")
+    @Builder.Default
     private Integer failedLoginAttempts = 0;
 
     @Column(name = "account_blocked_until")

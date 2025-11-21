@@ -10,10 +10,13 @@ import org.springframework.web.filter.CorsFilter;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Configuration CORS centralisee pour FIELDZ.
+ * Supporte les profils dev et prod via les variables d'environnement.
+ */
 @Configuration
 public class CorsConfig {
 
-    // 🧩 Ces valeurs viennent de application.properties ou .env
     @Value("${cors.allowed-origins:http://localhost:5173}")
     private String allowedOrigins;
 
@@ -23,38 +26,43 @@ public class CorsConfig {
     @Value("${cors.allowed-headers:Authorization,Content-Type,Cache-Control,Pragma,Expires,Accept,Accept-Language,X-Requested-With,If-None-Match,If-Modified-Since,X-CSRF-Token}")
     private String allowedHeaders;
 
+    /**
+     * Bean CorsFilter pour le filtrage CORS global.
+     */
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration cfg = new CorsConfiguration();
 
-        // 🔓 Lis les origines depuis les variables
+        // Origines autorisees (depuis les variables d'environnement)
         List<String> origins = Arrays.stream(allowedOrigins.split(","))
                 .map(String::trim)
+                .filter(s -> !s.isEmpty())
                 .toList();
-        cfg.setAllowedOrigins(origins);
 
-        // ✅ Autorise les cookies (indispensable pour refresh_token HttpOnly)
+        cfg.setAllowedOriginPatterns(origins);
         cfg.setAllowCredentials(true);
 
-        // 🔧 Méthodes et headers
-        cfg.setAllowedMethods(Arrays.asList(allowedMethods.split(",")));
-        cfg.setAllowedHeaders(Arrays.asList(allowedHeaders.split(",")));
+        cfg.setAllowedMethods(Arrays.stream(allowedMethods.split(","))
+                .map(String::trim)
+                .toList());
 
-        // ✅ Headers visibles côté front (cookie + pagination)
+        cfg.setAllowedHeaders(Arrays.stream(allowedHeaders.split(","))
+                .map(String::trim)
+                .toList());
+
         cfg.setExposedHeaders(List.of(
                 "Location",
                 "Content-Disposition",
                 "ETag",
-                "Set-Cookie"
+                "Set-Cookie",
+                "X-Total-Count",
+                "X-Total-Pages"
         ));
 
-        // ⏱ Cache du préflight
         cfg.setMaxAge(3600L);
 
-        // Appliquer sur toutes les routes
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", cfg);
-
         return new CorsFilter(source);
     }
 }

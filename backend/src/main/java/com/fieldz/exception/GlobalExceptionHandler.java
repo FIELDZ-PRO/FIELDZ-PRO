@@ -4,13 +4,14 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.MailException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
 import java.util.Map;
 
 @ControllerAdvice
@@ -24,21 +25,20 @@ public class GlobalExceptionHandler {
     ));
   }
 
-  // === Handlers spécifiques existants (inchangés) ===
+  // === Handlers spécifiques existants ===
   @ExceptionHandler(EmailDejaUtiliseException.class)
   public ResponseEntity<?> handleEmailDejaUtiliseException(EmailDejaUtiliseException ex) {
-    return json(HttpStatus.BAD_REQUEST, ex.getMessage());
+    return json(HttpStatus.CONFLICT, ex.getMessage()); // 409 Conflict
   }
 
   @ExceptionHandler(AuthentificationException.class)
   public ResponseEntity<?> handleAuthException(AuthentificationException ex) {
     String msg = ex.getMessage();
-    if (msg != null && msg.startsWith("Mot de passe")) {
-      return json(HttpStatus.UNAUTHORIZED, msg); // 401
-    } else if (msg != null && msg.startsWith("Compte bloqué")) {
+    if (msg != null && msg.startsWith("Compte bloqué")) {
       return json(HttpStatus.LOCKED, msg); // 423
     }
-    return json(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur inattendue");
+    // Toutes les autres erreurs d'authentification retournent 401
+    return json(HttpStatus.UNAUTHORIZED, msg); // 401
   }
 
   @ExceptionHandler(EntityNotFoundException.class)
@@ -81,6 +81,17 @@ public class GlobalExceptionHandler {
     return json(HttpStatus.CONFLICT, ex.getMessage());
   }
 
+  // === Spring Security exceptions ===
+  @ExceptionHandler(AccessDeniedException.class)
+  public ResponseEntity<?> handleAccessDenied(AccessDeniedException ex) {
+    return json(HttpStatus.FORBIDDEN, "Acces refuse"); // 403
+  }
+
+  @ExceptionHandler(AuthenticationException.class)
+  public ResponseEntity<?> handleSpringAuthException(AuthenticationException ex) {
+    return json(HttpStatus.UNAUTHORIZED, "Non authentifie"); // 401
+  }
+
   // === (NOUVEAU) Respecte le status d'origine (ex: 429) ===
   @ExceptionHandler(ResponseStatusException.class)
   public ResponseEntity<Map<String,Object>> handleRSE(ResponseStatusException ex) {
@@ -110,9 +121,34 @@ public class GlobalExceptionHandler {
     return json(HttpStatus.BAD_GATEWAY, "Impossible d’envoyer l’email pour le moment");
   }
 
-  // === Catch-all final (garde-le en dernier) — N'écrase plus les statuts spécifiques ===
+  // === Catch-all final (garde-le en dernier) ===
   @ExceptionHandler(Exception.class)
   public ResponseEntity<Map<String,Object>> handleGlobalException(Exception ex) {
+    // Gerer AuthentificationException ici aussi (au cas ou le handler specifique ne fonctionne pas)
+    if (ex instanceof AuthentificationException) {
+      String msg = ex.getMessage();
+      if (msg != null && msg.startsWith("Compte bloqué")) {
+        return json(HttpStatus.LOCKED, msg);
+      }
+      return json(HttpStatus.UNAUTHORIZED, msg);
+    }
+
+    // Verifier si c'est une RuntimeException avec message utile
+    String msg = ex.getMessage();
+    if (msg != null) {
+      // Gestion des erreurs d'acces par type de role incorrect
+      if (msg.contains("n'est pas un club") || msg.contains("n'est pas un joueur")) {
+        return json(HttpStatus.FORBIDDEN, msg);
+      }
+      // Entite introuvable ou non trouvee
+      if (msg.contains("introuvable") || msg.contains("non trouvé")) {
+        return json(HttpStatus.NOT_FOUND, msg);
+      }
+      // Erreurs d'authentification par message
+      if (msg.contains("Mot de passe incorrect") || msg.contains("Utilisateur non trouvé")) {
+        return json(HttpStatus.UNAUTHORIZED, msg);
+      }
+    }
     return json(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur interne");
   }
 }

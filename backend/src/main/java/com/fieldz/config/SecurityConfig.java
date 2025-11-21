@@ -5,6 +5,7 @@ import com.fieldz.security.oauth.CustomOAuth2UserService;
 import com.fieldz.security.oauth.OAuth2SuccessHandler;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -25,6 +26,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.springframework.security.config.Customizer.withDefaults;
@@ -40,8 +42,14 @@ public class SecurityConfig {
     private final CustomOAuth2UserService oauth2UserService;
     private final OAuth2SuccessHandler oauth2SuccessHandler;
 
+    @Value("${app.frontend-url:http://localhost:5173}")
+    private String frontendUrl;
+
+    @Value("${cors.allowed-origins:http://localhost:5173}")
+    private String allowedOrigins;
+
     // =======================
-    // ⚙️ CHAIN API
+    // CHAIN 1 : API (/api/**)
     // =======================
     @Bean
     @Order(1)
@@ -64,9 +72,9 @@ public class SecurityConfig {
                         .addHeaderWriter(new StaticHeadersWriter("Content-Security-Policy",
                                 "default-src 'self'; " +
                                         "img-src 'self' data: https:; " +
-                                        "script-src 'self' 'unsafe-inline' 'unsafe-eval' http://localhost:5173 http://127.0.0.1:5173; " +
-                                        "style-src 'self' 'unsafe-inline' http://localhost:5173; " +
-                                        "connect-src 'self' http://localhost:8080 http://192.168.100.16:8080 http://localhost:5173;"))
+                                        "script-src 'self' 'unsafe-inline' 'unsafe-eval'; " +
+                                        "style-src 'self' 'unsafe-inline'; " +
+                                        "connect-src 'self' http://localhost:* http://127.0.0.1:*;"))
                 )
 
                 // ---------- EXCEPTIONS ----------
@@ -88,7 +96,7 @@ public class SecurityConfig {
 
                 // ---------- ROUTES ----------
                 .authorizeHttpRequests(auth -> auth
-                        // Préflight
+                        // Preflight
                         .requestMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
 
                         // Auth publique
@@ -109,14 +117,15 @@ public class SecurityConfig {
                                 "/api/contact"
                         ).permitAll()
 
-                        // Accès public
+                        // Acces public
                         .requestMatchers("/api/club/search/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/club/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/creneaux/club/*").permitAll()
 
-                        // Rôles protégés
+                        // Roles proteges
                         .requestMatchers("/api/joueur/**").hasRole("JOUEUR")
                         .requestMatchers("/api/club/**").hasRole("CLUB")
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
                         .anyRequest().authenticated()
                 )
@@ -133,7 +142,7 @@ public class SecurityConfig {
     }
 
     // =======================
-    // 🌐 CHAIN WEB
+    // CHAIN 2 : WEB (OAuth2, H2, pages statiques)
     // =======================
     @Bean
     @Order(2)
@@ -150,14 +159,6 @@ public class SecurityConfig {
                         .addHeaderWriter(new StaticHeadersWriter("X-Content-Type-Options", "nosniff"))
                         .addHeaderWriter(new StaticHeadersWriter("Permissions-Policy",
                                 "geolocation=(), microphone=(), camera=()"))
-                        .addHeaderWriter(new StaticHeadersWriter("Strict-Transport-Security",
-                                "max-age=31536000; includeSubDomains"))
-                        .addHeaderWriter(new StaticHeadersWriter("Content-Security-Policy",
-                                "default-src 'self'; " +
-                                        "img-src 'self' data: https:; " +
-                                        "script-src 'self' 'unsafe-inline' 'unsafe-eval' http://localhost:5173 http://127.0.0.1:5173; " +
-                                        "style-src 'self' 'unsafe-inline' http://localhost:5173; " +
-                                        "connect-src 'self' http://localhost:8080 http://192.168.100.16:8080 http://localhost:5173;"))
                 )
 
                 // ---------- ROUTES WEB ----------
@@ -167,7 +168,8 @@ public class SecurityConfig {
                                 "/login/**",
                                 "/h2-console/**",
                                 "/error", "/favicon.ico",
-                                "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html"
+                                "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html",
+                                "/actuator/health", "/actuator/health/**"
                         ).permitAll()
 
                         .requestMatchers("/", "/index.html", "/assets/**").permitAll()
@@ -177,7 +179,7 @@ public class SecurityConfig {
 
                 // ---------- OAUTH2 GOOGLE ----------
                 .oauth2Login(oauth -> oauth
-                        .defaultSuccessUrl("http://localhost:5173/oauth-success", true)
+                        .defaultSuccessUrl(frontendUrl + "/oauth-success", true)
                         .userInfoEndpoint(userInfo -> userInfo.userService(oauth2UserService))
                         .successHandler(oauth2SuccessHandler)
                 );
@@ -186,22 +188,32 @@ public class SecurityConfig {
     }
 
     // =======================
-    // 🌍 CORS (frontend 5173)
+    // CORS Configuration
     // =======================
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration cfg = new CorsConfiguration();
-        cfg.setAllowedOriginPatterns(List.of("http://localhost:5173", "http://127.0.0.1:5173"));
-        cfg.setAllowedMethods(List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
+
+        // Lire les origines depuis la config
+        List<String> origins = Arrays.stream(allowedOrigins.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .toList();
+        cfg.setAllowedOriginPatterns(origins);
+
+        cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         cfg.setAllowedHeaders(List.of("*"));
+        cfg.setExposedHeaders(List.of("Location", "Content-Disposition", "ETag", "Set-Cookie"));
         cfg.setAllowCredentials(true);
+        cfg.setMaxAge(3600L);
+
         UrlBasedCorsConfigurationSource src = new UrlBasedCorsConfigurationSource();
         src.registerCorsConfiguration("/**", cfg);
         return src;
     }
 
     // =======================
-    // 🔑 AUTH MANAGER
+    // AUTH MANAGER
     // =======================
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
