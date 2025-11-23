@@ -445,10 +445,7 @@ public class CreneauService {
     @Transactional
     public void updateCreneauxExpires() {
         LocalDateTime maintenant = LocalDateTime.now();
-        int updated = creneauRepository.updateCreneauxExpires(maintenant);
-        if (updated > 0) {
-            log.info("Mise à jour automatique de {} créneaux expirés", updated);
-        }
+        creneauRepository.updateCreneauxExpires(maintenant);
     }
 
 }
