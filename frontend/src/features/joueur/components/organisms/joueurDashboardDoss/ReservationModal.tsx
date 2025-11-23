@@ -5,6 +5,8 @@ import FullscreenModal from "./FullscreenModal";
 import { AlertTriangle } from "lucide-react";
 import "./style/ReservationModal.css";
 
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
+
 type Props = {
   creneau: Creneau;
   onClose: () => void;
@@ -28,7 +30,7 @@ const ReservationModal: React.FC<Props> = ({
 
     try {
       const res = await fetch(
-        `http://localhost:8080/api/reservations/creneau/${creneau.id}`,
+        `${API_BASE}/reservations/creneau/${creneau.id}`,
         {
           method: "POST",
           headers: { Authorization: `Bearer ${token}` },

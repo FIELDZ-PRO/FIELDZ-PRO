@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../shared/context/AuthContext';
 import "./style/CompleteProfile.css"
 
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
+
 // Liste des indicatifs téléphoniques principaux
 const COUNTRY_CODES = [
   { code: '+213', country: 'Algérie', flag: '🇩🇿' },
@@ -33,7 +35,7 @@ const CompleteProfile = () => {
 
   // ✅ Vérifie l'état du profil
   useEffect(() => {
-    fetch('http://localhost:8080/api/utilisateur/me', {
+    fetch(`${API_BASE}/utilisateur/me`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -97,7 +99,7 @@ const CompleteProfile = () => {
 
     try {
       // 🔁 Envoie la mise à jour du profil
-      const response = await fetch('http://localhost:8080/api/utilisateur/complete-profile', {
+      const response = await fetch(`${API_BASE}/utilisateur/complete-profile`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -118,7 +120,7 @@ const CompleteProfile = () => {
       }
 
       // ✅ Recharge les données utilisateur à jour
-      const res = await fetch('http://localhost:8080/api/utilisateur/me', {
+      const res = await fetch(`${API_BASE}/utilisateur/me`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 

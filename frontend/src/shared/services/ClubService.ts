@@ -2,8 +2,8 @@ import { InvalidTokenError, jwtDecode } from "jwt-decode";
 import { Terrain, Creneau, ClubImage } from "../types";
 import apiClient from "../api/axiosClient";
 
-const UrlService = "http://localhost:8080/api";
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
+const API_BASE_NO_SUFFIX = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
 const ACCESS_TOKEN_KEY = "access_token";
 
 /* =======================
@@ -152,7 +152,7 @@ async function jsonOrThrow(res: Response) {
  */
 async function Login(email: string, motDePasse: string): Promise<LoginResponse> {
   try {
-    const res = await fetch(`${UrlService}/auth/login`, {
+    const res = await fetch(`${API_BASE}/auth/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -211,7 +211,7 @@ async function ModifyTerrain(
 }
 
 export const loginWithGoogle = () => {
-  window.location.href = `${API_BASE}/oauth2/authorization/google`;
+  window.location.href = `${API_BASE_NO_SUFFIX}/oauth2/authorization/google`;
 };
 
 /* =======================
@@ -219,25 +219,25 @@ export const loginWithGoogle = () => {
  * =======================
  */
 async function searchByVilleAndSport(ville: string, sport: string): Promise<ClubDto[]> {
-  const url = `${UrlService}/club/search?ville=${encodeURIComponent(ville)}&sport=${encodeURIComponent(sport)}`;
+  const url = `${API_BASE}/club/search?ville=${encodeURIComponent(ville)}&sport=${encodeURIComponent(sport)}`;
   const res = await fetch(url);
   return jsonOrThrow(res);
 }
 
 async function searchByVille(ville: string): Promise<ClubDto[]> {
-  const url = `${UrlService}/club/search/by-ville?ville=${encodeURIComponent(ville)}`;
+  const url = `${API_BASE}/club/search/by-ville?ville=${encodeURIComponent(ville)}`;
   const res = await fetch(url);
   return jsonOrThrow(res);
 }
 
 async function searchBySport(sport: string): Promise<ClubDto[]> {
-  const url = `${UrlService}/club/search/by-sport?sport=${encodeURIComponent(sport)}`;
+  const url = `${API_BASE}/club/search/by-sport?sport=${encodeURIComponent(sport)}`;
   const res = await fetch(url);
   return jsonOrThrow(res);
 }
 
 async function getClubById(id: number): Promise<ClubDto> {
-  const url = `${UrlService}/club/${id}`;
+  const url = `${API_BASE}/club/${id}`;
   const res = await fetch(url);
   return jsonOrThrow(res);
 }

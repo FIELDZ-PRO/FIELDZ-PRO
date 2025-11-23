@@ -3,6 +3,8 @@ import { useAuth } from '../../../shared/context/AuthContext';
 import { Joueur, Reservation, Creneau } from '../../../shared/types';
 import JoueurDashboardLayout from '../components/organisms/joueurDashboard/JoueurDashboardLayout';
 
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
+
 const JoueurDashboard2: React.FC = () => {
   const { token } = useAuth();
   const [joueur, setJoueur] = useState<Joueur | null>(null);
@@ -16,9 +18,9 @@ const JoueurDashboard2: React.FC = () => {
       };
 
       const [resJoueur, resReservations, resCreneaux] = await Promise.all([
-        fetch('http://localhost:8080/api/utilisateur/me', { headers }),
-        fetch("http://localhost:8080/api/reservations/mes", { headers }),
-        fetch('http://localhost:8080/api/creneaux/disponibles', { headers }),
+        fetch(`${API_BASE}/utilisateur/me`, { headers }),
+        fetch(`${API_BASE}/reservations/mes`, { headers }),
+        fetch(`${API_BASE}/creneaux/disponibles`, { headers }),
       ]);
 
       if (!resJoueur.ok || !resReservations.ok || !resCreneaux.ok) throw new Error("Erreur lors du chargement");

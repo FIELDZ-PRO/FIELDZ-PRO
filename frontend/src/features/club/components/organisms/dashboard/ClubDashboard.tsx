@@ -11,6 +11,8 @@ import { Terrain } from '../../../../../shared/types/index';
 import ReservationParDateSection from "./ReservationParDateSection";
 import ReservationGroupByStatut from "./ReservationGroupByStatut";
 
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
+
 
 
 function formatDateTimeFr(isoString: string): string {
@@ -41,7 +43,7 @@ const ClubDashboard: React.FC = () => {
   const handleVoirReservationsDate = async () => {
     try {
       const res = await fetch(
-        `http://localhost:8080/api/reservations/reservations/date?date=${date}`,
+        `${API_BASE}/reservations/reservations/date?date=${date}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -62,7 +64,7 @@ const ClubDashboard: React.FC = () => {
   useEffect(() => {
     const fetchClub = async () => {
       try {
-        const res = await fetch('http://localhost:8080/api/club/me', {
+        const res = await fetch(`${API_BASE}/club/me`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -82,7 +84,7 @@ const ClubDashboard: React.FC = () => {
   useEffect(() => {
     const fetchTerrains = async () => {
       try {
-        const res = await fetch('http://localhost:8080/api/terrains', {
+        const res = await fetch(`${API_BASE}/terrains`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -107,7 +109,7 @@ const ClubDashboard: React.FC = () => {
   useEffect(() => {
     const fetchReservations = async () => {
       try {
-        const res = await fetch("http://localhost:8080/api/reservations/reservations", {
+        const res = await fetch(`${API_BASE}/reservations/reservations`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

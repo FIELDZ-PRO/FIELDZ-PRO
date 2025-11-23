@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../shared/context/AuthContext';
 import './style/ProfilJoueur.css';
 
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
+
 // L'interface correspond au JoueurDto du backend
 interface PlayerData {
   id?: number;
@@ -31,7 +33,7 @@ const ProfilJoueur = () => {
     const fetchPlayerData = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch('http://localhost:8080/api/joueur/me', {
+        const response = await fetch(`${API_BASE}/joueur/me`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (!response.ok) {

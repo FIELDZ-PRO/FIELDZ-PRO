@@ -8,6 +8,8 @@ import { Calendar, Clock, MapPin, XCircle, CheckCircle, AlertCircle } from 'luci
 import MotifAnnulationModal from "./MotifAnnulationModal";
 import './style/ReservationCard.css';
 
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
+
 type Props = {
   reservation: Reservation;
   role: 'club' | 'joueur';
@@ -56,7 +58,7 @@ const ReservationCard: React.FC<Props> = ({ reservation, role, onUpdate }) => {
       return;
     }
     try {
-      const res = await fetch(`http://localhost:8080/api/reservations/${id}/confirmer`, {
+      const res = await fetch(`${API_BASE}/reservations/${id}/confirmer`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -74,7 +76,7 @@ const ReservationCard: React.FC<Props> = ({ reservation, role, onUpdate }) => {
 
   const handleAnnulerAvecMotif = async (motif: string) => {
     try {
-      const res = await fetch(`http://localhost:8080/api/reservations/${id}/annuler`, {
+      const res = await fetch(`${API_BASE}/reservations/${id}/annuler`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -95,7 +97,7 @@ const ReservationCard: React.FC<Props> = ({ reservation, role, onUpdate }) => {
   const handleAnnulerSansMotif = async () => {
     if (!window.confirm("Annuler cette réservation ?")) return;
     try {
-      const res = await fetch(`http://localhost:8080/api/reservations/${id}/annuler`, {
+      const res = await fetch(`${API_BASE}/reservations/${id}/annuler`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

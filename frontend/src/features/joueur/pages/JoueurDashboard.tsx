@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import JoueurDashboardLayout from "../components/organisms/joueurDashboardDoss/JoueurDashboardLayout";
 import { Creneau, Reservation, Joueur } from "../../../shared/types";
 
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
+
 const JoueurDashboard: React.FC = () => {
   const { logout, token } = useAuth();
   const navigate = useNavigate();
@@ -22,9 +24,9 @@ const JoueurDashboard: React.FC = () => {
     setLoading(true);
     try {
       const [joueurRes, creneauxRes, reservationsRes] = await Promise.all([
-        fetch("http://localhost:8080/api/joueur/me", { headers }),
-        fetch("http://localhost:8080/api/creneaux/disponibles", { headers }),
-        fetch("http://localhost:8080/api/reservations/mes", { headers }),
+        fetch(`${API_BASE}/joueur/me`, { headers }),
+        fetch(`${API_BASE}/creneaux/disponibles`, { headers }),
+        fetch(`${API_BASE}/reservations/mes`, { headers }),
       ]);
 
       if (joueurRes.ok) {

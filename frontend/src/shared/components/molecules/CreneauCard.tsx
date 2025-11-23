@@ -4,6 +4,8 @@ import { Creneau } from "../../types";
 import { toast } from "react-toastify";
 import { useAuth } from "../../context/AuthContext";
 
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
+
 type Props = {
   creneau: Creneau;
   onReserver?: () => void;
@@ -18,7 +20,7 @@ const CreneauCard: React.FC<Props> = ({ creneau, onReserver, onUpdate, role }) =
     if (!window.confirm("Voulez-vous vraiment annuler ce créneau ?")) return;
 
     try {
-      const res = await fetch(`http://localhost:8080/api/creneaux/${creneau.id}/annuler`, {
+      const res = await fetch(`${API_BASE}/creneaux/${creneau.id}/annuler`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

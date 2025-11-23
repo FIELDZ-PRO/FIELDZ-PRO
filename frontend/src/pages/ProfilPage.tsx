@@ -3,6 +3,8 @@ import { useAuth } from '../shared/context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import './style/ProfilPage.css';
 
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
+
 const ProfilPage = () => {
   const { token } = useAuth();
   const navigate = useNavigate();
@@ -16,7 +18,7 @@ const ProfilPage = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await fetch('http://localhost:8080/api/utilisateur/me', {
+        const res = await fetch(`${API_BASE}/utilisateur/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (!res.ok) throw new Error();
@@ -50,7 +52,7 @@ const ProfilPage = () => {
   // 🔹 Sauvegarde (PUT vers backend)
   const handleSave = async () => {
     try {
-      const res = await fetch('http://localhost:8080/api/utilisateur/update', {
+      const res = await fetch(`${API_BASE}/utilisateur/update`, {
         method: 'PUT',
         headers: {
           Authorization: `Bearer ${token}`,
