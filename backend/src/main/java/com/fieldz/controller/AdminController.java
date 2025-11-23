@@ -71,4 +71,5 @@ public class AdminController {
     public ResponseEntity<JoueurAdminDto> createJoueur(@RequestBody RegisterRequest request) {  
     return ResponseEntity.ok(adminService.createJoueur(request));
     }
+    
 }
