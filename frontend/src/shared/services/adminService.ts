@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const apiBaseURL = import.meta.env.VITE_API_BASE_URL || "https://fieldz-pro.koyeb.app";
+const apiBaseURL = import.meta.env.VITE_API_BASE_URL || "https://vital-nana-fieldz-11e3f995.koyeb.app";
 
 const http = axios.create({
   baseURL: apiBaseURL,

@@ -11,7 +11,7 @@ import { Terrain } from '../../../../../shared/types/index';
 import ReservationParDateSection from "./ReservationParDateSection";
 import ReservationGroupByStatut from "./ReservationGroupByStatut";
 
-const API_BASE = import.meta.env.VITE_API_URL || "https://fieldz-pro.koyeb.app/api";
+const API_BASE = import.meta.env.VITE_API_URL || "https://vital-nana-fieldz-11e3f995.koyeb.app/api";
 
 
 

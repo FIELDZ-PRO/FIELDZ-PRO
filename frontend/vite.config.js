@@ -8,11 +8,11 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'https://fieldz-pro.koyeb.app',
+        target: 'https://vital-nana-fieldz-11e3f995.koyeb.app',
         changeOrigin: true,
       },
       '/oauth2': {
-        target: 'https://fieldz-pro.koyeb.app',
+        target: 'https://vital-nana-fieldz-11e3f995.koyeb.app',
         changeOrigin: true,
       },
       
