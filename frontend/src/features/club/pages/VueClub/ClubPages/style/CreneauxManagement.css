@@ -1,0 +1,249 @@
+/* Import styles from CreneauxSection and ReservationsPage */
+@import '../../../../components/organisms/dashboard/CreneauxSection.css';
+
+/* ===============================
+   Page Layout
+   =============================== */
+.creneaux-management-page {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: #f9fafb;
+}
+
+/* ===============================
+   Page Header
+   =============================== */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.page-header h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #111827;
+  margin: 0;
+}
+
+.header-stats {
+  display: flex;
+  gap: 24px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 24px;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.stat-value2 {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #059669;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.stat-label2 {
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ===============================
+   Filters Section
+   =============================== */
+.filters-bar {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  margin-bottom: 24px;
+}
+
+/* ===============================
+   Creneaux List Container
+   =============================== */
+.creneaux-list-container {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 28px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  max-width: 100%;
+}
+
+.creneaux-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ===============================
+   Reset Button Icon Styling
+   =============================== */
+.btn-reset {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.btn-reset svg {
+  transition: transform 0.3s ease;
+}
+
+.btn-reset:hover svg {
+  transform: rotate(-180deg);
+}
+
+/* ===============================
+   Creneau Card Overrides
+   =============================== */
+.creneaux-management-page .creneau-card {
+  display: flex;
+  flex-direction: row;
+}
+
+.creneaux-management-page .creneau-card-image,
+.creneaux-management-page .creneau-card-image-placeholder {
+  width: 180px;
+  min-width: 180px;
+  max-width: 180px;
+  height: 180px;
+  flex-shrink: 0;
+  border-radius: 12px 0 0 12px;
+}
+
+.creneaux-management-page .creneau-card-content {
+  flex: 1;
+  padding: 22px 24px;
+}
+
+.creneaux-management-page .creneau-card-image-placeholder .sport-emoji {
+  font-size: 56px;
+}
+
+/* ===============================
+   Empty State
+   =============================== */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 2px dashed #e5e7eb;
+  margin-top: 24px;
+}
+
+.empty-state svg {
+  color: #d1d5db;
+  margin-bottom: 16px;
+}
+
+.empty-state h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #374151;
+  margin: 0 0 8px 0;
+}
+
+.empty-state p {
+  color: #6b7280;
+  font-size: 0.9375rem;
+  margin: 0;
+}
+
+/* ===============================
+   Responsive Design
+   =============================== */
+@media (max-width: 768px) {
+  .creneaux-management-page {
+    padding: 16px;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .page-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .header-stats {
+    width: 100%;
+    justify-content: space-around;
+  }
+
+  .stat-item {
+    padding: 10px 16px;
+    flex: 1;
+  }
+
+  .stat-value2 {
+    font-size: 1.5rem;
+  }
+
+  .stat-label2 {
+    font-size: 0.75rem;
+  }
+
+  .filters-bar {
+    padding: 16px;
+  }
+
+  .creneaux-list-container {
+    padding: 20px;
+  }
+
+  .creneaux-management-page .creneau-card-image,
+  .creneaux-management-page .creneau-card-image-placeholder {
+    width: 120px;
+    min-width: 120px;
+    max-width: 120px;
+    height: 140px;
+  }
+
+  .creneaux-management-page .creneau-card-content {
+    padding: 18px 20px;
+  }
+
+  .creneaux-management-page .creneau-card-image-placeholder .sport-emoji {
+    font-size: 38px;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-header h1 {
+    font-size: 1.25rem;
+  }
+
+  .header-stats {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .stat-item {
+    width: 100%;
+  }
+}

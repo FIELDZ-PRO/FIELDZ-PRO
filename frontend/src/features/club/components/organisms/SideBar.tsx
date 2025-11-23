@@ -1,5 +1,5 @@
 import { NavigationItem, useNavigation } from '../../pages/VueClub/Context/NavigationContext'
-import { Home, MapPin, Calendar, FileText, Settings, Clock } from 'lucide-react';
+import { Home, MapPin, Calendar, FileText, Settings, Clock, Ticket } from 'lucide-react';
 import './style/SideBar.css';
 
 const Sidebar = () => {
@@ -8,7 +8,8 @@ const Sidebar = () => {
     const menuItems: { id: NavigationItem; label: string; icon: any }[] = [
         { id: 'accueil' as NavigationItem, label: 'Accueil', icon: Home },
         { id: 'terrains' as NavigationItem, label: 'Gestion des terrains', icon: MapPin },
-        { id: 'createReservation' as NavigationItem, label: 'Gestion des créneaux', icon: Clock },
+        { id: 'createReservation' as NavigationItem, label: 'Créer des créneaux', icon: Clock },
+        { id: 'manageCreneaux' as NavigationItem, label: 'Gestion des créneaux', icon: Ticket },
         { id: 'reservations' as NavigationItem, label: 'Gestion des réservations', icon: Calendar },
         { id: 'club' as NavigationItem, label: 'Paramètres des clubs', icon: Settings },
 
