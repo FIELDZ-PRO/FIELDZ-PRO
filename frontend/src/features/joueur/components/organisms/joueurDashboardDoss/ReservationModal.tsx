@@ -5,7 +5,7 @@ import FullscreenModal from "./FullscreenModal";
 import { AlertTriangle } from "lucide-react";
 import "./style/ReservationModal.css";
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
+const API_BASE = import.meta.env.VITE_API_URL || "https://fieldz-pro.koyeb.app/api";
 
 type Props = {
   creneau: Creneau;

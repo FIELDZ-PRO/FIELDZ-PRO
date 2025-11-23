@@ -10,7 +10,7 @@ import { fetchCreneaux } from '../../../../../shared/services/ClubService';
 import { Search, CalendarDays, Filter } from 'lucide-react';
 import apiClient from '../../../../../shared/api/axiosClient';
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
+const API_BASE = import.meta.env.VITE_API_URL || "https://fieldz-pro.koyeb.app/api";
 
 type Props = {
   terrains: Terrain[];

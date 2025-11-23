@@ -3,7 +3,7 @@ import { useAuth } from '../../../shared/context/AuthContext';
 import { Joueur, Reservation, Creneau } from '../../../shared/types';
 import JoueurDashboardLayout from '../components/organisms/joueurDashboard/JoueurDashboardLayout';
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
+const API_BASE = import.meta.env.VITE_API_URL || "https://fieldz-pro.koyeb.app/api";
 
 const JoueurDashboard2: React.FC = () => {
   const { token } = useAuth();

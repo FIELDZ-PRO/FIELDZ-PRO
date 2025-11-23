@@ -53,7 +53,7 @@ cd frontend
 npm install
 npm run dev
 ➡ Accès à : http://localhost:5173
-➡ API à : http://localhost:8080
+➡ API à : https://fieldz-pro.koyeb.app
 
 ## ▶ Backend
 commandes bash : 
@@ -96,8 +96,8 @@ Ouvrir Swagger UI dans ton navigateur à l’adresse :
 bash
 Copier
 Modifier
-http://localhost:8080/swagger-ui.html
-(selon la version, essaie aussi http://localhost:8080/swagger-ui/index.html)
+https://fieldz-pro.koyeb.app/swagger-ui.html
+(selon la version, essaie aussi https://fieldz-pro.koyeb.app/swagger-ui/index.html)
 
 ### authentification google ##
 
@@ -131,7 +131,7 @@ Dans frontend/.env ou directement dans GoogleOAuthProvider, le clientId doit êt
 Copier
 Modifier
 655220357439-xxxxx.apps.googleusercontent.com
-Le backend doit être lancé sur http://localhost:8080 et le frontend sur http://localhost:5173.
+Le backend doit être lancé sur https://fieldz-pro.koyeb.app et le frontend sur http://localhost:5173.
 
 🧪 Comment tester la connexion Google
 Démarre le backend Spring Boot :

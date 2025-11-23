@@ -4,7 +4,7 @@ import { Users, TrendingUp, Handshake, Phone, Mail } from 'lucide-react'
 import axios from 'axios'
 import './style/ClubsPartnership.css'
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://fieldz-pro.koyeb.app'
 
 // ---- Mapping UI -> enum backend ----
 const SPORT_LABELS = [

@@ -11,7 +11,7 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
 /** ===== Config back ===== */
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "https://fieldz-pro.koyeb.app";
 
 /** ===== Types ===== */
 type Role = "JOUEUR" | "CLUB" | "ADMIN";

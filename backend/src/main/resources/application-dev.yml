@@ -81,7 +81,7 @@ security:
 # ============================================================
 app:
   frontend-url: http://localhost:5173
-  backend-url: http://localhost:8080
+  backend-url: https://fieldz-pro.koyeb.app
 
 # ============================================================
 # Swagger active en dev

@@ -124,7 +124,7 @@ psql -h localhost -U postgres fieldz < backup.sql
 
 ## H2 Console
 
-- URL : http://localhost:8080/h2-console
+- URL : https://fieldz-pro.koyeb.app/h2-console
 - JDBC URL : `jdbc:h2:file:./data/fieldz_db`
 - User : `sa`
 - Password : (vide)
@@ -135,17 +135,17 @@ psql -h localhost -U postgres fieldz < backup.sql
 
 ```bash
 # Register
-curl -X POST http://localhost:8080/api/auth/register \
+curl -X POST https://fieldz-pro.koyeb.app/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{"email":"test@test.com","password":"Test123!","nom":"Test","typeRole":"JOUEUR"}'
 
 # Login
-curl -X POST http://localhost:8080/api/auth/login \
+curl -X POST https://fieldz-pro.koyeb.app/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"test@test.com","password":"Test123!"}'
 
 # Refresh token
-curl -X POST http://localhost:8080/api/auth/refresh \
+curl -X POST https://fieldz-pro.koyeb.app/api/auth/refresh \
   -H "Cookie: refresh_token=xxx"
 ```
 
@@ -153,11 +153,11 @@ curl -X POST http://localhost:8080/api/auth/refresh \
 
 ```bash
 # Avec token
-curl http://localhost:8080/api/joueur/profile \
+curl https://fieldz-pro.koyeb.app/api/joueur/profile \
   -H "Authorization: Bearer <access_token>"
 
 # Liste des clubs
-curl http://localhost:8080/api/club/search
+curl https://fieldz-pro.koyeb.app/api/club/search
 ```
 
 ## Cles JWT
@@ -230,10 +230,10 @@ COOKIE_SECURE=true
 
 | Environnement | URL |
 |---------------|-----|
-| Dev Backend | http://localhost:8080 |
+| Dev Backend | https://fieldz-pro.koyeb.app |
 | Dev Frontend | http://localhost:5173 |
-| Dev Swagger | http://localhost:8080/swagger-ui.html |
-| Dev H2 | http://localhost:8080/h2-console |
+| Dev Swagger | https://fieldz-pro.koyeb.app/swagger-ui.html |
+| Dev H2 | https://fieldz-pro.koyeb.app/h2-console |
 | Prod Health | https://xxx.onrender.com/actuator/health |
 
 ## Ports

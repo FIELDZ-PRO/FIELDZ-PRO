@@ -21,7 +21,7 @@ FRONT_PID=$!
 cd ..
 
 echo "✅ Les deux serveurs tournent !"
-echo "   🌍 Backend : http://localhost:8080/"
+echo "   🌍 Backend : https://fieldz-pro.koyeb.app/"
 echo "   🌍 Frontend : http://localhost:5173/"
 
 # Attente pour garder les deux process actifs

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import './style/Login.css';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://fieldz-pro.koyeb.app';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');

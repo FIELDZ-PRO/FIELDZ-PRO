@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import JoueurDashboardLayout from "../components/organisms/joueurDashboardDoss/JoueurDashboardLayout";
 import { Creneau, Reservation, Joueur } from "../../../shared/types";
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
+const API_BASE = import.meta.env.VITE_API_URL || "https://fieldz-pro.koyeb.app/api";
 
 const JoueurDashboard: React.FC = () => {
   const { logout, token } = useAuth();

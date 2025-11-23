@@ -8,11 +8,11 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'http://localhost:8080',
+        target: 'https://fieldz-pro.koyeb.app',
         changeOrigin: true,
       },
       '/oauth2': {
-        target: 'http://localhost:8080',
+        target: 'https://fieldz-pro.koyeb.app',
         changeOrigin: true,
       },
       

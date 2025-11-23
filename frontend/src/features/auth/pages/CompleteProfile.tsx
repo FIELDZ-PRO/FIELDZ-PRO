@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../shared/context/AuthContext';
 import "./style/CompleteProfile.css"
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
+const API_BASE = import.meta.env.VITE_API_URL || "https://fieldz-pro.koyeb.app/api";
 
 // Liste des indicatifs téléphoniques principaux
 const COUNTRY_CODES = [

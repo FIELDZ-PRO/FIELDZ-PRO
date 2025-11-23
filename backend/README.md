@@ -112,8 +112,8 @@ Les cles sont stockees dans `src/main/resources/keys/`.
 
 Une fois l'application demarree :
 
-- **Swagger UI** : http://localhost:8080/swagger-ui.html
-- **OpenAPI JSON** : http://localhost:8080/v3/api-docs
+- **Swagger UI** : https://fieldz-pro.koyeb.app/swagger-ui.html
+- **OpenAPI JSON** : https://fieldz-pro.koyeb.app/v3/api-docs
 
 ### Endpoints Principaux
 
@@ -152,7 +152,7 @@ java -jar target/fieldz-1.0.0.jar --spring.profiles.active=prod
 
 ### Dev (H2)
 
-- Console : http://localhost:8080/h2-console
+- Console : https://fieldz-pro.koyeb.app/h2-console
 - JDBC URL : `jdbc:h2:file:./data/fieldz_db`
 - User : `sa` / Password : (vide)
 

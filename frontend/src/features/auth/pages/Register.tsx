@@ -4,7 +4,7 @@ import axios from "axios";
 import "./style/Register.css";
 import React from "react";
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "https://fieldz-pro.koyeb.app";
 
 // Liste des indicatifs téléphoniques principaux
 const COUNTRY_CODES = [

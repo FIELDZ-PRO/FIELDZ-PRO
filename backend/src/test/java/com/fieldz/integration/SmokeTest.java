@@ -65,7 +65,7 @@ class SmokeTest {
     void h2ConsoleIsConfigured() {
         // H2 console n'est pas testable via MockMvc car elle utilise des servlets speciaux
         // On verifie simplement que le contexte Spring se charge (test implicite)
-        // La console H2 est accessible manuellement sur http://localhost:8080/h2-console
+        // La console H2 est accessible manuellement sur https://fieldz-pro.koyeb.app/h2-console
         assert true : "H2 console configuration validated";
     }
 

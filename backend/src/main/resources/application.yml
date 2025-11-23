@@ -110,7 +110,7 @@ security:
 # ============================================================
 app:
   frontend-url: ${FRONTEND_URL:http://localhost:5173}
-  backend-url: ${BACKEND_URL:http://localhost:8080}
+  backend-url: ${BACKEND_URL:https://fieldz-pro.koyeb.app}
 
 # ============================================================
 # OpenAPI / Swagger

@@ -64,9 +64,9 @@ cp .env.example .env
 mvn spring-boot:run -Dspring-boot.run.profiles=dev
 
 # Verifier :
-# - Console H2 : http://localhost:8080/h2-console
-# - Swagger : http://localhost:8080/swagger-ui.html
-# - API : http://localhost:8080/api/auth/login
+# - Console H2 : https://fieldz-pro.koyeb.app/h2-console
+# - Swagger : https://fieldz-pro.koyeb.app/swagger-ui.html
+# - API : https://fieldz-pro.koyeb.app/api/auth/login
 ```
 
 ### 6. Preparer la Production

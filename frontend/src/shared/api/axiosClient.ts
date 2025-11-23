@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "https://fieldz-pro.koyeb.app";
 const ACCESS_TOKEN_KEY = "access_token";
 
 /**

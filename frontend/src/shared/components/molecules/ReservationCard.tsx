@@ -8,7 +8,7 @@ import { Calendar, Clock, MapPin, XCircle, CheckCircle, AlertCircle } from 'luci
 import MotifAnnulationModal from "./MotifAnnulationModal";
 import './style/ReservationCard.css';
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
+const API_BASE = import.meta.env.VITE_API_URL || "https://fieldz-pro.koyeb.app/api";
 
 type Props = {
   reservation: Reservation;
