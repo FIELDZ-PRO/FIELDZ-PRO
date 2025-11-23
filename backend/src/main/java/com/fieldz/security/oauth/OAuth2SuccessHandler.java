@@ -53,7 +53,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     private int refreshExpDays;
 
     // Redirection front après succès OAuth2
-    @Value("${app.oauth2.redirect-success:http://localhost:5173/oauth-success}")
+    @Value("${app.oauth2.redirect-success:https://fieldz-pro.vercel.app/oauth-success}")
     private String frontendRedirect;
 
     @Override

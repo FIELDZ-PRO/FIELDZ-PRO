@@ -42,10 +42,10 @@ public class SecurityConfig {
     private final CustomOAuth2UserService oauth2UserService;
     private final OAuth2SuccessHandler oauth2SuccessHandler;
 
-    @Value("${app.frontend-url:http://localhost:5173}")
+    @Value("${app.frontend-url:https://fieldz-pro.vercel.app}")
     private String frontendUrl;
 
-    @Value("${cors.allowed-origins:http://localhost:5173}")
+    @Value("${cors.allowed-origins:https://fieldz-pro.vercel.app}")
     private String allowedOrigins;
 
     // =======================
@@ -74,7 +74,7 @@ public class SecurityConfig {
                                         "img-src 'self' data: https:; " +
                                         "script-src 'self' 'unsafe-inline' 'unsafe-eval'; " +
                                         "style-src 'self' 'unsafe-inline'; " +
-                                        "connect-src 'self' http://localhost:* http://127.0.0.1:*;"))
+                                        "connect-src 'self' https://*.vercel.app https://*.koyeb.app;"))
                 )
 
                 // ---------- EXCEPTIONS ----------
