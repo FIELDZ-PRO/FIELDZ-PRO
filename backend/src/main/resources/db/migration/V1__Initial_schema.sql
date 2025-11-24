@@ -71,7 +71,28 @@ CREATE TABLE club_sports (
 CREATE INDEX idx_club_sports_club_id ON club_sports(club_id);
 
 -- ============================================================
--- 3. TABLE TERRAIN
+-- 3. TABLE CLUB_IMAGES
+-- ============================================================
+-- Images des clubs
+-- ============================================================
+
+CREATE TABLE club_images (
+    id BIGSERIAL PRIMARY KEY,
+    image_url VARCHAR(500) NOT NULL,
+    club_id BIGINT NOT NULL,
+    upload_date TIMESTAMP,
+    display_order INTEGER,
+
+    CONSTRAINT fk_club_images_club
+        FOREIGN KEY (club_id)
+        REFERENCES utilisateur(id)
+        ON DELETE CASCADE
+);
+
+CREATE INDEX idx_club_images_club_id ON club_images(club_id);
+
+-- ============================================================
+-- 4. TABLE TERRAIN
 -- ============================================================
 -- Terrains de sport appartenant aux clubs
 -- ============================================================
@@ -82,6 +103,7 @@ CREATE TABLE terrain (
     type_surface VARCHAR(100),
     ville VARCHAR(255),
     sport VARCHAR(50),
+    photo VARCHAR(500),
     club_id BIGINT,
     politique_club TEXT,
 
@@ -105,7 +127,7 @@ CREATE TABLE creneau (
     id BIGSERIAL PRIMARY KEY,
     date_debut TIMESTAMP NOT NULL,
     date_fin TIMESTAMP NOT NULL,
-    prix DECIMAL(10, 2),
+    prix DOUBLE PRECISION,
     statut VARCHAR(50) DEFAULT 'LIBRE',
     disponible BOOLEAN DEFAULT true,
     terrain_id BIGINT,
@@ -138,6 +160,7 @@ CREATE TABLE reservation (
     statut VARCHAR(50) NOT NULL,
     date_annulation TIMESTAMP,
     motif_annulation VARCHAR(500),
+    nom_reservant VARCHAR(255),
 
     CONSTRAINT fk_reservation_joueur
         FOREIGN KEY (joueur_id)
