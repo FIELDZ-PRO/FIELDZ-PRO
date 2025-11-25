@@ -1,195 +1,150 @@
 import { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../shared/context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import './style/ProfilPage.css';
 
 const ProfilPage = () => {
   const { token } = useAuth();
   const navigate = useNavigate();
 
-  const [user, setUser] = useState(null);
-  const [formData, setFormData] = useState({
-    nom: '',
-    prenom: '',
-    telephone: '',
-    adresse: ''
-  });
+  const [user, setUser] = useState<any>(null);
   const [editMode, setEditMode] = useState(false);
-  const [message, setMessage] = useState('');
+  const [formData, setFormData] = useState<any>({});
+  const [message, setMessage] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const res = await fetch('http://localhost:8080/api/utilisateur/me', {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         });
         if (!res.ok) throw new Error();
         const data = await res.json();
         setUser(data);
-        setFormData({
-          nom: data.nom || data.nomClub || '',
-          prenom: data.prenom || '',
-          telephone: data.telephone || '',
-          adresse: data.adresse || ''
-        });
+        setFormData(data);
       } catch (err) {
         navigate('/login');
       }
     };
-
     fetchUser();
   }, [token, navigate]);
 
-  const handleChange = (e) => {
-    setFormData(prev => ({
-      ...prev,
-      [e.target.name]: e.target.value
-    }));
+  if (!user) return <div className="loading">Chargement du profil...</div>;
+
+  // 🔹 Gestion des changements (texte + fichier)
+  const handleChange = (e: any) => {
+    const { name, value, files } = e.target;
+    if (files && files[0]) {
+      // Si image → convertir en Base64 (exemple)
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData((prev: any) => ({ ...prev, photo: reader.result }));
+      };
+      reader.readAsDataURL(files[0]);
+    } else {
+      setFormData((prev: any) => ({ ...prev, [name]: value }));
+    }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setMessage('');
-    setIsSuccess(false);
-
+  // 🔹 Sauvegarde (PUT vers backend)
+  const handleSave = async () => {
     try {
       const res = await fetch('http://localhost:8080/api/utilisateur/update', {
         method: 'PUT',
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(formData),
       });
 
       if (!res.ok) throw new Error();
-      setMessage('✅ Profil mis à jour avec succès.');
-      setIsSuccess(true);
+      const updatedUser = await res.json();
+      setUser(updatedUser);
       setEditMode(false);
+      setMessage("✅ Profil mis à jour avec succès.");
+      setIsSuccess(true);
     } catch (err) {
-      setMessage('❌ Une erreur est survenue lors de la mise à jour.');
+      setMessage("❌ Erreur lors de la mise à jour.");
       setIsSuccess(false);
     }
   };
 
-  if (!user) return <div className="p-8 text-center">Chargement du profil...</div>;
-
-  const isJoueur = user.role === 'JOUEUR';
-
   return (
-    
-    
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <div className="absolute top-6 left-6">
-  <button
-    onClick={() => navigate(user.role === "CLUB" ? "/club" : "/joueur")}
-    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 shadow"
-  >
-    ← Retour au dashboard
-  </button>
-</div>
+    <div className="profil-container">
+      {/* Bouton retour */}
+      <div className="profil-return">
+        <button
+          onClick={() => navigate(user.role === "CLUB" ? "/club" : "/joueur")}
+          className="btn-retour"
+        >
+          ← Retour au dashboard
+        </button>
+      </div>
 
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white shadow-md p-8 rounded-xl w-full max-w-md flex flex-col gap-4"
-      >
-        <h2 className="text-2xl font-bold text-center text-green-700">👤 Mon Profil</h2>
-
-        {/* Champ Nom ou Nom du Club */}
-        {editMode ? (
-          <input
-            type="text"
-            name="nom"
-            placeholder={isJoueur ? "Nom" : "Nom du club"}
-            value={formData.nom}
-            onChange={handleChange}
-            className="border rounded px-3 py-2"
-            required
+      <div className="profil-card">
+        <div className="profil-header">
+          <img
+            src={formData.photo || "https://via.placeholder.com/150"}
+            alt="Photo de profil"
+            className="profil-photo"
           />
-        ) : (
-          <div><strong>{isJoueur ? "Nom" : "Nom du club"} :</strong> {formData.nom}</div>
-        )}
+          {editMode && <input type="file" name="photo" onChange={handleChange} />}
+          <h2 className="profil-title">Mon Profil</h2>
+        </div>
 
-        {/* Prénom */}
-        {isJoueur &&
-          (editMode ? (
-            <input
-              type="text"
-              name="prenom"
-              placeholder="Prénom"
-              value={formData.prenom}
+        <div className="profil-info">
+          {editMode ? (
+            <>
+              <p><strong>Nom :</strong> <input type="text" name="nom" value={formData.nom} onChange={handleChange} /></p>
+              <p><strong>Prénom :</strong> <input type="text" name="prenom" value={formData.prenom} onChange={handleChange} /></p>
+              <p><strong>Âge :</strong> <input type="number" name="age" value={formData.age || ""} onChange={handleChange} /></p>
+              <p><strong>Sport préféré :</strong> <input type="text" name="sport" value={formData.sport || ""} onChange={handleChange} /></p>
+              <p><strong>Ville :</strong> <input type="text" name="ville" value={formData.ville || ""} onChange={handleChange} /></p>
+              <p><strong>Réseaux sociaux :</strong> <input type="text" name="reseaux" value={formData.reseaux || ""} onChange={handleChange} /></p>
+            </>
+          ) : (
+            <>
+              <p><strong>Nom :</strong> {user.nom}</p>
+              <p><strong>Prénom :</strong> {user.prenom}</p>
+              <p><strong>Âge :</strong> {user.age || "-"}</p>
+              <p><strong>Sport préféré :</strong> {user.sport || "-"}</p>
+              <p><strong>Ville :</strong> {user.ville || "-"}</p>
+              <p><strong>Réseaux sociaux :</strong> {user.reseaux || "-"}</p>
+            </>
+          )}
+        </div>
+
+        <div className="profil-description">
+          <h3>Description</h3>
+          {editMode ? (
+            <textarea
+              name="description"
+              value={formData.description || ""}
               onChange={handleChange}
-              className="border rounded px-3 py-2"
             />
           ) : (
-            <div><strong>Prénom :</strong> {formData.prenom || "-"}</div>
-          ))}
-
-        {/* Téléphone */}
-        {editMode ? (
-          <input
-            type="tel"
-            name="telephone"
-            placeholder="Téléphone"
-            value={formData.telephone}
-            onChange={handleChange}
-            className="border rounded px-3 py-2"
-          />
-        ) : (
-          <div><strong>Téléphone :</strong> {formData.telephone || "-"}</div>
-        )}
-
-        {/* Adresse */}
-        {!isJoueur &&
-          (editMode ? (
-            <input
-              type="text"
-              name="adresse"
-              placeholder="Adresse du club"
-              value={formData.adresse}
-              onChange={handleChange}
-              className="border rounded px-3 py-2"
-            />
-          ) : (
-            <div><strong>Adresse :</strong> {formData.adresse || "-"}</div>
-          ))}
+            <p>{user.description || "Aucune description pour le moment."}</p>
+          )}
+        </div>
 
         {/* Boutons */}
-        {editMode ? (
-          <div className="flex gap-4">
-            <button
-              type="submit"
-              className="bg-green-600 text-white flex-1 py-2 rounded hover:bg-green-700"
-            >
-              Enregistrer
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setEditMode(false);
-                setMessage('');
-              }}
-              className="bg-gray-300 text-gray-800 flex-1 py-2 rounded hover:bg-gray-400"
-            >
-              Annuler
-            </button>
-          </div>
-        ) : (
-          <button
-            type="button"
-            onClick={() => setEditMode(true)}
-            className="bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
-          >
-            Modifier le profil
-          </button>
-        )}
+        <div className="profil-actions">
+          {editMode ? (
+            <>
+              <button onClick={handleSave} className="btn-modifier">✅ Enregistrer</button>
+              <button onClick={() => setEditMode(false)} className="btn-retour">❌ Annuler</button>
+            </>
+          ) : (
+            <button onClick={() => setEditMode(true)} className="btn-modifier">✏️ Modifier le profil</button>
+          )}
+        </div>
 
         {message && (
-          <p className={`text-center text-sm ${isSuccess ? "text-green-600" : "text-red-500"}`}>
-            {message}
-          </p>
+          <p className={isSuccess ? "msg-success" : "msg-error"}>{message}</p>
         )}
-      </form>
+      </div>
     </div>
   );
 };

@@ -1,0 +1,802 @@
+/* ClubDetailsJoueur.css - Design FieldZ Amélioré */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  --color-black: #0E0E0E;
+  --color-primary-green: #05602B;
+  --color-secondary-green: #0A7B3D;
+  --color-gray: #6B7280;
+  --color-light-gray: #9CA3AF;
+  --color-white: #FFFFFF;
+  --color-bg: #F9FAFB;
+  --color-success-bg: #DCFCE7;
+  --color-success-text: #166534;
+}
+
+.club-details-container {
+  min-height: 100vh;
+  background: var(--color-bg);
+  padding-bottom: 40px;
+  font-family: 'Inter', sans-serif;
+}
+
+.club-details-loading,
+.club-details-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  gap: 16px;
+  font-family: 'Inter', sans-serif;
+  color: var(--color-gray);
+}
+
+.club-details-header {
+  background: var(--color-white);
+  padding: 16px 24px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.back-button {
+  background: transparent;
+  border: none;
+  color: var(--color-primary-green);
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  transition: opacity 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.back-button:hover {
+  opacity: 0.7;
+}
+
+.club-details-header h1 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-black);
+  margin: 0;
+  line-height: 1.2;
+}
+
+/* ========== BANNIÈRE ========== */
+.club-banner {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--color-primary-green) 0%, var(--color-secondary-green) 100%);
+}
+
+.club-banner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.club-banner-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-white);
+}
+
+.club-banner-placeholder h2 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+}
+
+.club-banner-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+  color: var(--color-white);
+  padding: 24px;
+}
+
+.club-banner-overlay h2 {
+  margin: 0 0 8px 0;
+  font-family: 'Poppins', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.club-banner-overlay p {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.inline-icon {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+/* ========== SECTION INFORMATIONS ========== */
+.club-info-section {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Cartes d'information */
+.info-card {
+  background: var(--color-white);
+  border-radius: 16px;
+  border: 1px solid #E5E7EB;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+  transition: all 0.3s;
+}
+
+.info-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+/* Header de carte */
+.info-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 24px;
+  background: linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%);
+  border-bottom: 2px solid #D1D5DB;
+}
+
+.card-icon {
+  width: 24px;
+  height: 24px;
+  color: var(--color-primary-green);
+  flex-shrink: 0;
+}
+
+.info-card-header h3 {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-black);
+}
+
+/* Contenu de carte */
+.info-card-content {
+  padding: 24px;
+}
+
+/* Carte Description */
+.description-card {
+  grid-column: 1;
+}
+
+.description-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--color-gray);
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.btn-read-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 16px;
+  padding: 8px 16px;
+  background: transparent;
+  border: 2px solid var(--color-primary-green);
+  border-radius: 8px;
+  color: var(--color-primary-green);
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-read-more:hover {
+  background: var(--color-primary-green);
+  color: var(--color-white);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(5, 96, 43, 0.2);
+}
+
+.btn-icon {
+  width: 18px;
+  height: 18px;
+}
+
+/* Carte Contact */
+.contact-card {
+  grid-column: 2;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid #F3F4F6;
+}
+
+.contact-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.contact-icon {
+  width: 20px;
+  height: 20px;
+  color: var(--color-primary-green);
+  flex-shrink: 0;
+}
+
+.contact-item span {
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  color: var(--color-gray);
+  word-break: break-word;
+}
+
+/* ========== SPORTS DISPONIBLES ========== */
+.club-sports {
+  padding: 0 24px;
+  max-width: 1200px;
+  margin: 0 auto 24px;
+}
+
+.club-sports h3 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-black);
+  margin-bottom: 12px;
+}
+
+.sports-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.sport-badge {
+  background: var(--color-white);
+  color: var(--color-gray);
+  border: 2px solid #E5E7EB;
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sport-badge:hover {
+  border-color: var(--color-primary-green);
+  color: var(--color-primary-green);
+  transform: translateY(-2px);
+}
+
+.sport-badge.active {
+  background: var(--color-primary-green);
+  color: var(--color-white);
+  border-color: var(--color-primary-green);
+  box-shadow: 0 2px 8px rgba(5, 96, 43, 0.25);
+}
+
+/* ========== CALENDRIER ========== */
+.date-selector {
+  padding: 0 24px;
+  max-width: 1200px;
+  margin: 0 auto 24px;
+}
+
+.date-selector h3 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-black);
+  margin-bottom: 16px;
+}
+
+.dates-grid {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+.dates-grid::-webkit-scrollbar {
+  height: 6px;
+}
+
+.dates-grid::-webkit-scrollbar-thumb {
+  background: var(--color-primary-green);
+  border-radius: 3px;
+}
+
+.date-button {
+  flex-shrink: 0;
+  min-width: 120px;
+  background: var(--color-white);
+  border: 2px solid #E5E7EB;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-gray);
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.date-button:hover {
+  border-color: var(--color-primary-green);
+}
+
+.date-button.active {
+  background: var(--color-primary-green);
+  border-color: var(--color-primary-green);
+  color: var(--color-white);
+}
+
+/* ========== CRÉNEAUX ========== */
+.creneaux-section {
+  padding: 0 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.creneaux-section h3 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-black);
+  margin-bottom: 16px;
+}
+
+.no-creneaux {
+  background: var(--color-white);
+  padding: 40px;
+  text-align: center;
+  border-radius: 12px;
+  border: 2px dashed #D1D5DB;
+  font-family: 'Inter', sans-serif;
+  color: var(--color-gray);
+}
+
+.no-creneaux-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+
+.no-creneaux-hint {
+  font-size: 14px;
+  color: var(--color-light-gray);
+  margin-top: 8px;
+}
+
+.creneaux-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.creneau-card {
+  background: var(--color-white);
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid #E5E7EB;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: box-shadow 0.2s;
+}
+
+.creneau-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.creneau-info {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.creneau-icon {
+  font-size: 32px;
+  background: #F3F4F6;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.creneau-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+  object-fit: cover;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.creneau-image-placeholder {
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--color-primary-green) 0%, var(--color-secondary-green) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 32px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.creneau-details h4 {
+  margin: 0 0 4px 0;
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-black);
+}
+
+.creneau-time {
+  margin: 4px 0;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: var(--color-gray);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.creneau-sport {
+  margin: 4px 0;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: var(--color-success-text);
+  font-weight: 600;
+}
+
+.creneau-action {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.creneau-prix {
+  font-family: 'Poppins', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-primary-green);
+  margin: 0;
+}
+
+.btn-reserver {
+  background: var(--color-primary-green);
+  color: var(--color-white);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.btn-reserver:hover {
+  background: var(--color-secondary-green);
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 1024px) {
+  .club-info-section {
+    gap: 16px;
+    padding: 20px;
+  }
+
+  .club-sports,
+  .date-selector,
+  .creneaux-section {
+    padding: 0 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .club-details-header {
+    padding: 12px 16px;
+  }
+
+  .club-details-header h1 {
+    font-size: 18px;
+  }
+
+  .club-banner {
+    height: 200px;
+  }
+
+  .club-banner-overlay {
+    padding: 16px;
+  }
+
+  .club-banner-overlay h2 {
+    font-size: 24px;
+  }
+
+  .club-banner-overlay p {
+    font-size: 14px;
+  }
+
+  .club-info-section {
+    grid-template-columns: 1fr;
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .description-card,
+  .contact-card {
+    grid-column: 1;
+  }
+
+  .info-card-header {
+    padding: 16px 20px;
+  }
+
+  .info-card-content {
+    padding: 20px;
+  }
+
+  .description-text {
+    font-size: 14px;
+  }
+
+  .contact-item span {
+    font-size: 14px;
+  }
+
+  .club-sports,
+  .date-selector,
+  .creneaux-section {
+    padding: 0 16px;
+  }
+
+  .club-sports h3,
+  .date-selector h3,
+  .creneaux-section h3 {
+    font-size: 17px;
+    margin-bottom: 12px;
+  }
+
+  .sport-badge {
+    font-size: 14px;
+    padding: 8px 16px;
+  }
+
+  .dates-grid {
+    gap: 8px;
+  }
+
+  .date-button {
+    min-width: 110px;
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+
+  .creneau-card {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+    padding: 14px;
+  }
+
+  .creneau-info {
+    gap: 12px;
+  }
+
+  .creneau-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 28px;
+  }
+
+  .creneau-image,
+  .creneau-image-placeholder {
+    width: 60px;
+    height: 60px;
+  }
+
+  .creneau-details h4 {
+    font-size: 15px;
+  }
+
+  .creneau-time,
+  .creneau-sport {
+    font-size: 13px;
+  }
+
+  .creneau-action {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+
+  .creneau-prix {
+    font-size: 17px;
+  }
+
+  .btn-reserver {
+    padding: 10px 24px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .club-details-header {
+    padding: 10px 12px;
+  }
+
+  .club-details-header h1 {
+    font-size: 16px;
+  }
+
+  .back-button {
+    font-size: 14px;
+    padding: 6px;
+  }
+
+  .club-banner {
+    height: 180px;
+  }
+
+  .club-banner-overlay {
+    padding: 12px;
+  }
+
+  .club-banner-overlay h2 {
+    font-size: 20px;
+    margin-bottom: 4px;
+  }
+
+  .club-banner-overlay p {
+    font-size: 13px;
+  }
+
+  .club-info-section {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .info-card-header {
+    padding: 14px 16px;
+  }
+
+  .info-card-header h3 {
+    font-size: 16px;
+  }
+
+  .card-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .info-card-content {
+    padding: 16px;
+  }
+
+  .description-text {
+    font-size: 13px;
+  }
+
+  .btn-read-more {
+    font-size: 13px;
+    padding: 6px 12px;
+  }
+
+  .contact-item {
+    padding: 12px 0;
+  }
+
+  .contact-item span {
+    font-size: 13px;
+  }
+
+  .club-sports,
+  .date-selector,
+  .creneaux-section {
+    padding: 0 12px;
+  }
+
+  .club-sports h3,
+  .date-selector h3,
+  .creneaux-section h3 {
+    font-size: 16px;
+  }
+
+  .sport-badge {
+    font-size: 13px;
+    padding: 7px 14px;
+  }
+
+  .date-button {
+    min-width: 100px;
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  .creneau-card {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .creneau-icon {
+    width: 44px;
+    height: 44px;
+    font-size: 24px;
+  }
+
+  .creneau-details h4 {
+    font-size: 14px;
+  }
+
+  .creneau-time,
+  .creneau-sport {
+    font-size: 12px;
+  }
+
+  .creneau-prix {
+    font-size: 16px;
+  }
+
+  .btn-reserver {
+    padding: 8px 20px;
+    font-size: 13px;
+  }
+
+  .no-creneaux {
+    padding: 30px 20px;
+    font-size: 14px;
+  }
+}

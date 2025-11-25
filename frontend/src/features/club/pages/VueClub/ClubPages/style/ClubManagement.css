@@ -1,0 +1,513 @@
+.club-management-page {
+    padding: 32px;
+    background-color: #f8fafc;
+    min-height: calc(100vh - 64px);
+    box-sizing: border-box;
+}
+
+/* ===== Page Header ===== */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+}
+
+.page-header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+}
+
+/* ===== Image Section ===== */
+.image-container {
+    position: relative;
+    width: 100%;
+    max-width: 900px;
+}
+
+.image-loader-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.7);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+    border-radius: 12px;
+    backdrop-filter: blur(3px);
+}
+
+.image-loader {
+    color: var(--primary-color, #007bff);
+    animation: rotateLoader 1s linear infinite;
+}
+
+@keyframes rotateLoader {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+
+.image-section:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    transform: translateY(-4px);
+}
+
+.image-section {
+    background-color: #fafafa;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+.image-section h2 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+/* ensure the image area acts as a centered flex box */
+.image-container {
+    position: relative;
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    /* center the whole container horizontally */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* vertically center contents (preview or "no-image") */
+    min-height: 220px;
+    /* give it some height so centering works nicely */
+    box-sizing: border-box;
+}
+
+/* preview wrapper keeps image centered and constrained */
+.image-preview-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* vertical centering */
+    width: 100%;
+    height: 100%;
+    margin-bottom: 1rem;
+}
+
+/* image sizing: fill available space but keep aspect ratio */
+.image-preview {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    max-height: 400px;
+    /* your chosen max height */
+    border-radius: 10px;
+    object-fit: contain;
+    /* fits image without cropping */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Slide animation for image changes */
+.image-preview.club-image-slide-left {
+    animation: clubImageSlideFromRight 0.5s ease-out forwards;
+}
+
+.image-preview.club-image-slide-right {
+    animation: clubImageSlideFromLeft 0.5s ease-out forwards;
+}
+
+@keyframes clubImageSlideFromRight {
+    0% {
+        opacity: 0;
+        transform: translateX(100px) scale(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+}
+
+@keyframes clubImageSlideFromLeft {
+    0% {
+        opacity: 0;
+        transform: translateX(-100px) scale(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+}
+
+/* loader overlay stays absolute and centered on top */
+.image-loader-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.7);
+    z-index: 10;
+    border-radius: 12px;
+    backdrop-filter: blur(3px);
+}
+
+
+
+/* No image text */
+.no-image {
+    text-align: center;
+    color: #777;
+    font-style: italic;
+    margin-bottom: 1rem;
+}
+
+/* ===== Image Slider ===== */
+.image-slider-container {
+    width: 100%;
+    position: relative;
+}
+
+.image-preview-wrapper {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+/* Slider arrows */
+.slider-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    border: none;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    z-index: 5;
+    color: white;
+}
+
+.slider-arrow:hover {
+    background-color: rgba(0, 0, 0, 0.7);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.slider-arrow-left {
+    left: 16px;
+}
+
+.slider-arrow-right {
+    right: 16px;
+}
+
+/* Delete button */
+.delete-image-btn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background-color: rgba(220, 38, 38, 0.9);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    z-index: 5;
+    color: white;
+}
+
+.delete-image-btn:hover {
+    background-color: rgba(185, 28, 28, 1);
+    transform: scale(1.1);
+}
+
+/* Image indicators (dots) */
+.image-indicators {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    margin-bottom: 8px;
+}
+
+.image-indicators .indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #d1d5db;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    padding: 0;
+}
+
+.image-indicators .indicator:hover {
+    background-color: #9ca3af;
+    transform: scale(1.2);
+}
+
+.image-indicators .indicator.active {
+    background-color: #2563eb;
+    transform: scale(1.3);
+}
+
+/* Image counter */
+.image-counter {
+    text-align: center;
+    font-size: 14px;
+    color: #6b7280;
+    font-weight: 500;
+    margin-top: 8px;
+}
+
+/* ===== Dropzone ===== */
+.dropzone {
+    border: 2px dashed #bbb;
+    border-radius: 10px;
+    padding: 1.5rem;
+    text-align: center;
+    color: #666;
+    transition: 0.3s ease;
+}
+
+.image-section.drag-active .dropzone {
+    border-color: #007bff;
+    background-color: #eef6ff;
+}
+
+.upload-label {
+    display: inline-block;
+    margin-top: 0.5rem;
+    cursor: pointer;
+}
+
+.upload-button {
+    color: white;
+    background-color: #007bff;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+.upload-button:hover {
+    background-color: #0056b3;
+}
+
+
+/* ===== Management Content ===== */
+.management-content {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.management-content:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    transform: translateY(-4px);
+}
+
+/* ===== Club Info Form ===== */
+.club-info-section2 {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.info-form {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e2e8f0;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group:last-child {
+    margin-bottom: 0;
+}
+
+.form-group label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 6px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.2s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #2563eb;
+}
+
+.form-group input:disabled {
+    background-color: #f9fafb;
+    color: #6b7280;
+    cursor: not-allowed;
+}
+
+/* ===== Sports Selector ===== */
+.sports-selector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.sport-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 2px solid #d1d5db;
+    background-color: #ffffff;
+    color: #374151;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.sport-chip:hover:not(:disabled) {
+    border-color: #2563eb;
+    background-color: #eff6ff;
+    transform: translateY(-2px);
+}
+
+.sport-chip.selected {
+    border-color: #2E7D32;
+    background-color: #2E7D32;
+    color: white;
+}
+
+.sport-chip.selected:hover:not(:disabled) {
+    background-color: #235e26;
+    border-color: #235e26;
+}
+
+.sport-chip:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.sports-hint {
+    margin-top: 8px;
+    font-size: 13px;
+    color: #9ca3af;
+    font-style: italic;
+}
+
+/* ===== Buttons ===== */
+.btn-add {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border: none;
+}
+
+.btn-primary {
+    background-color: #2E7D32;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #235e26;
+}
+
+/* ===== TextArea ===== */
+
+.form-group textarea {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    outline: none;
+    resize: vertical;
+    min-height: 100px;
+    background-color: #f9f9f9;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-group textarea:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+}
+
+.form-group textarea:disabled {
+    background-color: #f1f1f1;
+    color: #666;
+    cursor: not-allowed;
+}
+
+
+/* ===== Responsive ===== */
+@media (max-width: 1024px) {
+    .management-content {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .club-management-page {
+        padding: 16px;
+    }
+
+    .page-header {
+        flex-direction: column;
+        gap: 16px;
+        align-items: stretch;
+    }
+}

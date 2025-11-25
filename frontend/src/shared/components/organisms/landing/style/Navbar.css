@@ -1,0 +1,283 @@
+/* Navbar.css - Logo et texte séparés et ajustables indépendamment */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&family=Inter:wght@400;500;600&display=swap');
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background-color: rgba(253, 255, 253, 0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(132, 146, 141, 0.1);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.navbar__container {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+/* === LOGO COMPLET === */
+.navbar__logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.navbar__logo:hover {
+  transform: scale(1.05);
+}
+
+/* === LOGO SYMBOLE SVG - AJUSTABLE INDÉPENDAMMENT === */
+.navbar__logo-symbol {
+  height: 2.2rem;         /* 🔧 Logo plus grand */
+  width: auto;
+  object-fit: contain;
+}
+
+/* === TEXTE FIELDZ - AJUSTABLE INDÉPENDAMMENT === */
+.navbar__logo-text {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 800;
+  font-size: 2.2rem;      /* 🔧 Texte FIELDZ beaucoup plus grand */
+  line-height: 1;
+  color: #05612B;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.navbar__menu {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navbar__link {
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 1rem;
+  color: #84928D;
+  text-decoration: none;
+  transition: color 0.3s ease;
+  position: relative;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.navbar__link::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(135deg, #05612B 0%, #0A7B3D 100%);
+  transition: width 0.3s ease;
+}
+
+.navbar__link:hover {
+  color: #05612B;
+}
+
+.navbar__link:hover::after {
+  width: 100%;
+}
+
+.navbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-shrink: 0;
+}
+
+.navbar-btn {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 0.875rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: 9999px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  display: inline-block;
+  text-align: center;
+}
+
+.navbar-btn.login {
+  color: #05612B;
+  background-color: transparent;
+  border: 1px solid rgba(5, 97, 43, 0.2);
+}
+
+.navbar-btn.login:hover {
+  background-color: rgba(5, 97, 43, 0.05);
+  border-color: #05612B;
+}
+
+.navbar-btn.register {
+  color: #FDFFFD;
+  background: linear-gradient(135deg, #05612B 0%, #0A7B3D 100%);
+  box-shadow: 0 4px 12px rgba(5, 97, 43, 0.2);
+}
+
+.navbar-btn.register:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(5, 97, 43, 0.3);
+}
+
+.navbar-btn.club-login {
+  color: #84928D;
+  background-color: transparent;
+  border: 1px solid rgba(132, 146, 141, 0.2);
+}
+
+.navbar-btn.club-login:hover {
+  color: #000000;
+  background-color: rgba(132, 146, 141, 0.05);
+  border-color: #84928D;
+}
+
+.navbar__mobile-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: #000000;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.navbar__menu-actions {
+  display: none;
+}
+
+/* === RESPONSIVE === */
+
+/* Tablette (1024px) */
+@media (max-width: 1024px) {
+  .navbar__menu {
+    gap: 1.5rem;
+  }
+
+  .navbar__actions {
+    gap: 0.75rem;
+  }
+
+  .navbar-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.8125rem;
+  }
+
+  /* Logo et texte tablette */
+  .navbar__logo-symbol {
+    height: 1.375rem;
+  }
+
+  .navbar__logo-text {
+    font-size: 1.375rem;
+  }
+}
+
+/* Tablette (768px) - Logo ET texte visibles */
+@media (max-width: 768px) {
+  /* Garde le texte FIELDZ visible */
+  .navbar__logo-text {
+    font-size: 1.8rem;      /* ✅ Texte visible sur tablette */
+  }
+
+  .navbar__logo-symbol {
+    height: 1.8rem;         /* ✅ Logo visible sur tablette */
+  }
+
+  .navbar__actions-desktop {
+    display: none;
+  }
+
+  .navbar__mobile-toggle {
+    display: block;
+  }
+
+  .navbar__menu {
+    position: fixed;
+    top: 73px;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    background-color: #FDFFFD;
+    padding: 2rem 1.5rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    gap: 1.5rem;
+    max-height: calc(100vh - 73px);
+    overflow-y: auto;
+  }
+
+  .navbar__menu.active {
+    transform: translateX(0);
+  }
+
+  .navbar__menu li {
+    width: 100%;
+  }
+
+  .navbar__link {
+    display: block;
+    padding: 0.75rem 0;
+    font-size: 1.125rem;
+  }
+
+  .navbar__link::after {
+    display: none;
+  }
+
+  .navbar__menu-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(132, 146, 141, 0.1);
+  }
+
+  .navbar__menu-actions .navbar-btn {
+    width: 100%;
+    text-align: center;
+    padding: 0.875rem 1.5rem;
+    font-size: 1rem;
+  }
+}
+
+/* Mobile (480px) */
+@media (max-width: 480px) {
+  .navbar__container {
+    padding: 0.875rem 1rem;
+  }
+
+  .navbar__logo-symbol {
+    height: 1.5rem;         /* ✅ Logo visible sur mobile */
+  }
+
+  .navbar__logo-text {
+    font-size: 1.5rem;      /* ✅ Texte visible sur mobile */
+  }
+}

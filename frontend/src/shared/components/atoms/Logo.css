@@ -1,0 +1,22 @@
+.logo-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.logo-icon {
+  color: #0D4E1D;
+  transition: transform 0.2s ease;
+}
+
+.logo-container:hover .logo-icon {
+  transform: scale(1.05);
+}
+
+.logo-text {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #0D4E1D;
+  letter-spacing: 1px;
+  font-family: 'Arial Black', 'Arial', sans-serif;
+}

@@ -1,0 +1,64 @@
+/* ... (previous CSS rules) ... */
+
+/* Loading Spinner Animation */
+.spinner {
+    display: flex;
+    /* Use flexbox to center content */
+    justify-content: center;
+    /* Center horizontally */
+    align-items: center;
+    /* Center vertically */
+    margin-top: 20px;
+    height: 50px;
+    /* Give it some height */
+}
+
+.spinner p {
+    font-size: 1.2rem;
+    font-weight: bold;
+    animation: spin 1s linear infinite;
+    /* Apply the animation */
+    display: inline-block;
+    /* Allows transform to work on text */
+    padding-left: 10px;
+    /* Space for the icon */
+}
+
+/* Add a visual element to the spinner */
+.spinner::before {
+    content: '⚽';
+    /* Soccer ball emoji */
+    font-size: 1.5rem;
+    animation: rotateBall 1.5s linear infinite;
+    /* Different animation for the ball */
+    display: inline-block;
+}
+
+/* Keyframes for the 'spin' animation (for the text) */
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Keyframes for the 'rotateBall' animation (for the soccer ball emoji) */
+@keyframes rotateBall {
+    0% {
+        transform: rotate(0deg) scale(1);
+    }
+
+    50% {
+        transform: rotate(180deg) scale(1.1);
+    }
+
+    /* Slightly larger in the middle */
+    100% {
+        transform: rotate(360deg) scale(1);
+    }
+}
+
+/* ... (rest of your CSS rules) ... */

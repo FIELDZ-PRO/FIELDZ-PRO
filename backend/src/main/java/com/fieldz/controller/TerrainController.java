@@ -11,6 +11,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import org.springframework.util.StringUtils;
+import com.fieldz.dto.UpdateTerrainRequest;
 
 @RestController
 @RequestMapping("/api/terrains")
@@ -36,5 +38,64 @@ public class TerrainController {
                 .map(TerrainMapper::toDto)
                 .toList();
         return ResponseEntity.ok(dtos);
+    }
+
+    // ====== NOUVEAUX ENDPOINTS ======
+
+    // Filtre exact: une ou plusieurs villes
+    // GET /api/terrains/search?ville=Alger
+    // GET /api/terrains/search?villes=Alger,Oran
+    @GetMapping("/search")
+    @PreAuthorize("hasAnyRole('JOUEUR','CLUB','ADMIN')")
+    public ResponseEntity<List<TerrainDto>> searchTerrains(
+            @RequestParam(required = false) String ville,
+            @RequestParam(required = false) String villes) {
+
+        List<Terrain> terrains;
+        if (StringUtils.hasText(villes)) {
+            terrains = terrainService.getTerrainsParVillesCsv(villes);
+        } else {
+            terrains = terrainService.getTerrainsParVille(ville);
+        }
+
+        List<TerrainDto> dtos = terrains.stream()
+                .map(TerrainMapper::toDto)
+                .toList();
+        return ResponseEntity.ok(dtos);
+    }
+
+    // Recherche partielle (autocomplétion):
+    // GET /api/terrains/search/contains?q=alg
+    @GetMapping("/search/contains")
+    @PreAuthorize("hasAnyRole('JOUEUR','CLUB','ADMIN')")
+    public ResponseEntity<List<TerrainDto>> searchTerrainsContains(@RequestParam("q") String q) {
+        List<Terrain> terrains = terrainService.searchVilleContient(q);
+        List<TerrainDto> dtos = terrains.stream()
+                .map(TerrainMapper::toDto)
+                .toList();
+        return ResponseEntity.ok(dtos);
+    }
+
+    // ✅ Modifier un terrain
+    @PutMapping("/{terrainId}")
+    @PreAuthorize("hasRole('CLUB')")
+    public ResponseEntity<TerrainDto> updateTerrain(
+            @PathVariable Long terrainId,
+            @RequestBody UpdateTerrainRequest req,
+            Authentication authentication) {
+
+        Terrain updated = terrainService.updateTerrain(terrainId, req, authentication);
+        return ResponseEntity.ok(TerrainMapper.toDto(updated));
+    }
+
+    // ✅ Supprimer un terrain (annule les réservations actives avant)
+    @DeleteMapping("/{terrainId}")
+    @PreAuthorize("hasRole('CLUB')")
+    public ResponseEntity<Void> supprimerTerrain(
+            @PathVariable Long terrainId,
+            Authentication authentication) {
+
+        terrainService.supprimerTerrain(terrainId, authentication);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -2,15 +2,10 @@ package com.fieldz.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.util.List;
 import lombok.experimental.SuperBuilder;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-
+import java.util.List;
 
 @Entity
 @DiscriminatorValue("JOUEUR")
@@ -22,13 +17,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class Joueur extends Utilisateur {
 
     private String prenom;
-    private String telephone;
 
+    private String telephone;
+    private String description;
+    // URL de la photo de profil
+    @Column(name = "photo_profil_url")
+    private String photoProfilUrl;
 
     @OneToMany(mappedBy = "joueur")
-    @JsonIgnore   // <-- Ajoute cette ligne pour ne JAMAIS envoyer la liste des réservations d'un joueur dans le JSON
+    @JsonIgnore // évite les payloads énormes / boucles
     private List<Reservation> reservations;
-
-
-
 }

@@ -89,5 +89,18 @@ public class ReservationController {
         return ResponseEntity.ok("Présence confirmée avec succès.");
     }
 
+    @PutMapping("/{reservationId}/absent")
+    @PreAuthorize("hasRole('CLUB')")
+    public ResponseEntity<String> marquerAbsent(
+            @PathVariable Long reservationId,
+            @RequestBody(required = false) MotifAnnulationRequest motifRequest,
+            Authentication authentication) {
+
+        String motif = (motifRequest != null) ? motifRequest.getMotif() : null;
+        String msg = reservationService.marquerAbsent(reservationId, authentication, motif);
+        return ResponseEntity.ok(msg);
+    }
+
+
 
 }

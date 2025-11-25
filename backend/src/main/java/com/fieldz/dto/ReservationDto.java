@@ -6,7 +6,8 @@ import java.time.LocalDateTime;
 @Data
 public class ReservationDto {
     private Long id;
-    private Long joueurId;          // Pour lier le joueur sans exposer tout l'objet
+    //private Long joueurId;          // Pour lier le joueur sans exposer tout l'objet
+    private JoueurDto joueur;
     // private Long creneauId;         // Pour lier le créneau sans exposer tout l'objet
     private CreneauDto creneau;
     private LocalDateTime dateReservation;
@@ -14,5 +15,8 @@ public class ReservationDto {
 
     private LocalDateTime dateAnnulation;
     private String motifAnnulation;
+
+    // Nom du réservant pour les réservations manuelles (sans compte joueur)
+    private String nomReservant;
 
 }

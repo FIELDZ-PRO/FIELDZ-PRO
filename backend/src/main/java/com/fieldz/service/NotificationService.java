@@ -33,6 +33,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -112,61 +113,56 @@ public class NotificationService {
     }
 
 
+    @Transactional(readOnly = true) // 👈 ouvre une session Hibernate pour initialiser les proxys
     public void envoyerRappels2hAvant() {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime target = now.plusHours(2);
-        //LocalDateTime target = now.plusMinutes(10); 10min avant
 
-
-        List<Reservation> reservations = reservationRepository.findAll()
-                .stream()
-                .filter(r -> {
-                    LocalDateTime creneauDebut = r.getCreneau().getDateDebut();
-                    return creneauDebut.isAfter(now) && creneauDebut.isBefore(target)
-                            && r.getStatut() == Statut.RESERVE;
-                })
-                .collect(java.util.stream.Collectors.toList()); // ✅ ajout nécessaire
+        List<Reservation> reservations =
+                reservationRepository.findUpcomingWithCreneauBetween(now, target, Statut.RESERVE);
 
         for (Reservation r : reservations) {
-            boolean dejaEnvoye = notificationEnvoyeeRepository
-                    .findByReservationIdAndType(r.getId(), "RAPPEL_2H")
-                    .isPresent();
-
-            if (!dejaEnvoye) {
-                Joueur joueur = r.getJoueur();
-                Creneau creneau = r.getCreneau();
-
-                String sujet = "⏰ Rappel : Créneau à venir bientôt";
-                String contenu = String.format(
-                        """
-                        Bonjour %s,
-    
-                        Ceci est un rappel : vous avez une réservation dans moins de 2h.
-    
-                        📅 Date : %s
-                        🕓 Heure : %s - %s
-                        🏟️ Terrain : %s (Club : %s)
-    
-                        À tout de suite sur le terrain !
-                        L'équipe FIELDZ
-                        """,
-                        joueur.getPrenom(),
-                        creneau.getDateDebut().toLocalDate(), // ✅ à la place de getDate()
-                        creneau.getDateDebut().toLocalTime(), // ✅ remplace getHeureDebut()
-                        creneau.getDateFin().toLocalTime(),   // ✅ remplace getHeureFin()
-                        creneau.getTerrain().getNomTerrain(),
-                        creneau.getTerrain().getClub().getNom()
-                );
-
-                emailService.envoyerEmail(joueur.getEmail(), sujet, contenu);
-
-                NotificationEnvoyee notif = new NotificationEnvoyee(null, r.getId(), "RAPPEL_2H", LocalDateTime.now());
-                notificationEnvoyeeRepository.save(notif);
-
-                log.info("✅ Email de rappel envoyé à {}", joueur.getEmail());
+            // ✅ anti-doublon plus propre
+            if (notificationEnvoyeeRepository.existsByReservationIdAndType(r.getId(), "RAPPEL_2H")) {
+                continue;
             }
+
+            Creneau c = r.getCreneau();   // déjà initialisé
+            if (c == null) continue;
+            Joueur joueur = r.getJoueur(); // déjà initialisé
+
+            // ✅ TON message conservé mot pour mot
+            String sujet = "⏰ Rappel : Créneau à venir bientôt";
+            String contenu = String.format("""
+                Bonjour %s,
+
+                Ceci est un rappel : vous avez une réservation dans moins de 2h.
+
+                📅 Date : %s
+                🕓 Heure : %s - %s
+                🏟️ Terrain : %s (Club : %s)
+
+                À tout de suite sur le terrain !
+                L'équipe FIELDZ
+                """,
+                    (joueur != null ? joueur.getPrenom() : ""),
+                    c.getDateDebut().toLocalDate(),
+                    c.getDateDebut().toLocalTime(),
+                    c.getDateFin().toLocalTime(),
+                    (c.getTerrain() != null ? c.getTerrain().getNomTerrain() : "Terrain"),
+                    (c.getTerrain() != null && c.getTerrain().getClub() != null ? c.getTerrain().getClub().getNom() : "Club")
+            );
+
+            emailService.envoyerEmail(joueur.getEmail(), sujet, contenu);
+
+            notificationEnvoyeeRepository.save(
+                    new NotificationEnvoyee(null, r.getId(), "RAPPEL_2H", LocalDateTime.now())
+            );
+
+            log.info("✅ Email de rappel envoyé à {}", joueur.getEmail());
         }
     }
+
 
 
 
@@ -285,6 +281,137 @@ public class NotificationService {
 
         emailService.envoyerEmail(email, sujet, message);
     }
+
+    // 🔔 Notifier (in-app) + email lorsqu'une réservation est annulée par le club
+    public void notifierAnnulationReservationParClub(Reservation r, String motif) {
+        if (r == null || r.getJoueur() == null) return;
+
+        // 1) Email
+        try {
+            if (r.getCreneau() != null) {
+                envoyerEmailAnnulationCreneau(r.getJoueur().getEmail(), r.getCreneau());
+            }
+        } catch (Exception e) {
+            log.warn("Échec envoi email annulation (club) pour réservation {}: {}", r.getId(), e.getMessage());
+        }
+
+        // 2) Notification in-app
+        try {
+            Notification notif = new Notification();
+            notif.setDestinataire(r.getJoueur());
+            notif.setType(TypeNotification.ANNULATION); // ✅ ton enum
+            notif.setDateEnvoi(LocalDateTime.now());
+            notif.setLue(false);
+
+            String titre = "Réservation annulée par le club";
+            String contenu;
+            if (r.getCreneau() != null) {
+                var c = r.getCreneau();
+                contenu = String.format(
+                        "Votre réservation a été annulée par le club%s\n\n" +
+                                "Date : %s\nHeure : %s - %s\nTerrain : %s",
+                        (motif != null && !motif.isBlank() ? " : " + motif : "."),
+                        c.getDateDebut().toLocalDate(),
+                        c.getDateDebut().toLocalTime(),
+                        c.getDateFin().toLocalTime(),
+                        c.getTerrain().getNomTerrain()
+                );
+            } else {
+                contenu = "Votre réservation a été annulée par le club."
+                        + (motif != null && !motif.isBlank() ? " Motif : " + motif : "");
+            }
+
+            // Adapte aux champs réels de ta classe Notification
+            try { notif.getClass().getMethod("setTitre", String.class).invoke(notif, titre); } catch (Exception ignored) {}
+            try { notif.getClass().getMethod("setContenu", String.class).invoke(notif, contenu); } catch (Exception ignored) {}
+            try { notif.getClass().getMethod("setMessage", String.class).invoke(notif, contenu); } catch (Exception ignored) {}
+
+            notificationRepository.save(notif);
+        } catch (Exception e) {
+            log.warn("Échec création notification in-app (annulation club) pour réservation {}: {}", r.getId(), e.getMessage());
+        }
+    }
+
+    public void notifierAbsenceReservationParClub(Reservation r, String motif) {
+        if (r == null || r.getJoueur() == null) return;
+
+        final Joueur joueur = r.getJoueur();
+        final Creneau c = r.getCreneau();
+
+        // --- 1) Email au joueur
+        try {
+            if (c != null) {
+                String sujet = "🚫 Absence constatée – FIELDZ";
+                String contenu = String.format(
+                        """
+                        Bonjour %s,
+    
+                        Le club a signalé votre absence (no-show) sur la réservation suivante :
+    
+                        📅 Date : %s
+                        🕒 Heure : %s - %s
+                        🏟️ Terrain : %s (Club : %s)
+                        %s
+    
+                        Si vous pensez qu’il s’agit d’une erreur, contactez le club au plus vite.
+    
+                        L’équipe FIELDZ
+                        """,
+                        joueur.getPrenom() != null ? joueur.getPrenom() : "",
+                        formatDate(c.getDateDebut()),
+                        formatHeure(c.getDateDebut()),
+                        formatHeure(c.getDateFin()),
+                        c.getTerrain() != null ? c.getTerrain().getNomTerrain() : "Terrain",
+                        (c.getTerrain() != null && c.getTerrain().getClub() != null) ? c.getTerrain().getClub().getNom() : "Club",
+                        (motif != null && !motif.isBlank()) ? ("\nMotif : " + motif) : ""
+                );
+
+                emailService.envoyerEmail(joueur.getEmail(), sujet, contenu);
+            }
+        } catch (Exception e) {
+            log.warn("Échec envoi email ABSENCE pour réservation {}: {}", r.getId(), e.getMessage());
+        }
+
+        // --- 2) Notification in-app au joueur
+        try {
+            Notification notif = new Notification();
+            notif.setDestinataire(joueur);
+            notif.setType(TypeNotification.ABSENCE);           // 👈 nouveau type
+            notif.setDateEnvoi(LocalDateTime.now());
+            notif.setLue(false);
+
+            String titre = "Absence marquée par le club";
+            String contenu;
+            if (c != null) {
+                contenu = String.format(
+                        "Le club a signalé une absence sur votre réservation.\n\nDate : %s\nHeure : %s - %s\nTerrain : %s%s",
+                        formatDate(c.getDateDebut()),
+                        formatHeure(c.getDateDebut()),
+                        formatHeure(c.getDateFin()),
+                        (c.getTerrain() != null ? c.getTerrain().getNomTerrain() : "Terrain"),
+                        (motif != null && !motif.isBlank() ? "\nMotif : " + motif : "")
+                );
+            } else {
+                contenu = "Le club a signalé une absence sur votre réservation."
+                        + (motif != null && !motif.isBlank() ? " Motif : " + motif : "");
+            }
+
+            // tes entités Notification semblent variables : on garde la même technique que chez toi
+            try { notif.getClass().getMethod("setTitre", String.class).invoke(notif, titre); } catch (Exception ignored) {}
+            try { notif.getClass().getMethod("setContenu", String.class).invoke(notif, contenu); } catch (Exception ignored) {}
+            try { notif.getClass().getMethod("setMessage", String.class).invoke(notif, contenu); } catch (Exception ignored) {}
+
+            notificationRepository.save(notif);
+        } catch (Exception e) {
+            log.warn("Échec création notification in-app ABSENCE pour réservation {}: {}", r.getId(), e.getMessage());
+        }
+    }
+
+    /** Overload pratique si pas de motif à fournir. */
+    public void notifierAbsenceReservationParClub(Reservation r) {
+        notifierAbsenceReservationParClub(r, null);
+    }
+
 
 
 }

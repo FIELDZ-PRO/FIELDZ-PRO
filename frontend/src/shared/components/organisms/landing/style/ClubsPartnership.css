@@ -1,0 +1,453 @@
+:root {
+  --fieldz-green: #0D4E1D;
+  --gray-50: #f9fafb;
+  --gray-100: #e5e7eb;
+  --gray-600: #4a5568;
+}
+
+/* Section globale */
+.clubs {
+  padding: 6rem 4rem;
+  background: var(--fieldz-green);
+  color: #fff;
+  box-sizing: border-box;
+}
+
+/* Header */
+.clubs__header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.clubs__header h2 {
+  font-size: 2.5rem;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.clubs__header p {
+  margin: 1rem 0 0;
+  font-size: 1.125rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Grille principale */
+.clubs__grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Benefits */
+.clubs__benefits {
+  flex: 1 1 45%;
+  min-width: 300px;
+}
+
+.clubs__benefits h3 {
+  font-size: 1.75rem;
+  margin-bottom: 2rem;
+}
+
+.clubs__benefit {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  transition: opacity .3s;
+}
+
+.clubs__benefit:hover {
+  opacity: .8;
+}
+
+.benefit__icon {
+  background: #fff;
+  color: var(--fieldz-green);
+  padding: .75rem;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.clubs__benefit h4 {
+  margin: 0 0 0.5rem;
+  font-size: 1.25rem;
+}
+
+.clubs__benefit p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.5;
+}
+
+/* Contact card */
+.clubs__contact-card {
+  flex: 1 1 45%;
+  min-width: 300px;
+  background: #fff;
+  color: #111;
+  padding: 2.5rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+
+.clubs__contact-card h3 {
+  margin: 0 0 0.75rem;
+  font-size: 1.75rem;
+  color: var(--fieldz-green);
+}
+
+.clubs__contact-card > p {
+  margin: 0 0 2rem;
+  color: var(--gray-600);
+  line-height: 1.6;
+}
+
+/* Form */
+.contact-form {
+  width: 100%;
+}
+
+.contact-form .form__row {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.contact-form .form__row > div {
+  flex: 1;
+  min-width: 200px;
+}
+
+.contact-form label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.contact-form input,
+.contact-form textarea {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border: 2px solid var(--gray-100);
+  border-radius: 0.75rem;
+  margin-bottom: 1.5rem;
+  transition: all 0.2s;
+  font-size: 1rem;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.contact-form textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+  border-color: var(--fieldz-green);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(13, 78, 29, 0.1);
+}
+
+.form__checkbox-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.form__checkbox-grid label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  padding: 0.5rem 0;
+  font-weight: 500;
+}
+
+.form__checkbox-grid input[type="checkbox"] {
+  width: auto;
+  margin: 0;
+  cursor: pointer;
+}
+
+.clubs__contact-card button {
+  width: 100%;
+  background: var(--fieldz-green);
+  color: #fff;
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 2rem;
+  font-size: 1rem;
+  transition: all 0.3s;
+}
+
+.clubs__contact-card button:hover:not(:disabled) {
+  background: #0a3d17;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(13, 78, 29, 0.3);
+}
+
+.clubs__contact-card button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Submit message */
+.submit-message {
+  padding: 1rem;
+  border-radius: 0.75rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-weight: 600;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.submit-message.success {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.submit-message.error {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+/* Direct contact */
+.clubs__direct-contact {
+  border-top: 1px solid var(--gray-100);
+  padding-top: 1.5rem;
+  margin-top: 1rem;
+}
+
+.clubs__direct-contact > p {
+  margin: 0 0 1rem;
+  color: var(--gray-600);
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.clubs__direct-contact > div {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  color: var(--gray-600);
+  font-size: 0.95rem;
+}
+
+.clubs__direct-contact svg {
+  color: var(--fieldz-green);
+  flex-shrink: 0;
+}
+
+/* Responsive Design */
+
+/* Tablettes et petits écrans */
+@media (max-width: 1024px) {
+  .clubs {
+    padding: 4rem 2rem;
+  }
+
+  .clubs__header h2 {
+    font-size: 2rem;
+  }
+
+  .clubs__grid {
+    gap: 3rem;
+  }
+
+  .clubs__benefits,
+  .clubs__contact-card {
+    flex: 1 1 100%;
+  }
+}
+
+/* Mobile large (paysage) */
+@media (max-width: 768px) {
+  .clubs {
+    padding: 3rem 1.5rem;
+  }
+
+  .clubs__header {
+    margin-bottom: 3rem;
+  }
+
+  .clubs__header h2 {
+    font-size: 1.75rem;
+  }
+
+  .clubs__header p {
+    font-size: 1rem;
+  }
+
+  .clubs__grid {
+    gap: 2.5rem;
+  }
+
+  .clubs__benefits h3,
+  .clubs__contact-card h3 {
+    font-size: 1.5rem;
+  }
+
+  .clubs__benefit {
+    gap: 0.75rem;
+  }
+
+  .benefit__icon {
+    padding: 0.625rem;
+  }
+
+  .clubs__contact-card {
+    padding: 2rem;
+  }
+
+  .contact-form .form__row {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .contact-form .form__row > div {
+    min-width: 100%;
+  }
+
+  .form__checkbox-grid {
+    gap: 0.75rem;
+  }
+}
+
+/* Mobile standard */
+@media (max-width: 480px) {
+  .clubs {
+    padding: 2.5rem 1rem;
+  }
+
+  .clubs__header h2 {
+    font-size: 1.5rem;
+  }
+
+  .clubs__header p {
+    font-size: 0.95rem;
+  }
+
+  .clubs__benefits h3,
+  .clubs__contact-card h3 {
+    font-size: 1.35rem;
+  }
+
+  .clubs__benefit h4 {
+    font-size: 1.1rem;
+  }
+
+  .clubs__benefit p {
+    font-size: 0.95rem;
+  }
+
+  .benefit__icon {
+    padding: 0.5rem;
+  }
+
+  .benefit__icon svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .clubs__contact-card {
+    padding: 1.5rem;
+  }
+
+  .clubs__contact-card h3 {
+    font-size: 1.25rem;
+  }
+
+  .clubs__contact-card > p {
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .contact-form label {
+    font-size: 0.9rem;
+  }
+
+  .contact-form input,
+  .contact-form textarea {
+    padding: 0.75rem;
+    font-size: 0.95rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .form__checkbox-grid {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .form__checkbox-grid label {
+    padding: 0.375rem 0;
+    font-size: 0.9rem;
+  }
+
+  .clubs__contact-card button {
+    padding: 0.875rem 1.5rem;
+    font-size: 0.95rem;
+  }
+
+  .submit-message {
+    padding: 0.875rem;
+    font-size: 0.9rem;
+  }
+
+  .clubs__direct-contact > p,
+  .clubs__direct-contact > div {
+    font-size: 0.875rem;
+  }
+}
+
+/* Très petits écrans */
+@media (max-width: 360px) {
+  .clubs {
+    padding: 2rem 0.75rem;
+  }
+
+  .clubs__header h2 {
+    font-size: 1.35rem;
+  }
+
+  .clubs__benefits,
+  .clubs__contact-card {
+    min-width: 100%;
+  }
+
+  .clubs__contact-card {
+    padding: 1.25rem;
+  }
+
+  .contact-form input,
+  .contact-form textarea {
+    padding: 0.625rem;
+  }
+}

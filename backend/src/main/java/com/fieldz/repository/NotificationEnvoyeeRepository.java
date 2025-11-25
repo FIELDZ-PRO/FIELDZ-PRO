@@ -7,4 +7,6 @@ import java.util.Optional;
 
 public interface NotificationEnvoyeeRepository extends JpaRepository<NotificationEnvoyee, Long> {
     Optional<NotificationEnvoyee> findByReservationIdAndType(Long reservationId, String type);
+    boolean existsByReservationIdAndType(Long reservationId, String type);
+
 }

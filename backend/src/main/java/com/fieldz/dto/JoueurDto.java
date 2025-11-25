@@ -5,8 +5,9 @@ import lombok.Data;
 @Data
 public class JoueurDto {
     private Long id;
-    private String nom;
+    private String nom;            // hérité de Utilisateur
     private String prenom;
+    private String email; 
     private String telephone;
-    // Ajoute d'autres champs à exposer côté front si besoin
+    private String photoProfilUrl; // nouveau
 }

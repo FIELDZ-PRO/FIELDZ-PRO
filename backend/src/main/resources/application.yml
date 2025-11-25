@@ -1,0 +1,123 @@
+# ============================================================
+# FIELDZ - Configuration commune (tous profils)
+# ============================================================
+
+spring:
+  application:
+    name: fieldz
+
+  # Profil actif par defaut (dev en local, prod sur Render)
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+
+  # Jackson - Serialisation JSON
+  jackson:
+    deserialization:
+      adjust-dates-to-context-time-zone: false
+    serialization:
+      write-dates-as-timestamps: false
+    time-zone: Europe/Paris
+
+  # Mail - Configuration SMTP Gmail
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    from: ${MAIL_FROM:contact.fieldz@gmail.com}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
+  # Upload - Limites fichiers
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+  # OAuth2 Google
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID:}
+            client-secret: ${GOOGLE_CLIENT_SECRET:}
+            scope: email, profile
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+            user-name-attribute: email
+
+# ============================================================
+# Serveur
+# ============================================================
+server:
+  address: 0.0.0.0
+  port: ${PORT:8080}
+  forward-headers-strategy: framework
+
+# ============================================================
+# JWT - Configuration
+# ============================================================
+jwt:
+  alg: ${JWT_ALG:RS256}
+  rs256:
+    private: ${JWT_RS256_PRIVATE:keys/private.pem}
+    public: ${JWT_RS256_PUBLIC:keys/public.pem}
+  access:
+    expMinutes: ${JWT_ACCESS_EXP_MINUTES:15}
+  refresh:
+    expDays: ${JWT_REFRESH_EXP_DAYS:7}
+  # Fallback HS256 (si pas de cles RSA)
+  secret: ${JWT_SECRET:change-me-in-production}
+
+# ============================================================
+# CORS - Configuration
+# ============================================================
+cors:
+  allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173}
+  allowed-methods: ${CORS_ALLOWED_METHODS:GET,POST,PUT,DELETE,PATCH,OPTIONS}
+  allowed-headers: ${CORS_ALLOWED_HEADERS:Authorization,Content-Type,Cache-Control,Pragma,Expires,Accept,Accept-Language,X-Requested-With,If-None-Match,If-Modified-Since,X-CSRF-Token}
+
+# ============================================================
+# Cloudinary - Upload images
+# ============================================================
+cloudinary:
+  cloud-name: ${CLOUDINARY_CLOUD_NAME:}
+  api-key: ${CLOUDINARY_API_KEY:}
+  api-secret: ${CLOUDINARY_API_SECRET:}
+
+# ============================================================
+# Securite - Cookies
+# ============================================================
+security:
+  cookies:
+    domain: ${COOKIE_DOMAIN:localhost}
+    secure: ${COOKIE_SECURE:false}
+
+# ============================================================
+# URLs Application
+# ============================================================
+app:
+  frontend-url: ${FRONTEND_URL:http://localhost:5173}
+  backend-url: ${BACKEND_URL:http://localhost:8080}
+
+# ============================================================
+# OpenAPI / Swagger
+# ============================================================
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: ${SWAGGER_ENABLED:true}
+  api-docs:
+    enabled: ${SWAGGER_ENABLED:true}

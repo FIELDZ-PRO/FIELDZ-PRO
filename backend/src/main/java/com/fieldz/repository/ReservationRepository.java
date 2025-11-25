@@ -17,6 +17,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     List<Reservation> findByJoueur(Joueur joueur);
     List<Reservation> findByCreneau_TerrainIn(List<Terrain> terrains);
 
+
     // A supprimer après les test
     // List<Reservation> findByCreneau_TerrainInAndCreneau_Date(List<Terrain> terrains, LocalDate date);
     @Query("SELECT r FROM Reservation r WHERE r.creneau.terrain IN :terrains AND r.dateReservation BETWEEN :start AND :end")
@@ -62,4 +63,49 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             @Param("date") LocalDate date);
 
             */
+
+    long countByCreneauIdAndStatutIn(Long creneauId, List<Statut> statuts);
+
+    List<Reservation> findByCreneauIdAndStatutIn(Long creneauId, List<Statut> statuts);
+
+    // Réservations actives sur un terrain (tous ses créneaux)
+    @org.springframework.data.jpa.repository.Query("""
+       SELECT r FROM Reservation r
+       WHERE r.creneau.terrain.id = :terrainId
+         AND r.statut IN :statuts
+       """)
+    java.util.List<com.fieldz.model.Reservation> findByTerrainIdAndStatutIn(
+            @org.springframework.data.repository.query.Param("terrainId") Long terrainId,
+            @org.springframework.data.repository.query.Param("statuts") java.util.List<com.fieldz.model.Statut> statuts);
+
+    @org.springframework.data.jpa.repository.Query("""
+       SELECT COUNT(r) FROM Reservation r
+       WHERE r.creneau.terrain.id = :terrainId
+         AND r.statut IN :statuts
+       """)
+    long countByTerrainIdAndStatutIn(
+            @org.springframework.data.repository.query.Param("terrainId") Long terrainId,
+            @org.springframework.data.repository.query.Param("statuts") java.util.List<com.fieldz.model.Statut> statuts);
+
+    // Pour déréférencer TOUTES les réservations liées à un terrain (actives + historiques)
+    java.util.List<com.fieldz.model.Reservation> findByCreneau_TerrainId(Long terrainId);
+
+
+    @Query("""
+    select r
+    from Reservation r
+    join fetch r.creneau c
+    join fetch r.joueur j
+    left join fetch c.terrain t
+    left join fetch t.club club
+    where r.statut = :statut
+      and c.dateDebut between :start and :end
+""")
+    List<Reservation> findUpcomingWithCreneauBetween(
+            @Param("start") LocalDateTime start,
+            @Param("end")   LocalDateTime end,
+            @Param("statut") Statut statut
+    );
+
+
 }

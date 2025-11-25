@@ -9,7 +9,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserMapper {
     public UserDto toDto(Utilisateur user) {
-        if (user == null) return null;
+        if (user == null)
+            return null;
 
         UserDto dto = new UserDto();
         dto.setId(user.getId());

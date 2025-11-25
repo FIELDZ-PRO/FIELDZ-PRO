@@ -1,0 +1,71 @@
+.creneau-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    background-color: #f9fafb;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+    align-items: flex-start;
+}
+
+
+.creneau-form-group {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 180px;
+    min-width: 160px;
+}
+
+.creneau-form-group label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 6px;
+}
+
+.creneau-form-group input,
+.creneau-form-group select {
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    color: #374151;
+    background-color: #fff;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.creneau-form-group input:focus,
+.creneau-form-group select:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    outline: none;
+}
+
+.creneau-form button {
+    background-color: #008e13;
+    color: white;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    margin-top: 8px;
+}
+
+.creneau-form button:hover {
+    background-color: #2563eb;
+    transform: translateY(-1px);
+}
+
+
+.creneau-form-group {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 180px;
+    min-width: 160px;
+    margin-bottom: 8px;
+    /* ✅ small spacing under each input */
+}
