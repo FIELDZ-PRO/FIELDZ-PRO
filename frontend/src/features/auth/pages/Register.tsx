@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./style/Register.css";
 import React from "react";
+import { useAuth } from "../../../shared/context/AuthContext";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "https://vital-nana-fieldz-11e3f995.koyeb.app";
 
@@ -34,6 +35,7 @@ export default function Register() {
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -46,12 +48,25 @@ export default function Register() {
     }
   };
 
+  // Password requirements checker
+  const checkPasswordRequirements = (password: string) => {
+    return {
+      minLength: password.length >= 10,
+      hasUppercase: /[A-Z]/.test(password),
+      hasLowercase: /[a-z]/.test(password),
+      hasSpecial: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+    };
+  };
+
+  const passwordRequirements = checkPasswordRequirements(form.motDePasse);
+  const isPasswordValid = Object.values(passwordRequirements).every(Boolean);
+
   const validate = () => {
     if (!form.nom.trim()) return "Nom requis";
     if (!/^\S+@\S+\.\S+$/.test(form.email)) return "Email invalide";
-    if (form.motDePasse.length < 6) return "Mot de passe trop court (≥6)";
+    if (!isPasswordValid) return "Le mot de passe ne respecte pas tous les critères de sécurité";
     if (form.motDePasse !== form.confirm) return "Les mots de passe ne correspondent pas";
-    if (form.phoneNumber.length < 9 || form.phoneNumber.length > 10) 
+    if (form.phoneNumber.length < 9 || form.phoneNumber.length > 10)
       return "Le numéro doit contenir 9 ou 10 chiffres";
     return "";
   };
@@ -63,12 +78,12 @@ export default function Register() {
     if (v) return setMessage(v);
 
     setIsLoading(true);
-    
+
     // Construction du numéro complet avec l'indicatif
     const fullPhoneNumber = `${form.countryCode}${form.phoneNumber}`;
 
     try {
-      await axios.post(`${API_BASE}/api/auth/register`, {
+      const response = await axios.post(`${API_BASE}/api/auth/register`, {
         nom: form.nom,
         email: form.email,
         motDePasse: form.motDePasse,
@@ -77,7 +92,16 @@ export default function Register() {
         adresse: "",
         nomClub: ""
       });
-      navigate("/login");
+
+      // Auto-login: store the token and redirect to player dashboard
+      const token = response.data.token;
+      if (token) {
+        login(token, { remember: false });
+        navigate("/joueur");
+      } else {
+        // Fallback to login page if no token returned
+        navigate("/login");
+      }
     } catch (err: any) {
       const msg = err?.response?.data?.message || "Erreur lors de l'inscription.";
       setMessage(msg);
@@ -182,7 +206,7 @@ export default function Register() {
                   className="form-input password-input"
                   type={showPwd ? "text" : "password"}
                   name="motDePasse"
-                  placeholder="Min. 6 caractères"
+                  placeholder="Créez un mot de passe sécurisé"
                   value={form.motDePasse}
                   onChange={onChange}
                   autoComplete="new-password"
@@ -194,9 +218,9 @@ export default function Register() {
                   onClick={() => setShowPwd((s) => !s)}
                   aria-label={showPwd ? "Masquer" : "Afficher"}
                 >
-                  <svg 
-                    width="18" 
-                    height="18" 
+                  <svg
+                    width="18"
+                    height="18"
                     viewBox="0 0 24 24" 
                     fill="none" 
                     stroke="currentColor" 
@@ -216,6 +240,28 @@ export default function Register() {
                   </svg>
                 </button>
               </div>
+
+              {/* Password requirements indicator */}
+              {form.motDePasse && (
+                <div className="password-requirements">
+                  <div className={`requirement ${passwordRequirements.minLength ? 'valid' : 'invalid'}`}>
+                    <span className="requirement-icon">{passwordRequirements.minLength ? '✓' : '✗'}</span>
+                    <span className="requirement-text">Au moins 10 caractères</span>
+                  </div>
+                  <div className={`requirement ${passwordRequirements.hasUppercase ? 'valid' : 'invalid'}`}>
+                    <span className="requirement-icon">{passwordRequirements.hasUppercase ? '✓' : '✗'}</span>
+                    <span className="requirement-text">Au moins une majuscule (A-Z)</span>
+                  </div>
+                  <div className={`requirement ${passwordRequirements.hasLowercase ? 'valid' : 'invalid'}`}>
+                    <span className="requirement-icon">{passwordRequirements.hasLowercase ? '✓' : '✗'}</span>
+                    <span className="requirement-text">Au moins une minuscule (a-z)</span>
+                  </div>
+                  <div className={`requirement ${passwordRequirements.hasSpecial ? 'valid' : 'invalid'}`}>
+                    <span className="requirement-icon">{passwordRequirements.hasSpecial ? '✓' : '✗'}</span>
+                    <span className="requirement-text">Au moins un caractère spécial (!@#$%...)</span>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="form-group">
