@@ -62,5 +62,16 @@ public interface CreneauRepository extends JpaRepository<Creneau, Long> {
 """)
     List<Creneau> findByTerrainIdFetchTerrainAndClub(@Param("terrainId") Long terrainId);
 
+    // Mettre à jour les créneaux expirés
+    @Modifying
+    @Query("""
+        UPDATE Creneau c
+        SET c.statut = com.fieldz.model.Statut.ANNULE, c.disponible = false
+        WHERE c.dateFin < :maintenant
+          AND (c.statut = com.fieldz.model.Statut.LIBRE OR c.statut = com.fieldz.model.Statut.RESERVE)
+          AND c.disponible = true
+    """)
+    int updateCreneauxExpires(@Param("maintenant") LocalDateTime maintenant);
+
 }
 

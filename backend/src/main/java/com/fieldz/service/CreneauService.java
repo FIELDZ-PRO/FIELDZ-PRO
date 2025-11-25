@@ -85,6 +85,9 @@ public class CreneauService {
             throw new RuntimeException("Ce terrain ne vous appartient pas.");
         }
 
+        // Mettre à jour les créneaux expirés avant de les récupérer
+        updateCreneauxExpires();
+
         // ✅ Fetch terrain + club pour le mapper
         return creneauRepository.findByTerrainIdFetchTerrainAndClub(terrainId);
     }
@@ -93,6 +96,10 @@ public class CreneauService {
         // ancien: findByStatut(Statut.LIBRE) -> on tient compte aussi de
         // disponible=true
         LocalDateTime maintenant = LocalDateTime.now();
+
+        // Mettre à jour les créneaux expirés avant de les récupérer
+        updateCreneauxExpires();
+
         List<Creneau> dispo = creneauRepository.findByStatutAndDisponibleTrue(Statut.LIBRE);
 
         // Filtrer pour ne garder que les créneaux futurs
@@ -393,6 +400,9 @@ public class CreneauService {
         List<Creneau> creneaux;
         LocalDateTime maintenant = LocalDateTime.now();
 
+        // Mettre à jour les créneaux expirés avant de les récupérer
+        updateCreneauxExpires();
+
         if (dateStr == null || dateStr.isBlank()) {
             creneaux = creneauRepository.findByTerrainClubIdAndDisponibleTrue(clubId);
             creneaux = creneaux.stream()
@@ -426,6 +436,16 @@ public class CreneauService {
         }
 
         return creneaux;
+    }
+
+    /**
+     * Met à jour automatiquement les créneaux dont la date de fin est passée
+     * en les marquant comme ANNULE et disponible = false
+     */
+    @Transactional
+    public void updateCreneauxExpires() {
+        LocalDateTime maintenant = LocalDateTime.now();
+        creneauRepository.updateCreneauxExpires(maintenant);
     }
 
 }
