@@ -1,0 +1,60 @@
+# Build artifacts
+target/
+*.jar
+*.war
+*.ear
+*.class
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+.classpath
+.project
+.settings/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Local data
+data/
+*.db
+
+# Documentation
+README.md
+*.md
+INSTRUCTIONS.md
+CHEATSHEET.md
+DEPLOY_RENDER.md
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Logs
+logs/
+*.log
+
+# Test files
+src/test/
+
+# Maven wrapper (optional - keep if you want to use it)
+.mvn/
+mvnw
+mvnw.cmd
+
+# Node modules (if any)
+node_modules/
+package-lock.json
+
+# Misc
+*.swp
+*.swo
+*~
