@@ -6,8 +6,8 @@ import { useAuth } from "../../../shared/context/AuthContext";
 import "./style/Login.css";
 
 type JwtPayload = { role?: "JOUEUR" | "CLUB" | "ADMIN" | string };
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
-
+// const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
+const API_BASE = import.meta.env.VITE_API_URL;
 export default function Login() {
   const [email, setEmail] = useState("");
   const [motDePasse, setMotDePasse] = useState("");
@@ -34,15 +34,15 @@ export default function Login() {
       const token: string | undefined = res.data?.token ?? res.data?.accessToken;
       if (!token) throw new Error("Réponse invalide du serveur (token manquant).");
 
-      try { localStorage.setItem("remember_me", String(remember)); } catch {}
+      try { localStorage.setItem("remember_me", String(remember)); } catch { }
 
       login(token, { remember });
 
       const role = jwtDecode<JwtPayload>(token)?.role;
-      if (role === "JOUEUR")      navigate("/joueur");
-      else if (role === "CLUB")   navigate("/club");
-      else if (role === "ADMIN")  navigate("/admin");
-      else                        navigate("/");
+      if (role === "JOUEUR") navigate("/joueur");
+      else if (role === "CLUB") navigate("/club");
+      else if (role === "ADMIN") navigate("/admin");
+      else navigate("/");
     } catch (err: any) {
       const s = err?.response?.status;
       const d = err?.response?.data;
