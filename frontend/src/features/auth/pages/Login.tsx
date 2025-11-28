@@ -6,8 +6,7 @@ import { useAuth } from "../../../shared/context/AuthContext";
 import "./style/Login.css";
 
 type JwtPayload = { role?: "JOUEUR" | "CLUB" | "ADMIN" | string };
-// const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
-const API_BASE = import.meta.env.VITE_API_URL;
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [motDePasse, setMotDePasse] = useState("");
