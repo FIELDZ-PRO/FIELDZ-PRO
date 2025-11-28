@@ -22,9 +22,9 @@ const JoueurDashboard: React.FC = () => {
     setLoading(true);
     try {
       const [joueurRes, creneauxRes, reservationsRes] = await Promise.all([
-        fetch("http://localhost:8080/api/joueur/me", { headers }),
-        fetch("http://localhost:8080/api/creneaux/disponibles", { headers }),
-        fetch("http://localhost:8080/api/reservations/mes", { headers }),
+        fetch("https://prime-cherida-fieldzz-17996b20.koyeb.app/api/joueur/me", { headers }),
+        fetch("https://prime-cherida-fieldzz-17996b20.koyeb.app/api/creneaux/disponibles", { headers }),
+        fetch("https://prime-cherida-fieldzz-17996b20.koyeb.app/api/reservations/mes", { headers }),
       ]);
 
       if (joueurRes.ok) {

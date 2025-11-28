@@ -33,7 +33,7 @@ const CompleteProfile = () => {
 
   // ✅ Vérifie l'état du profil
   useEffect(() => {
-    fetch('http://localhost:8080/api/utilisateur/me', {
+    fetch('https://prime-cherida-fieldzz-17996b20.koyeb.app/api/utilisateur/me', {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -97,7 +97,7 @@ const CompleteProfile = () => {
 
     try {
       // 🔁 Envoie la mise à jour du profil
-      const response = await fetch('http://localhost:8080/api/utilisateur/complete-profile', {
+      const response = await fetch('https://prime-cherida-fieldzz-17996b20.koyeb.app/api/utilisateur/complete-profile', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -118,7 +118,7 @@ const CompleteProfile = () => {
       }
 
       // ✅ Recharge les données utilisateur à jour
-      const res = await fetch('http://localhost:8080/api/utilisateur/me', {
+      const res = await fetch('https://prime-cherida-fieldzz-17996b20.koyeb.app/api/utilisateur/me', {
         headers: { Authorization: `Bearer ${token}` }
       });
 

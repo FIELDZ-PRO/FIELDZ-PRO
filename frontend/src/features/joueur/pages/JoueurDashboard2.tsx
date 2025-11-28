@@ -16,9 +16,9 @@ const JoueurDashboard2: React.FC = () => {
       };
 
       const [resJoueur, resReservations, resCreneaux] = await Promise.all([
-        fetch('http://localhost:8080/api/utilisateur/me', { headers }),
-        fetch("http://localhost:8080/api/reservations/mes", { headers }),
-        fetch('http://localhost:8080/api/creneaux/disponibles', { headers }),
+        fetch('https://prime-cherida-fieldzz-17996b20.koyeb.app/api/utilisateur/me', { headers }),
+        fetch("https://prime-cherida-fieldzz-17996b20.koyeb.app/api/reservations/mes", { headers }),
+        fetch('https://prime-cherida-fieldzz-17996b20.koyeb.app/api/creneaux/disponibles', { headers }),
       ]);
 
       if (!resJoueur.ok || !resReservations.ok || !resCreneaux.ok) throw new Error("Erreur lors du chargement");

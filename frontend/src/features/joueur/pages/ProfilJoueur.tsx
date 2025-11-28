@@ -31,7 +31,7 @@ const ProfilJoueur = () => {
     const fetchPlayerData = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch('http://localhost:8080/api/joueur/me', {
+        const response = await fetch('https://prime-cherida-fieldzz-17996b20.koyeb.app/api/joueur/me', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (!response.ok) {

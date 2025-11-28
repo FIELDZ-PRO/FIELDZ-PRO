@@ -16,7 +16,7 @@ const ProfilPage = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await fetch('http://localhost:8080/api/utilisateur/me', {
+        const res = await fetch('https://prime-cherida-fieldzz-17996b20.koyeb.app/api/utilisateur/me', {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (!res.ok) throw new Error();
@@ -50,7 +50,7 @@ const ProfilPage = () => {
   // 🔹 Sauvegarde (PUT vers backend)
   const handleSave = async () => {
     try {
-      const res = await fetch('http://localhost:8080/api/utilisateur/update', {
+      const res = await fetch('https://prime-cherida-fieldzz-17996b20.koyeb.app/api/utilisateur/update', {
         method: 'PUT',
         headers: {
           Authorization: `Bearer ${token}`,
