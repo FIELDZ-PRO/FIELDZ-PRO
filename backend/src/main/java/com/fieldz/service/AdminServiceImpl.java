@@ -144,26 +144,29 @@ public AdminStatsDto getStats() {
         // Génération d'un mot de passe provisoire basé sur le nom du club
         String rawPassword = generatePassword(request.getNom());
 
-        Club club = new Club();
-        club.setNom(request.getNom()); // <-- uniquement "nom"
-        club.setEmail(request.getEmailResponsable());
-        club.setMotDePasse(passwordEncoder.encode(rawPassword));
-        club.setTypeRole(Role.CLUB);
-        club.setAdresse(request.getAdresse());
-        club.setTelephone(request.getTelephone());
-        club.setVille(request.getVille());
-        club.setDateInscription(LocalDateTime.now());
-        club.setProfilComplet(false);
-
         // Map du champ libre "sport" -> Set<Sport> (optionnel)
+        Set<Sport> sports = null;
         if (request.getSport() != null && !request.getSport().isBlank()) {
             String val = request.getSport().trim().toUpperCase(Locale.ROOT).replace(' ', '_');
             try {
-                club.setSports(Set.of(Sport.valueOf(val))); // ex: "PADEL", "FOOT_5"
+                sports = Set.of(Sport.valueOf(val)); // ex: "PADEL", "FOOT_5"
             } catch (IllegalArgumentException e) {
                 throw new RuntimeException("Sport inconnu: " + request.getSport());
             }
         }
+
+        Club club = Club.builder()
+                .nom(request.getNom())
+                .email(request.getEmailResponsable())
+                .motDePasse(passwordEncoder.encode(rawPassword))
+                .typeRole(Role.CLUB)
+                .adresse(request.getAdresse())
+                .telephone(request.getTelephone())
+                .ville(request.getVille())
+                .dateInscription(LocalDateTime.now())
+                .profilComplet(false)
+                .sports(sports)
+                .build();
 
         Club saved = utilisateurRepository.save(club);
 
@@ -263,17 +266,18 @@ public AdminStatsDto getStats() {
         String[] parts = nomComplet.split(" ", 2); // Split au premier espace
         String prenom = parts.length > 1 ? parts[0] : nomComplet;
         String nom = parts.length > 1 ? parts[1] : "";
-    
-        // Créer le joueur
-        Joueur joueur = new Joueur();
-        joueur.setNom(nom);
-        joueur.setPrenom(prenom);
-        joueur.setEmail(request.getEmail());
-        joueur.setMotDePasse(passwordEncoder.encode(request.getMotDePasse()));
-        joueur.setTypeRole(Role.JOUEUR);
-        joueur.setDateInscription(LocalDateTime.now());
-        joueur.setProfilComplet(false);
-        joueur.setFailedLoginAttempts(0);
+
+        // Créer le joueur avec le builder
+        Joueur joueur = Joueur.builder()
+                .nom(nom)
+                .prenom(prenom)
+                .email(request.getEmail())
+                .motDePasse(passwordEncoder.encode(request.getMotDePasse()))
+                .typeRole(Role.JOUEUR)
+                .dateInscription(LocalDateTime.now())
+                .profilComplet(false)
+                .failedLoginAttempts(0)
+                .build();
     
         Joueur saved = utilisateurRepository.save(joueur);
     
