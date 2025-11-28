@@ -2,8 +2,8 @@ import { InvalidTokenError, jwtDecode } from "jwt-decode";
 import { Terrain, Creneau, ClubImage } from "../types";
 import apiClient from "../api/axiosClient";
 
-const UrlService = "http://localhost:8080/api";
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
+const UrlService = `${API_BASE}/api`;
 const ACCESS_TOKEN_KEY = "access_token";
 
 /* =======================
