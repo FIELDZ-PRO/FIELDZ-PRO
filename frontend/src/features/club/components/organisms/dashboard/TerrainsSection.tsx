@@ -4,6 +4,8 @@ import { Terrain } from '../../../../../shared/types/index';
 import { useAuth } from '../../../../../shared/context/AuthContext';
 import TerrainGroup from './TerrainGroup';
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
+
 type TerrainsSectionProps = {
   terrains: Terrain[];
   setTerrains: React.Dispatch<React.SetStateAction<Terrain[]>>;
@@ -14,7 +16,7 @@ const TerrainsSection: React.FC<TerrainsSectionProps> = ({ terrains, setTerrains
 
   const handleAjouterTerrain = async (terrain: Omit<Terrain, 'id'>) => {
     try {
-      const res = await fetch('http://localhost:8080/api/terrains', {
+      const res = await fetch(`${API_BASE}/api/terrains`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

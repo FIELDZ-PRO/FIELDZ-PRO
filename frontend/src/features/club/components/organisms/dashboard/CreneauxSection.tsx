@@ -10,6 +10,8 @@ import { fetchCreneaux } from '../../../../../shared/services/ClubService';
 import { Search, CalendarDays, Filter } from 'lucide-react';
 import apiClient from '../../../../../shared/api/axiosClient';
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
+
 type Props = {
   terrains: Terrain[];
   reservations: Reservation[];
@@ -155,7 +157,7 @@ const CreneauxSection: React.FC<Props> = ({ terrains, reservations, setReservati
     try {
       const { terrainId, dateDebut, dateFin, prix } = data;
 
-      const res = await fetch(`http://localhost:8080/api/creneaux/terrains/${terrainId}/creneaux`, {
+      const res = await fetch(`${API_BASE}/api/creneaux/terrains/${terrainId}/creneaux`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
