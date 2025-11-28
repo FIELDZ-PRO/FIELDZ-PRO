@@ -4,7 +4,7 @@ import { Terrain } from '../../../../../shared/types/index';
 import { useAuth } from '../../../../../shared/context/AuthContext';
 import TerrainGroup from './TerrainGroup';
 
-const API_BASE = import.meta.env.VITE_API_URL || "https://vital-nana-fieldz-11e3f995.koyeb.app/api";
+const API_BASE = import.meta.env.VITE_API_URL || "https://prime-cherida-fieldzz-17996b20.koyeb.app/api";
 
 type TerrainsSectionProps = {
   terrains: Terrain[];

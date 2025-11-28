@@ -2,8 +2,8 @@ import { InvalidTokenError, jwtDecode } from "jwt-decode";
 import { Terrain, Creneau, ClubImage } from "../types";
 import apiClient from "../api/axiosClient";
 
-const API_BASE = import.meta.env.VITE_API_URL || "https://vital-nana-fieldz-11e3f995.koyeb.app/api";
-const API_BASE_NO_SUFFIX = import.meta.env.VITE_API_BASE_URL || "https://vital-nana-fieldz-11e3f995.koyeb.app";
+const API_BASE = import.meta.env.VITE_API_URL || "https://prime-cherida-fieldzz-17996b20.koyeb.app/api";
+const API_BASE_NO_SUFFIX = import.meta.env.VITE_API_BASE_URL || "https://prime-cherida-fieldzz-17996b20.koyeb.app";
 const ACCESS_TOKEN_KEY = "access_token";
 
 /* =======================

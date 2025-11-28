@@ -7,7 +7,7 @@ import "../../auth/pages/style/Login.css";
 import React from "react";
 
 type JwtPayload = { role?: "ADMIN" | string };
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "https://vital-nana-fieldz-11e3f995.koyeb.app";
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "https://prime-cherida-fieldzz-17996b20.koyeb.app";
 
 export default function AdminLogin() {
   const [email, setEmail] = useState("");

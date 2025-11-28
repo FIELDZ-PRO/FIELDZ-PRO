@@ -6,7 +6,7 @@ import { useAuth } from "../../../shared/context/AuthContext";
 import "./style/Login.css";
 
 type JwtPayload = { role?: "JOUEUR" | "CLUB" | "ADMIN" | string };
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "https://vital-nana-fieldz-11e3f995.koyeb.app";
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "https://prime-cherida-fieldzz-17996b20.koyeb.app";
 
 export default function Login() {
   const [email, setEmail] = useState("");

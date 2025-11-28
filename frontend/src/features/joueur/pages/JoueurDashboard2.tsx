@@ -3,7 +3,7 @@ import { useAuth } from '../../../shared/context/AuthContext';
 import { Joueur, Reservation, Creneau } from '../../../shared/types';
 import JoueurDashboardLayout from '../components/organisms/joueurDashboard/JoueurDashboardLayout';
 
-const API_BASE = import.meta.env.VITE_API_URL || "https://vital-nana-fieldz-11e3f995.koyeb.app/api";
+const API_BASE = import.meta.env.VITE_API_URL || "https://prime-cherida-fieldzz-17996b20.koyeb.app/api";
 
 const JoueurDashboard2: React.FC = () => {
   const { token } = useAuth();

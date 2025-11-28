@@ -11,7 +11,7 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
 /** ===== Config back ===== */
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "https://vital-nana-fieldz-11e3f995.koyeb.app";
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "https://prime-cherida-fieldzz-17996b20.koyeb.app";
 
 /** ===== Types ===== */
 type Role = "JOUEUR" | "CLUB" | "ADMIN";
