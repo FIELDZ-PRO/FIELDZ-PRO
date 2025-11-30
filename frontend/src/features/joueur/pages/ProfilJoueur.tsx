@@ -180,7 +180,6 @@ const ProfilJoueur = () => {
 
             <div className="profil-header-info">
               <h2>{playerData.prenom} {playerData.nom}</h2>
-              <p className="email-display">{playerData.email}</p>
             </div>
           </div>
 
