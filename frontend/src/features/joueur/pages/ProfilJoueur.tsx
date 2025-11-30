@@ -51,31 +51,10 @@ const ProfilJoueur = () => {
           throw new Error(`Erreur serveur (${response.status})`);
         }
 
-        // Lire le corps de la réponse une seule fois
-        const text = await response.text();
-
-        // Vérifier si la réponse est vide
-        if (!text || text.trim() === '') {
-          console.error('Empty response from server');
-          throw new Error("Le serveur n'a renvoyé aucune donnée");
-        }
-
-        // Vérifier le content-type
-        const contentType = response.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-          console.error('Non-JSON response:', text.substring(0, 200));
-          throw new Error("Réponse invalide du serveur");
-        }
-
-        // Parser le JSON
-        try {
-          const data = JSON.parse(text);
-          setPlayerData(data);
-          setFormData(data);
-        } catch (parseError) {
-          console.error('JSON parse error:', parseError, 'Text:', text.substring(0, 200));
-          throw new Error("Impossible de lire les données du profil");
-        }
+        // Lire le JSON
+        const data = await response.json();
+        setPlayerData(data);
+        setFormData(data);
       } catch (error: any) {
         console.error('Fetch player error:', error);
         const message = error.message || 'Erreur lors du chargement du profil';
@@ -135,15 +114,17 @@ const ProfilJoueur = () => {
         throw new Error(`Erreur serveur (${response.status})`);
       }
 
-      // Lire le corps de la réponse une seule fois
-      const text = await response.text();
-
-      // Vérifier si la réponse est vide
-      if (!text || text.trim() === '') {
-        console.error('Empty response from server');
-        throw new Error("Le serveur n'a renvoyé aucune donnée");
-      }
-
+      // Mise à jour réussie - pas besoin de lire la réponse
+      setPlayerData(formData);
+      setIsEditing(false);
+      setMessage({ text: 'Profil mis à jour avec succès !', type: 'success' });
+    } catch (error: any) {
+      console.error('Save profile error:', error);
+      const message = error.message || 'Erreur lors de la sauvegarde';
+      setMessage({ text: message, type: 'error' });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   if (isLoading) {
