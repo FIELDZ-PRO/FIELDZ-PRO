@@ -34,28 +34,53 @@ const ProfilJoueur = () => {
 
     const fetchPlayerData = async () => {
       setIsLoading(true);
+      setMessage(null);
       try {
         const response = await fetch(`${API_BASE}/joueur/me`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
+
+        // Vérifier le statut HTTP
         if (!response.ok) {
-          if (response.status === 401 || response.status === 403) logout();
+          if (response.status === 401 || response.status === 403) {
+            logout();
+            return;
+          }
           const errorText = await response.text();
-          console.error('Error response:', errorText);
-          throw new Error(`Impossible de charger le profil (${response.status})`);
+          console.error(`Error ${response.status}:`, errorText);
+          throw new Error(`Erreur serveur (${response.status})`);
         }
+
+        // Lire le corps de la réponse une seule fois
+        const text = await response.text();
+
+        // Vérifier si la réponse est vide
+        if (!text || text.trim() === '') {
+          console.error('Empty response from server');
+          throw new Error("Le serveur n'a renvoyé aucune donnée");
+        }
+
+        // Vérifier le content-type
         const contentType = response.headers.get("content-type");
         if (!contentType || !contentType.includes("application/json")) {
-          const text = await response.text();
-          console.error('Non-JSON response:', text);
-          throw new Error("Le serveur n'a pas renvoyé de JSON valide");
+          console.error('Non-JSON response:', text.substring(0, 200));
+          throw new Error("Réponse invalide du serveur");
         }
-        const data = await response.json();
-        setPlayerData(data);
-        setFormData(data);
+
+        // Parser le JSON
+        try {
+          const data = JSON.parse(text);
+          setPlayerData(data);
+          setFormData(data);
+        } catch (parseError) {
+          console.error('JSON parse error:', parseError, 'Text:', text.substring(0, 200));
+          throw new Error("Impossible de lire les données du profil");
+        }
       } catch (error: any) {
-        console.error('Fetch error:', error);
-        setMessage({ text: error.message, type: 'error' });
+        console.error('Fetch player error:', error);
+        const message = error.message || 'Erreur lors du chargement du profil';
+        setMessage({ text: message, type: 'error' });
+        setPlayerData(null);
       } finally {
         setIsLoading(false);
       }
@@ -98,21 +123,49 @@ const ProfilJoueur = () => {
           telephone: formData.telephone,
         }),
       });
-      console.log(response);
+
+      // Vérifier le statut HTTP
       if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+          logout();
+          return;
+        }
         const errorText = await response.text();
-        console.error('Update error response:', errorText);
-        throw new Error(`Erreur lors de la mise à jour du profil (${response.status})`);
+        console.error(`Update error ${response.status}:`, errorText);
+        throw new Error(`Erreur serveur (${response.status})`);
       }
 
-      const updatedData = await response.json();
-      setPlayerData(updatedData);
-      setFormData(updatedData);
-      setIsEditing(false);
-      setMessage({ text: '✅ Profil mis à jour avec succès !', type: 'success' });
+      // Lire le corps de la réponse une seule fois
+      const text = await response.text();
+
+      // Vérifier si la réponse est vide
+      if (!text || text.trim() === '') {
+        console.error('Empty response from server');
+        throw new Error("Le serveur n'a renvoyé aucune donnée");
+      }
+
+      // Vérifier le content-type
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        console.error('Non-JSON response:', text.substring(0, 200));
+        throw new Error("Réponse invalide du serveur");
+      }
+
+      // Parser le JSON
+      try {
+        const updatedData = JSON.parse(text);
+        setPlayerData(updatedData);
+        setFormData(updatedData);
+        setIsEditing(false);
+        setMessage({ text: 'Profil mis à jour avec succès !', type: 'success' });
+      } catch (parseError) {
+        console.error('JSON parse error:', parseError, 'Text:', text.substring(0, 200));
+        throw new Error("Impossible de lire la réponse du serveur");
+      }
     } catch (error: any) {
-      console.error('Save error:', error);
-      setMessage({ text: error.message || 'Erreur lors de la sauvegarde', type: 'error' });
+      console.error('Save profile error:', error);
+      const message = error.message || 'Erreur lors de la sauvegarde';
+      setMessage({ text: message, type: 'error' });
     } finally {
       setIsSaving(false);
     }
@@ -224,7 +277,6 @@ const ProfilJoueur = () => {
                   className={isEditing ? "editable-field" : "readonly-field"}
                 />
               </div>
-
               <div className="field-group">
                 <label htmlFor="telephone">
                   <span className="field-icon">📞</span>

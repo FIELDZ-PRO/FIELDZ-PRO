@@ -8,9 +8,6 @@ import "./style/Login.css";
 type JwtPayload = { role?: "JOUEUR" | "CLUB" | "ADMIN" | string };
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "https://prime-cherida-fieldzz-17996b20.koyeb.app";
 
-console.log('🔧 [Login] API_BASE:', API_BASE);
-console.log('🔧 [Login] VITE_API_BASE_URL:', import.meta.env.VITE_API_BASE_URL);
-
 export default function Login() {
   const [email, setEmail] = useState("");
   const [motDePasse, setMotDePasse] = useState("");
