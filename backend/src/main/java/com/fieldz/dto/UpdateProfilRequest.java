@@ -14,6 +14,7 @@ public class UpdateProfilRequest {
 
     // Champs communs
     private String nom;
+    private String email;
 
     // JOUEUR uniquement
     private String prenom;

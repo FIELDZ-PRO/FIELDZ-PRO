@@ -135,6 +135,17 @@ public class UtilisateurController {
     public ResponseEntity<String> updateProfil(@RequestBody UpdateProfilRequest req,
             @AuthenticationPrincipal Utilisateur utilisateur) {
 
+        // Vérifier si l'email doit être modifié
+        if (notBlank(req.getEmail())) {
+            // Vérifier si l'email est déjà utilisé par un autre utilisateur
+            if (utilisateurRepository.findByEmail(req.getEmail()).isPresent()
+                && !req.getEmail().equals(utilisateur.getEmail())) {
+                return ResponseEntity.badRequest()
+                    .body("Cet email est déjà utilisé par un autre compte.");
+            }
+            utilisateur.setEmail(req.getEmail());
+        }
+
         // Commun
         if (notBlank(req.getNom()))
             utilisateur.setNom(req.getNom());
