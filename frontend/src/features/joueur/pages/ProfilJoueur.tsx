@@ -105,13 +105,6 @@ const ProfilJoueur = () => {
         throw new Error(`Erreur lors de la mise à jour du profil (${response.status})`);
       }
 
-      const contentType = response.headers.get("content-type");
-      if (!contentType || !contentType.includes("application/json")) {
-        const text = await response.text();
-        console.error('Non-JSON response:', text);
-        throw new Error("Le serveur n'a pas renvoyé de JSON valide");
-      }
-
       const updatedData = await response.json();
       setPlayerData(updatedData);
       setFormData(updatedData);
