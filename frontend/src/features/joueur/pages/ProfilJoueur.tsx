@@ -12,7 +12,6 @@ interface PlayerData {
   prenom: string;
   email: string;
   telephone: string | null;
-  description?: string | null;
   photoProfilUrl: string | null;
 }
 
@@ -88,7 +87,6 @@ const ProfilJoueur = () => {
           nom: formData.nom,
           prenom: formData.prenom,
           telephone: formData.telephone,
-          description: formData.description,
         }),
       });
 
@@ -233,41 +231,26 @@ const ProfilJoueur = () => {
                 />
               </div>
 
-              <div className="field-group">
-                <label htmlFor="description">
-                  <span className="field-icon">📝</span>
-                  Description
-                </label>
-                <textarea
-                  id="description"
-                  name="description"
-                  value={formData?.description || ''}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                  className={isEditing ? "editable-field" : "readonly-field"}
-                  placeholder="Parlez-nous de vous..."
-                  rows={4}
-                />
-              </div>
+
             </div>
 
             {/* Boutons d'action */}
             <div className="profil-actions">
               {!isEditing ? (
-                <button className="btn-primary" onClick={handleEdit}>
-                  ✏️ Modifier le profil
+                <button className="profil-btn-primary" onClick={handleEdit}>
+                  Modifier le profil
                 </button>
               ) : (
                 <>
                   <button
-                    className="btn-success"
+                    className="profil-btn-success"
                     onClick={handleSave}
                     disabled={isSaving}
                   >
                     {isSaving ? '⏳ Enregistrement...' : '✅ Enregistrer'}
                   </button>
                   <button
-                    className="btn-cancel"
+                    className="profil-btn-cancel"
                     onClick={handleCancel}
                     disabled={isSaving}
                   >

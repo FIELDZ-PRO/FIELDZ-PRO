@@ -314,10 +314,10 @@
   transform: translateY(-2px);
 }
 
-/* === BUTTON STYLES === */
-.btn-primary,
-.btn-success,
-.btn-cancel {
+/* === PROFIL BUTTON STYLES === */
+.profil-btn-primary,
+.profil-btn-success,
+.profil-btn-cancel {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -333,34 +333,34 @@
   flex: 1;
 }
 
-.btn-primary,
-.btn-success {
+.profil-btn-primary,
+.profil-btn-success {
   background: var(--color-primary-green);
   color: var(--color-white);
   box-shadow: 0 2px 8px rgba(5, 97, 43, 0.2);
 }
 
-.btn-primary:hover:not(:disabled),
-.btn-success:hover:not(:disabled) {
+.profil-btn-primary:hover:not(:disabled),
+.profil-btn-success:hover:not(:disabled) {
   background: var(--color-secondary-green);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(5, 97, 43, 0.3);
 }
 
-.btn-cancel {
+.profil-btn-cancel {
   background: #F3F4F6;
   color: var(--color-black);
   border: 2px solid #E5E7EB;
 }
 
-.btn-cancel:hover:not(:disabled) {
+.profil-btn-cancel:hover:not(:disabled) {
   background: #E5E7EB;
   transform: translateY(-2px);
 }
 
-.btn-primary:disabled,
-.btn-success:disabled,
-.btn-cancel:disabled {
+.profil-btn-primary:disabled,
+.profil-btn-success:disabled,
+.profil-btn-cancel:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
