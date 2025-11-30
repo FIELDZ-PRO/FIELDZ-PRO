@@ -144,31 +144,6 @@ const ProfilJoueur = () => {
         throw new Error("Le serveur n'a renvoyé aucune donnée");
       }
 
-      // Vérifier le content-type
-      const contentType = response.headers.get("content-type");
-      if (!contentType || !contentType.includes("application/json")) {
-        console.error('Non-JSON response:', text.substring(0, 200));
-        throw new Error("Réponse invalide du serveur");
-      }
-
-      // Parser le JSON
-      try {
-        const updatedData = JSON.parse(text);
-        setPlayerData(updatedData);
-        setFormData(updatedData);
-        setIsEditing(false);
-        setMessage({ text: 'Profil mis à jour avec succès !', type: 'success' });
-      } catch (parseError) {
-        console.error('JSON parse error:', parseError, 'Text:', text.substring(0, 200));
-        throw new Error("Impossible de lire la réponse du serveur");
-      }
-    } catch (error: any) {
-      console.error('Save profile error:', error);
-      const message = error.message || 'Erreur lors de la sauvegarde';
-      setMessage({ text: message, type: 'error' });
-    } finally {
-      setIsSaving(false);
-    }
   };
 
   if (isLoading) {
