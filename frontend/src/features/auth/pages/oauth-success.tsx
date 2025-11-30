@@ -4,6 +4,8 @@ import { jwtDecode } from "jwt-decode";
 import { useAuth } from "../../../shared/context/AuthContext";
 import React from "react";
 
+const API_BASE = import.meta.env.VITE_API_URL || "https://prime-cherida-fieldzz-17996b20.koyeb.app/api";
+
 const OAuthSuccess = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
@@ -35,9 +37,9 @@ const OAuthSuccess = () => {
         window.location.search.replace(/(\?|&)token=[^&]*/, "").replace(/\?&/, "?").replace(/\?$/, "");
       window.history.replaceState(null, "", cleanUrl);
 
-      // 3) Appeler /api via le proxy Vite (évite CORS) — SANS header Cache-Control
+      // 3) Appeler l'API pour récupérer le profil utilisateur
       setTimeout(() => {
-        fetch("/api/utilisateur/me", {
+        fetch(`${API_BASE}/utilisateur/me`, {
           method: "GET",
           headers: { Authorization: `Bearer ${token}` }, // garde l'Authorization
           // credentials: "include" // optionnel: cookies envoyés par défaut en same-origin

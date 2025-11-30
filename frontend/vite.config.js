@@ -8,14 +8,14 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'https://vital-nana-fieldz-11e3f995.koyeb.app',
+        target: 'https://prime-cherida-fieldzz-17996b20.koyeb.app',
         changeOrigin: true,
       },
       '/oauth2': {
-        target: 'https://vital-nana-fieldz-11e3f995.koyeb.app',
+        target: 'https://prime-cherida-fieldzz-17996b20.koyeb.app',
         changeOrigin: true,
       },
-      
+
     }
   }
 })
