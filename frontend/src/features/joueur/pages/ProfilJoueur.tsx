@@ -40,12 +40,21 @@ const ProfilJoueur = () => {
         });
         if (!response.ok) {
           if (response.status === 401 || response.status === 403) logout();
-          throw new Error("Impossible de charger le profil.");
+          const errorText = await response.text();
+          console.error('Error response:', errorText);
+          throw new Error(`Impossible de charger le profil (${response.status})`);
+        }
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          const text = await response.text();
+          console.error('Non-JSON response:', text);
+          throw new Error("Le serveur n'a pas renvoyé de JSON valide");
         }
         const data = await response.json();
         setPlayerData(data);
         setFormData(data);
       } catch (error: any) {
+        console.error('Fetch error:', error);
         setMessage({ text: error.message, type: 'error' });
       } finally {
         setIsLoading(false);
@@ -91,7 +100,16 @@ const ProfilJoueur = () => {
       });
 
       if (!response.ok) {
-        throw new Error("Erreur lors de la mise à jour du profil");
+        const errorText = await response.text();
+        console.error('Update error response:', errorText);
+        throw new Error(`Erreur lors de la mise à jour du profil (${response.status})`);
+      }
+
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        const text = await response.text();
+        console.error('Non-JSON response:', text);
+        throw new Error("Le serveur n'a pas renvoyé de JSON valide");
       }
 
       const updatedData = await response.json();
@@ -100,6 +118,7 @@ const ProfilJoueur = () => {
       setIsEditing(false);
       setMessage({ text: '✅ Profil mis à jour avec succès !', type: 'success' });
     } catch (error: any) {
+      console.error('Save error:', error);
       setMessage({ text: error.message || 'Erreur lors de la sauvegarde', type: 'error' });
     } finally {
       setIsSaving(false);
