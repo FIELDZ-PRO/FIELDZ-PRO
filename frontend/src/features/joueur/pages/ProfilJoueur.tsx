@@ -223,7 +223,6 @@ const ProfilJoueur = () => {
                   disabled
                   className={isEditing ? "editable-field" : "readonly-field"}
                 />
-                <p className="field-hint">L'email ne peut pas être modifié</p>
               </div>
 
               <div className="field-group">
