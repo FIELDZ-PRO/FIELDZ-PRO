@@ -21,7 +21,10 @@ const ProfilJoueur = () => {
   const { token, isAuthenticated, logout } = useAuth();
 
   const [playerData, setPlayerData] = useState<PlayerData | null>(null);
+  const [formData, setFormData] = useState<PlayerData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState<{ text: string, type: 'success' | 'error' } | null>(null);
 
   useEffect(() => {
@@ -42,6 +45,7 @@ const ProfilJoueur = () => {
         }
         const data = await response.json();
         setPlayerData(data);
+        setFormData(data);
       } catch (error: any) {
         setMessage({ text: error.message, type: 'error' });
       } finally {
@@ -50,6 +54,59 @@ const ProfilJoueur = () => {
     };
     fetchPlayerData();
   }, [isAuthenticated, token, navigate, logout]);
+
+  const handleEdit = () => {
+    setIsEditing(true);
+    setMessage(null);
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    setFormData(playerData);
+    setMessage(null);
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => prev ? { ...prev, [name]: value } : null);
+  };
+
+  const handleSave = async () => {
+    if (!formData) return;
+
+    setIsSaving(true);
+    setMessage(null);
+
+    try {
+      const response = await fetch(`${API_BASE}/utilisateur/update`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          nom: formData.nom,
+          prenom: formData.prenom,
+          telephone: formData.telephone,
+          description: formData.description,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Erreur lors de la mise à jour du profil");
+      }
+
+      const updatedData = await response.json();
+      setPlayerData(updatedData);
+      setFormData(updatedData);
+      setIsEditing(false);
+      setMessage({ text: '✅ Profil mis à jour avec succès !', type: 'success' });
+    } catch (error: any) {
+      setMessage({ text: error.message || 'Erreur lors de la sauvegarde', type: 'error' });
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -108,7 +165,7 @@ const ProfilJoueur = () => {
             </div>
           </div>
 
-          {/* Informations en lecture seule */}
+          {/* Formulaire de modification */}
           <div className="profil-form">
             <div className="profil-fields">
               <div className="field-group">
@@ -119,9 +176,11 @@ const ProfilJoueur = () => {
                 <input
                   type="text"
                   id="prenom"
-                  value={playerData.prenom || ''}
-                  disabled
-                  className="readonly-field"
+                  name="prenom"
+                  value={formData?.prenom || ''}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                  className={isEditing ? "editable-field" : "readonly-field"}
                 />
               </div>
 
@@ -133,9 +192,11 @@ const ProfilJoueur = () => {
                 <input
                   type="text"
                   id="nom"
-                  value={playerData.nom || ''}
-                  disabled
-                  className="readonly-field"
+                  name="nom"
+                  value={formData?.nom || ''}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                  className={isEditing ? "editable-field" : "readonly-field"}
                 />
               </div>
 
@@ -147,10 +208,12 @@ const ProfilJoueur = () => {
                 <input
                   type="email"
                   id="email"
-                  value={playerData.email || ''}
+                  name="email"
+                  value={formData?.email || ''}
                   disabled
                   className="readonly-field"
                 />
+                <p className="field-hint">L'email ne peut pas être modifié</p>
               </div>
 
               <div className="field-group">
@@ -161,11 +224,57 @@ const ProfilJoueur = () => {
                 <input
                   type="tel"
                   id="telephone"
-                  value={playerData.telephone || 'Non renseigné'}
-                  disabled
-                  className="readonly-field"
+                  name="telephone"
+                  value={formData?.telephone || ''}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                  className={isEditing ? "editable-field" : "readonly-field"}
+                  placeholder="Votre numéro de téléphone"
                 />
               </div>
+
+              <div className="field-group">
+                <label htmlFor="description">
+                  <span className="field-icon">📝</span>
+                  Description
+                </label>
+                <textarea
+                  id="description"
+                  name="description"
+                  value={formData?.description || ''}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                  className={isEditing ? "editable-field" : "readonly-field"}
+                  placeholder="Parlez-nous de vous..."
+                  rows={4}
+                />
+              </div>
+            </div>
+
+            {/* Boutons d'action */}
+            <div className="profil-actions">
+              {!isEditing ? (
+                <button className="btn-primary" onClick={handleEdit}>
+                  ✏️ Modifier le profil
+                </button>
+              ) : (
+                <>
+                  <button
+                    className="btn-success"
+                    onClick={handleSave}
+                    disabled={isSaving}
+                  >
+                    {isSaving ? '⏳ Enregistrement...' : '✅ Enregistrer'}
+                  </button>
+                  <button
+                    className="btn-cancel"
+                    onClick={handleCancel}
+                    disabled={isSaving}
+                  >
+                    ❌ Annuler
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
