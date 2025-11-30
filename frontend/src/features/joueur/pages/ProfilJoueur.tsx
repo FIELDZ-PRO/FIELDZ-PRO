@@ -98,7 +98,7 @@ const ProfilJoueur = () => {
           telephone: formData.telephone,
         }),
       });
-
+      console.log(response);
       if (!response.ok) {
         const errorText = await response.text();
         console.error('Update error response:', errorText);
@@ -221,7 +221,7 @@ const ProfilJoueur = () => {
                   name="email"
                   value={formData?.email || ''}
                   disabled
-                  className="readonly-field"
+                  className={isEditing ? "editable-field" : "readonly-field"}
                 />
                 <p className="field-hint">L'email ne peut pas être modifié</p>
               </div>
