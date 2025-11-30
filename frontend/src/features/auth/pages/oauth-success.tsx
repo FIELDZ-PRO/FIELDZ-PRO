@@ -11,12 +11,11 @@ const OAuthSuccess = () => {
   const { login } = useAuth();
 
   useEffect(() => {
-    // 1) Récupérer le token (#token=... puis ?token=...)
+    // 1) Récupérer le token (#token=... puis ?token=... puis sessionStorage)
     const fromHash = new URLSearchParams(window.location.hash.replace(/^#/, "")).get("token");
     const fromQuery = new URLSearchParams(window.location.search).get("token");
-    const fromSession = sessionStorage.getItem("fieldz_access") || undefined;
-    const fromLocal = localStorage.getItem("fieldz_access") || undefined;
-    const token = fromHash || fromQuery || fromSession || fromLocal;
+    const fromSession = sessionStorage.getItem("access_token") || undefined;
+    const token = fromHash || fromQuery || fromSession;
 
     if (!token) {
       navigate("/login");
