@@ -197,9 +197,14 @@
   font-family: 'Inter', sans-serif;
   font-size: 15px;
   line-height: 1.7;
-  color: var(--color-gray);
+  color: #374151;
   margin: 0;
   white-space: pre-wrap;
+}
+
+.description-text.no-description {
+  color: #9CA3AF;
+  font-style: italic;
 }
 
 .btn-read-more {
@@ -259,7 +264,7 @@
 .contact-item span {
   font-family: 'Inter', sans-serif;
   font-size: 15px;
-  color: var(--color-gray);
+  color: #374151;
   word-break: break-word;
 }
 
@@ -482,7 +487,7 @@
   margin: 4px 0;
   font-family: 'Inter', sans-serif;
   font-size: 14px;
-  color: var(--color-gray);
+  color: #4B5563;
   display: flex;
   align-items: center;
   gap: 4px;
@@ -590,10 +595,12 @@
 
   .description-text {
     font-size: 14px;
+    color: #374151;
   }
 
   .contact-item span {
     font-size: 14px;
+    color: #374151;
   }
 
   .club-sports,
@@ -651,7 +658,11 @@
     font-size: 15px;
   }
 
-  .creneau-time,
+  .creneau-time {
+    font-size: 13px;
+    color: #4B5563;
+  }
+
   .creneau-sport {
     font-size: 13px;
   }
@@ -728,6 +739,7 @@
 
   .description-text {
     font-size: 13px;
+    color: #374151;
   }
 
   .btn-read-more {
@@ -741,6 +753,7 @@
 
   .contact-item span {
     font-size: 13px;
+    color: #374151;
   }
 
   .club-sports,
@@ -781,7 +794,11 @@
     font-size: 14px;
   }
 
-  .creneau-time,
+  .creneau-time {
+    font-size: 12px;
+    color: #4B5563;
+  }
+
   .creneau-sport {
     font-size: 12px;
   }

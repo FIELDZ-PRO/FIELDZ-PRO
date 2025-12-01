@@ -95,7 +95,7 @@ export const CreateReservationPage: React.FC = () => {
             {/* Header */}
             <div className="dashboard-header">
                 <h1 className="dashboard-title">
-                    {club?.nom || '...'}
+                  Club :  {club?.nom || '...'}
                 </h1>
             </div>
 

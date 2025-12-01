@@ -24,6 +24,7 @@ const COUNTRY_CODES = [
 export default function Register() {
   const [form, setForm] = useState({
     nom: "",
+    prenom: "",
     email: "",
     motDePasse: "",
     confirm: "",
@@ -63,6 +64,7 @@ export default function Register() {
 
   const validate = () => {
     if (!form.nom.trim()) return "Nom requis";
+    if (!form.prenom.trim()) return "Prénom requis";
     if (!/^\S+@\S+\.\S+$/.test(form.email)) return "Email invalide";
     if (!isPasswordValid) return "Le mot de passe ne respecte pas tous les critères de sécurité";
     if (form.motDePasse !== form.confirm) return "Les mots de passe ne correspondent pas";
@@ -85,6 +87,7 @@ export default function Register() {
     try {
       const response = await axios.post(`${API_BASE}/api/auth/register`, {
         nom: form.nom,
+        prenom: form.prenom,
         email: form.email,
         motDePasse: form.motDePasse,
         telephone: fullPhoneNumber, // Envoi du numéro complet
@@ -151,6 +154,18 @@ export default function Register() {
                 name="nom"
                 placeholder="Nom"
                 value={form.nom}
+                onChange={onChange}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Prénom</label>
+              <input
+                className="form-input"
+                name="prenom"
+                placeholder="Prénom"
+                value={form.prenom}
                 onChange={onChange}
                 required
               />

@@ -327,19 +327,6 @@ const JoueurDashboardLayout: React.FC<Props> = ({
               reservations={reservationsAnnulees}
             />
 
-            {reservationsAnnulees.length === 0 && (
-              <div className="empty-state-modern">
-                <div className="empty-icon-container">
-                  <div className="empty-icon-circle">
-                    <Calendar className="empty-icon" />
-                  </div>
-                </div>
-                <h3 className="empty-title">Aucune annulation</h3>
-                <p className="empty-description">
-                  Tu n'as aucune réservation annulée.
-                </p>
-              </div>
-            )}
           </div>
         );
 

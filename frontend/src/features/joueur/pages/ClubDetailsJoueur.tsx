@@ -220,35 +220,41 @@ const ClubDetailsJoueur: React.FC = () => {
 
       {/* Description & Contact */}
       <div className="club-info-section">
-        {club.description && (
-          <div className="info-card description-card">
-            <div className="info-card-header">
-              <Info className="card-icon" />
-              <h3>À propos de {club.nom}</h3>
-            </div>
-            <div className="info-card-content">
-              <p className="description-text">
-                {showFullDescription ? club.description : truncateText(club.description, 200)}
-              </p>
-              {club.description.length > 200 && (
-                <button
-                  className="btn-read-more"
-                  onClick={() => setShowFullDescription((v) => !v)}
-                >
-                  {showFullDescription ? (
-                    <>
-                      <ChevronUp className="btn-icon" /> Voir moins
-                    </>
-                  ) : (
-                    <>
-                      <ChevronDown className="btn-icon" /> Lire plus
-                    </>
-                  )}
-                </button>
-              )}
-            </div>
+        <div className="info-card description-card">
+          <div className="info-card-header">
+            <Info className="card-icon" />
+            <h3>À propos de {club.nom}</h3>
           </div>
-        )}
+          <div className="info-card-content">
+            {club.description ? (
+              <>
+                <p className="description-text">
+                  {showFullDescription ? club.description : truncateText(club.description, 200)}
+                </p>
+                {club.description.length > 200 && (
+                  <button
+                    className="btn-read-more"
+                    onClick={() => setShowFullDescription((v) => !v)}
+                  >
+                    {showFullDescription ? (
+                      <>
+                        <ChevronUp className="btn-icon" /> Voir moins
+                      </>
+                    ) : (
+                      <>
+                        <ChevronDown className="btn-icon" /> Lire plus
+                      </>
+                    )}
+                  </button>
+                )}
+              </>
+            ) : (
+              <p className="description-text no-description">
+                Aucune description disponible pour ce club.
+              </p>
+            )}
+          </div>
+        </div>
 
         <div className="info-card contact-card">
           <div className="info-card-header">
