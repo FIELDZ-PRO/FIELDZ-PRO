@@ -3,9 +3,16 @@ import { Settings, User, MapPin, Mail, Phone, Image as ImageIcon, Loader2, Text,
 import './style/ClubManagement.css';
 import { getClubMe, modifyInfoClub, addClubImage, deleteClubImage, ClubDto } from '../../../../../shared/services/ClubService';
 import { ClubImage } from '../../../../../shared/types';
+import CustomAlert, { AlertType } from '../../../../../shared/components/atoms/CustomAlert';
 
 // Available sports list
 const AVAILABLE_SPORTS = ['PADEL', 'FOOT5', 'TENNIS', 'BASKET', 'HANDBALL', 'VOLLEY'] as const;
+
+interface AlertState {
+  show: boolean;
+  type: AlertType;
+  message: string;
+}
 
 /** ====== Limites centralisées ====== */
 const MAX_DESC = 4000;     // limite description
@@ -95,6 +102,12 @@ const ClubManagementPage = () => {
   const [slideDirection, setSlideDirection] = useState<'left' | 'right' | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
+  const [alertState, setAlertState] = useState<AlertState>({ show: false, type: 'info', message: '' });
+
+  const showAlert = (type: AlertType, message: string) => {
+    setAlertState({ show: true, type, message });
+  };
+
   const fetchClubInfo = async () => {
     try {
       const data = await getClubMe();
@@ -104,7 +117,7 @@ const ClubManagementPage = () => {
         setCurrentImageIndex(0);
       }
     } catch (error) {
-      alert('Erreur lors de la récupération des informations du club.');
+      showAlert('error', 'Erreur lors de la récupération des informations du club.');
     }
   };
 
@@ -121,11 +134,10 @@ const ClubManagementPage = () => {
 
   const handleSave = async () => {
     if (hasOverLimit) {
-      return alert(
-        `Le texte dépasse la limite autorisée.\n` +
+      const message = `Le texte dépasse la limite autorisée.\n` +
         (overDesc ? `- Description: max ${MAX_DESC} caractères\n` : '') +
-        (overPolicy ? `- Politique: max ${MAX_POLICY} caractères` : '')
-      );
+        (overPolicy ? `- Politique: max ${MAX_POLICY} caractères` : '');
+      return showAlert('warning', message);
     }
 
     // Trim léger + clamp avant envoi (double sécurité)
@@ -137,9 +149,10 @@ const ClubManagementPage = () => {
 
     try {
       await modifyInfoClub(payload);
+      showAlert('success', 'Modifications enregistrées avec succès !');
       setIsEditing(false);
     } catch (error) {
-      alert('Erreur lors de la sauvegarde des modifications.');
+      showAlert('error', 'Erreur lors de la sauvegarde des modifications.');
     }
   };
 
@@ -152,8 +165,9 @@ const ClubManagementPage = () => {
       setClubInfo(updatedClubInfo);
       // Set current index to the newly added image
       setCurrentImageIndex(updatedImages.length - 1);
+      showAlert('success', 'Image ajoutée avec succès !');
     } catch (error) {
-      alert("Erreur lors du téléchargement de l'image");
+      showAlert('error', "Erreur lors du téléchargement de l'image");
       console.error('Upload failed:', error);
     } finally {
       setIsUploading(false);
@@ -182,8 +196,9 @@ const ClubManagementPage = () => {
       } else if (updatedImages.length === 0) {
         setCurrentImageIndex(0);
       }
+      showAlert('success', 'Image supprimée avec succès !');
     } catch (error) {
-      alert("Erreur lors de la suppression de l'image");
+      showAlert('error', "Erreur lors de la suppression de l'image");
       console.error('Delete failed:', error);
     }
   };
@@ -223,6 +238,15 @@ const ClubManagementPage = () => {
 
   return (
     <div className="club-management-page">
+      {alertState.show && (
+        <CustomAlert
+          type={alertState.type}
+          message={alertState.message}
+          onClose={() => setAlertState({ ...alertState, show: false })}
+          duration={5000}
+        />
+      )}
+
       <div className="page-header">
         <h1>Gestion du club</h1>
         <button

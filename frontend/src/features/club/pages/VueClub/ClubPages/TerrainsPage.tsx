@@ -6,8 +6,15 @@ import { ClubService, uploadClubImage } from '../../../../../shared/services/Clu
 import { useModal } from '../../../../../shared/context/ModalContext';
 import apiClient from '../../../../../shared/api/axiosClient';
 import ImageUpload from '../../../../../shared/components/molecules/ImageUpload';
+import CustomAlert, { AlertType } from '../../../../../shared/components/atoms/CustomAlert';
 
 export type TypeDeSport = 'Padel' | 'Football';
+
+interface AlertState {
+    show: boolean;
+    type: AlertType;
+    message: string;
+}
 
 // Helper function to convert base64 to File
 const base64ToFile = (base64String: string, filename: string): File => {
@@ -47,6 +54,12 @@ const TerrainsPage = () => {
 
     const { setIsModalOpen } = useModal();
 
+    const [alertState, setAlertState] = useState<AlertState>({ show: false, type: 'info', message: '' });
+
+    const showAlert = (type: AlertType, message: string) => {
+        setAlertState({ show: true, type, message });
+    };
+
     // Fetch terrains
     const fetchTerrains = async () => {
         try {
@@ -79,9 +92,10 @@ const TerrainsPage = () => {
 
             const res = await apiClient.post<Terrain>('/api/terrains', terrainData);
             setTerrains((prev) => [...prev, res.data]);
+            showAlert('success', 'Terrain ajouté avec succès !');
             closeAddForm();
         } catch (err) {
-            alert("❌ Erreur lors de l'ajout du terrain.");
+            showAlert('error', "Erreur lors de l'ajout du terrain.");
             console.error(err);
         }
     };
@@ -111,12 +125,13 @@ const TerrainsPage = () => {
                 setTerrains(prev =>
                     prev.map(t => t.id === editTerrain.id ? updatedTerrain : t)
                 );
+                showAlert('success', 'Terrain modifié avec succès !');
                 closeEditForm();
             } else {
-                alert("Erreur lors de la modification du terrain.");
+                showAlert('error', "Erreur lors de la modification du terrain.");
             }
         } catch (error) {
-            alert("❌ Erreur lors de la modification du terrain.");
+            showAlert('error', "Erreur lors de la modification du terrain.");
             console.error(error);
         }
     };
@@ -125,8 +140,9 @@ const TerrainsPage = () => {
         const checkDelete = await ClubService.DeleteTerrain(id);
         if (checkDelete) {
             setTerrains(prev => prev.filter(t => t.id !== id));
+            showAlert('success', 'Terrain supprimé avec succès !');
         } else {
-            alert("Le terrain n'a pas été supprimé avec succès");
+            showAlert('error', "Le terrain n'a pas été supprimé avec succès");
         }
     };
 
@@ -153,6 +169,15 @@ const TerrainsPage = () => {
 
     return (
         <div className="terrains-page">
+            {alertState.show && (
+                <CustomAlert
+                    type={alertState.type}
+                    message={alertState.message}
+                    onClose={() => setAlertState({ ...alertState, show: false })}
+                    duration={5000}
+                />
+            )}
+
             <div className="page-header">
                 <h1>Gestion des terrains</h1>
                 <button className="btn-add btn-primary" onClick={openAddForm}>

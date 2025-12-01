@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
 import './style/CreneauForm.css';
+import CustomAlert, { AlertType } from '../../../../shared/components/atoms/CustomAlert';
+
+interface AlertState {
+  show: boolean;
+  type: AlertType;
+  message: string;
+}
 
 interface CreneauFormProps {
   terrains: { id: number; nomTerrain: string; typeSurface?: string }[];
