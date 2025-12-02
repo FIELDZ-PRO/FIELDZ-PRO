@@ -3,7 +3,14 @@ import { Calendar, Clock, MapPin, CheckCircle, Loader } from "lucide-react";
 import { Reservation } from "../../../../../shared/types";
 import { ReservationService } from "../../../../../shared/services/ReservationService";
 import MotifAnnulationModal from "../../../../../shared/components/molecules/MotifAnnulationModal";
+import CustomAlert, { AlertType } from "../../../../../shared/components/atoms/CustomAlert";
 import "./style/ReservationAvenir.css";
+
+interface AlertState {
+  show: boolean;
+  type: AlertType;
+  message: string;
+}
 
 type Props = {
   reservations: Reservation[];
@@ -19,6 +26,11 @@ const ReservationAVenir: React.FC<Props> = ({ reservations, onUpdate }) => {
   const [loadingCancel, setLoadingCancel] = useState<number | null>(null);
   const [showMotifModal, setShowMotifModal] = useState(false);
   const [reservationToCancel, setReservationToCancel] = useState<number | null>(null);
+  const [alertState, setAlertState] = useState<AlertState>({ show: false, type: 'info', message: '' });
+
+  const showAlert = (type: AlertType, message: string) => {
+    setAlertState({ show: true, type, message });
+  };
 
   // Vérifier si l'annulation est autorisée (jusqu'à 15 min avant le début)
   const canCancelReservation = (reservation: Reservation): boolean => {
@@ -50,7 +62,7 @@ const ReservationAVenir: React.FC<Props> = ({ reservations, onUpdate }) => {
         hour: '2-digit',
         minute: '2-digit'
       });
-      alert(`L'annulation n'est plus possible. Vous pouviez annuler jusqu'à ${cutoffStr} (soit ${GRACE_MINUTES} minutes avant le début du créneau).`);
+      showAlert('warning', `L'annulation n'est plus possible. Vous pouviez annuler jusqu'à ${cutoffStr} (soit ${GRACE_MINUTES} minutes avant le début du créneau).`);
       return;
     }
 
@@ -70,7 +82,7 @@ const ReservationAVenir: React.FC<Props> = ({ reservations, onUpdate }) => {
       setLoadingCancel(reservationToCancel);
       await ReservationService.cancelReservation(reservationToCancel, motif);
 
-      alert("Réservation annulée avec succès !");
+      showAlert('success', 'Réservation annulée avec succès !');
       closeMotifModal();
 
       if (onUpdate) {
@@ -82,13 +94,13 @@ const ReservationAVenir: React.FC<Props> = ({ reservations, onUpdate }) => {
       const errorMessage = error.message || "Erreur inconnue";
 
       if (errorMessage.includes("déjà annulée") || errorMessage.includes("already cancelled")) {
-        alert("Cette réservation est déjà annulée.");
+        showAlert('warning', 'Cette réservation est déjà annulée.');
         closeMotifModal();
         if (onUpdate) {
           onUpdate();
         }
       } else {
-        alert("Erreur lors de l'annulation : " + errorMessage);
+        showAlert('error', 'Erreur lors de l\'annulation : ' + errorMessage);
       }
     } finally {
       setLoadingCancel(null);
@@ -275,6 +287,16 @@ const ReservationAVenir: React.FC<Props> = ({ reservations, onUpdate }) => {
             );
           })}
         </div>
+      )}
+
+      {/* Alert personnalisée */}
+      {alertState.show && (
+        <CustomAlert
+          type={alertState.type}
+          message={alertState.message}
+          onClose={() => setAlertState({ ...alertState, show: false })}
+          duration={5000}
+        />
       )}
 
       {/* Modal d'annulation */}

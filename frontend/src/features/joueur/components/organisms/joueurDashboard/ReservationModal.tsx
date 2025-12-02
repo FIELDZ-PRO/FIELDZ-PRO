@@ -2,6 +2,13 @@ import React, { useState } from "react";
 import { Creneau } from "../../../../../shared/types";
 import FullscreenModal from "./FullscreenModal";
 import apiClient from "../../../../../shared/api/axiosClient";
+import CustomAlert, { AlertType } from "../../../../../shared/components/atoms/CustomAlert";
+
+interface AlertState {
+  show: boolean;
+  type: AlertType;
+  message: string;
+}
 
 type Props = {
   creneau: Creneau;
@@ -12,6 +19,11 @@ type Props = {
 const ReservationModal: React.FC<Props> = ({ creneau, onClose, onReservation }) => {
   const [accepte, setAccepte] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [alertState, setAlertState] = useState<AlertState>({ show: false, type: 'info', message: '' });
+
+  const showAlert = (type: AlertType, message: string) => {
+    setAlertState({ show: true, type, message });
+  };
 
   const confirmer = async () => {
     if (!accepte) return;
@@ -20,7 +32,7 @@ const ReservationModal: React.FC<Props> = ({ creneau, onClose, onReservation }) 
       await apiClient.post(`/api/reservations/creneau/${creneau.id}`);
       await onReservation();
     } catch (e) {
-      alert("Erreur lors de la réservation");
+      showAlert('error', 'Erreur lors de la réservation');
       console.error(e);
     } finally {
       setLoading(false);
@@ -29,6 +41,16 @@ const ReservationModal: React.FC<Props> = ({ creneau, onClose, onReservation }) 
 
   return (
     <FullscreenModal onClose={onClose}>
+      {/* Alert personnalisée */}
+      {alertState.show && (
+        <CustomAlert
+          type={alertState.type}
+          message={alertState.message}
+          onClose={() => setAlertState({ ...alertState, show: false })}
+          duration={5000}
+        />
+      )}
+
       <h2 style={{ fontSize: "1.8rem", fontWeight: "bold", color: "#15803d", marginBottom: "1rem" }}>
         📜 Politique du club
       </h2>
