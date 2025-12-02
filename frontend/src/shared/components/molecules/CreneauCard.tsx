@@ -1,8 +1,10 @@
 // src/components/molecules/CreneauCard.tsx
-import React from 'react';
+import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Creneau } from "../../types";
 import { toast } from "react-toastify";
 import { useAuth } from "../../context/AuthContext";
+import ConfirmModal from "../atoms/ConfirmModal";
 
 const API_BASE = import.meta.env.VITE_API_URL || "https://prime-cherida-fieldzz-17996b20.koyeb.app/api";
 
@@ -15,9 +17,14 @@ type Props = {
 
 const CreneauCard: React.FC<Props> = ({ creneau, onReserver, onUpdate, role }) => {
   const { token } = useAuth();
+  const [showCancelModal, setShowCancelModal] = useState(false);
 
-  const handleAnnulerCreneau = async () => {
-    if (!window.confirm("Voulez-vous vraiment annuler ce créneau ?")) return;
+  const handleOpenCancelModal = () => {
+    setShowCancelModal(true);
+  };
+
+  const handleConfirmCancel = async () => {
+    setShowCancelModal(false);
 
     try {
       const res = await fetch(`${API_BASE}/creneaux/${creneau.id}/annuler`, {
@@ -117,12 +124,27 @@ const CreneauCard: React.FC<Props> = ({ creneau, onReserver, onUpdate, role }) =
 
           {role === "club" &&
             (creneau.statut === "LIBRE" || creneau.statut === "RESERVE") && (
-              <button onClick={handleAnnulerCreneau} className="jd-btn-danger">
+              <button onClick={handleOpenCancelModal} className="jd-btn-danger">
                 ❌ Annuler ce créneau
               </button>
             )}
         </div>
       </div>
+
+      {/* Modal de confirmation - rendu via Portal pour éviter overflow:hidden */}
+      {showCancelModal && createPortal(
+        <ConfirmModal
+          isOpen={showCancelModal}
+          title="Annuler ce créneau ?"
+          message={`Voulez-vous vraiment annuler ce créneau du ${dateStr} à ${heureStr} ? Cette action est irréversible.`}
+          type="danger"
+          confirmText="Annuler le créneau"
+          cancelText="Retour"
+          onConfirm={handleConfirmCancel}
+          onCancel={() => setShowCancelModal(false)}
+        />,
+        document.body
+      )}
     </div>
   );
 };

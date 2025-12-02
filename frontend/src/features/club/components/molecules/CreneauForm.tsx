@@ -24,6 +24,11 @@ const CreneauForm: React.FC<CreneauFormProps> = ({ terrains, onSubmit }) => {
   const [heureDebut, setHeureDebut] = useState('');
   const [heureFin, setHeureFin] = useState('');
   const [prix, setPrix] = useState('');
+  const [alertState, setAlertState] = useState<AlertState>({ show: false, type: 'info', message: '' });
+
+  const showAlert = (type: AlertType, message: string) => {
+    setAlertState({ show: true, type, message });
+  };
 
   // ✅ petit helper: ajoute ":00" si l'input time renvoie HH:mm
   const addSeconds = (t: string) => (t && t.length === 5 ? `${t}:00` : t);
@@ -32,7 +37,7 @@ const CreneauForm: React.FC<CreneauFormProps> = ({ terrains, onSubmit }) => {
     e.preventDefault();
 
     if (!terrainId || !date || !heureDebut || !heureFin || !prix) {
-      alert('Veuillez remplir tous les champs.');
+      showAlert('warning', 'Veuillez remplir tous les champs.');
       return;
     }
 
@@ -43,7 +48,7 @@ const CreneauForm: React.FC<CreneauFormProps> = ({ terrains, onSubmit }) => {
 
     // ✅ vérif simple : comparaison lexicographique OK sur ce format
     if (dateFin <= dateDebut) {
-      alert("L'heure de fin doit être après l'heure de début.");
+      showAlert('warning', "L'heure de fin doit être après l'heure de début.");
       return;
     }
 
@@ -63,8 +68,18 @@ const CreneauForm: React.FC<CreneauFormProps> = ({ terrains, onSubmit }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="creneau-form">
-      <div className="creneau-form-group">
+    <>
+      {alertState.show && (
+        <CustomAlert
+          type={alertState.type}
+          message={alertState.message}
+          onClose={() => setAlertState({ ...alertState, show: false })}
+          duration={5000}
+        />
+      )}
+
+      <form onSubmit={handleSubmit} className="creneau-form">
+        <div className="creneau-form-group">
         <label>Terrain</label>
         <select value={terrainId} onChange={(e) => setTerrainId(e.target.value)}>
           <option value="">-- Sélectionner un terrain --</option>
@@ -98,6 +113,7 @@ const CreneauForm: React.FC<CreneauFormProps> = ({ terrains, onSubmit }) => {
 
       <button type="submit">➕ Proposer</button>
     </form>
+    </>
   );
 };
 

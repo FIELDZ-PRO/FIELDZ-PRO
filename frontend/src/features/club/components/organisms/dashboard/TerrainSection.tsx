@@ -4,7 +4,13 @@ import './style/TerrainSection.css';
 import { Terrain } from '../../../../../shared/types';
 import { useAuth } from '../../../../../shared/context/AuthContext';
 import apiClient from '../../../../../shared/api/axiosClient';
+import CustomAlert, { AlertType } from '../../../../../shared/components/atoms/CustomAlert';
 
+interface AlertState {
+    show: boolean;
+    type: AlertType;
+    message: string;
+}
 
 interface TerrainResponse {
     id: number;
@@ -23,15 +29,20 @@ interface TerrainResponse {
 
 const TerrainSection = () => {
     const [terrains, setTerrains] = useState<Omit<Terrain, 'id'>[]>([]);
+    const [alertState, setAlertState] = useState<AlertState>({ show: false, type: 'info', message: '' });
+
+    const showAlert = (type: AlertType, message: string) => {
+        setAlertState({ show: true, type, message });
+    };
 
     const handleAjouterTerrain = async (terrain: Omit<Terrain, 'id'>) => {
         try {
             const res = await apiClient.post<Terrain>('/api/terrains', terrain);
-            alert(`✅ Terrain ajouté (ID: ${res.data.id})`);
+            showAlert('success', `Terrain ajouté (ID: ${res.data.id})`);
             setTerrains((prev) => [...prev, res.data]);
         } catch (err: any) {
             const errorMsg = err?.response?.data?.message || err?.message || "Erreur réseau ou serveur.";
-            alert("❌ Erreur : " + errorMsg);
+            showAlert('error', "Erreur : " + errorMsg);
             console.error(err);
         }
     };
@@ -52,7 +63,14 @@ const TerrainSection = () => {
 
     return (
         <div className="terrain-section">
-
+            {alertState.show && (
+                <CustomAlert
+                    type={alertState.type}
+                    message={alertState.message}
+                    onClose={() => setAlertState({ ...alertState, show: false })}
+                    duration={5000}
+                />
+            )}
 
             <div className="terrain-content">
                 <div className="terrain-header">

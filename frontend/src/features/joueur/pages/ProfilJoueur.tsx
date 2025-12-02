@@ -142,7 +142,7 @@ const ProfilJoueur = () => {
       </div>
     );
   }
-
+  console.log(playerData)
   return (
     <div className="profil-page-background">
       <div className="profil-container">

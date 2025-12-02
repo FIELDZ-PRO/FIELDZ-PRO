@@ -9,6 +9,13 @@ import './CreneauxSection.css';
 import { fetchCreneaux } from '../../../../../shared/services/ClubService';
 import { Search, CalendarDays, Filter } from 'lucide-react';
 import apiClient from '../../../../../shared/api/axiosClient';
+import CustomAlert, { AlertType } from '../../../../../shared/components/atoms/CustomAlert';
+
+interface AlertState {
+  show: boolean;
+  type: AlertType;
+  message: string;
+}
 
 const API_BASE = import.meta.env.VITE_API_URL || "https://prime-cherida-fieldzz-17996b20.koyeb.app/api";
 
@@ -66,6 +73,11 @@ const dateKeyLocal = (d: Date) => {
 const CreneauxSection: React.FC<Props> = ({ terrains, reservations, setReservations }) => {
   const { token } = useAuth();
   const [creneaux, setCreneaux] = useState<Creneau[]>([]);
+  const [alertState, setAlertState] = useState<AlertState>({ show: false, type: 'info', message: '' });
+
+  const showAlert = (type: AlertType, message: string) => {
+    setAlertState({ show: true, type, message });
+  };
 
   /* ========= Etats de filtres ========= */
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -170,19 +182,19 @@ const CreneauxSection: React.FC<Props> = ({ terrains, reservations, setReservati
 
       if (!res.ok) {
         if (res.status === 409) {
-          alert('❌ Ce créneau chevauche un créneau déjà existant.');
+          showAlert('error', 'Ce créneau chevauche un créneau déjà existant.');
         } else {
-          alert('❌' + text);
+          showAlert('error', text);
         }
         return;
       }
 
       const created = JSON.parse(text);
-      alert(`✅ Créneau ajouté pour le ${new Date(created.dateDebut).toLocaleString('fr-FR')}`);
+      showAlert('success', `Créneau ajouté pour le ${new Date(created.dateDebut).toLocaleString('fr-FR')}`);
       await waitCreneaux();
     } catch (err) {
       console.error(err);
-      alert('❌ Erreur inconnue lors de l’ajout du créneau');
+      showAlert('error', "Erreur inconnue lors de l'ajout du créneau");
     }
   };
 
@@ -211,6 +223,15 @@ const CreneauxSection: React.FC<Props> = ({ terrains, reservations, setReservati
 
   return (
     <div className="flex flex-col gap-10">
+      {alertState.show && (
+        <CustomAlert
+          type={alertState.type}
+          message={alertState.message}
+          onClose={() => setAlertState({ ...alertState, show: false })}
+          duration={5000}
+        />
+      )}
+
       {/* 🏟️ Section 1: Créneaux ponctuels */}
       <div className="section-wrapper">
         <section>

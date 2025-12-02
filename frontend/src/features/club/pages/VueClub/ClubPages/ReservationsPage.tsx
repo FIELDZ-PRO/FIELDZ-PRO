@@ -9,6 +9,15 @@ import {
   cancelReservationByClub,
   markReservationAbsent,
 } from '../../../../../shared/services/ClubService';
+import ConfirmModal from '../../../../../shared/components/atoms/ConfirmModal';
+import MotifAnnulationModal from '../../../../../shared/components/molecules/MotifAnnulationModal';
+import CustomAlert, { AlertType } from '../../../../../shared/components/atoms/CustomAlert';
+
+interface AlertState {
+  show: boolean;
+  type: AlertType;
+  message: string;
+}
 
 const GRACE_MINUTES = 15;
 
@@ -29,6 +38,18 @@ const ReservationsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [loadingId, setLoadingId] = useState<number | null>(null);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+
+  // États pour les modals
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [showMotifModal, setShowMotifModal] = useState(false);
+  const [pendingCancelId, setPendingCancelId] = useState<number | null>(null);
+
+  // État pour les alertes
+  const [alertState, setAlertState] = useState<AlertState>({ show: false, type: 'info', message: '' });
+
+  const showAlert = (type: AlertType, message: string) => {
+    setAlertState({ show: true, type, message });
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -86,6 +107,41 @@ const ReservationsPage = () => {
     return Date.now() <= cutoffTime;
   };
 
+  // Gestion du modal de confirmation d'annulation
+  const handleConfirmCancel = () => {
+    setShowCancelModal(false);
+    setShowMotifModal(true);
+  };
+
+  const handleCancelModal = () => {
+    setShowCancelModal(false);
+    setPendingCancelId(null);
+  };
+
+  // Gestion du modal du motif d'annulation
+  const handleSubmitMotif = async (motif: string) => {
+    if (!pendingCancelId) return;
+
+    setShowMotifModal(false);
+    setLoadingId(pendingCancelId);
+    try {
+      await cancelReservationByClub(pendingCancelId, motif);
+      updateReservationStatus(pendingCancelId, 'ANNULE_PAR_CLUB');
+      showAlert('success', 'Réservation annulée avec succès !');
+    } catch (error) {
+      console.error("Erreur lors de l'annulation : ", error);
+      showAlert('error', (error as Error).message || "Une erreur est survenue lors de l'annulation.");
+    } finally {
+      setLoadingId(null);
+      setPendingCancelId(null);
+    }
+  };
+
+  const handleCloseMotifModal = () => {
+    setShowMotifModal(false);
+    setPendingCancelId(null);
+  };
+
   type Action = 'confirm' | 'cancel' | 'absent';
 
   const handleReservationAction = async (id: number, action: Action) => {
@@ -104,7 +160,7 @@ const ReservationsPage = () => {
         hour: '2-digit',
         minute: '2-digit'
       });
-      alert(`"Présent" et "Absent" seront disponibles à partir de ${availableStr} (soit ${GRACE_MINUTES} minutes avant le début du créneau).`);
+      showAlert('warning', `"Présent" et "Absent" seront disponibles à partir de ${availableStr} (soit ${GRACE_MINUTES} minutes avant le début du créneau).`);
       return;
     }
 
@@ -122,27 +178,13 @@ const ReservationsPage = () => {
           hour: '2-digit',
           minute: '2-digit'
         });
-        alert(`L'annulation n'est plus possible. Vous pouviez annuler jusqu'à ${cutoffStr} (soit ${GRACE_MINUTES} minutes avant le début du créneau).`);
+        showAlert('warning', `L'annulation n'est plus possible. Vous pouviez annuler jusqu'à ${cutoffStr} (soit ${GRACE_MINUTES} minutes avant le début du créneau).`);
         return;
       }
 
-      const confirmed = window.confirm("Confirmer l'annulation de cette réservation ?");
-      if (!confirmed) return;
-
-      const motifInput = window.prompt("Motif d'annulation (visible par le joueur) :");
-      if (motifInput === null) return; // l'utilisateur a annulé le prompt → on sort
-      const motif = motifInput.trim() || "Annulé par le club";
-
-      setLoadingId(id);
-      try {
-        await cancelReservationByClub(id, motif);
-        updateReservationStatus(id, 'ANNULE_PAR_CLUB');
-      } catch (error) {
-        console.error("Erreur lors de l'annulation : ", error);
-        alert((error as Error).message || "Une erreur est survenue lors de l'annulation.");
-      } finally {
-        setLoadingId(null);
-      }
+      // Ouvrir le modal de confirmation
+      setPendingCancelId(id);
+      setShowCancelModal(true);
       return; // on sort : on a géré l'action cancel
     }
 
@@ -159,7 +201,7 @@ const ReservationsPage = () => {
       }
     } catch (error) {
       console.error('Erreur lors de la mise à jour de la réservation :', error);
-      alert((error as Error).message || 'Une erreur est survenue. Veuillez réessayer.');
+      showAlert('error', (error as Error).message || 'Une erreur est survenue. Veuillez réessayer.');
     } finally {
       setLoadingId(null);
     }
@@ -216,6 +258,35 @@ const ReservationsPage = () => {
   console.log(reservations)
   return (
     <div className="reservations-page">
+      {/* Modals */}
+      <ConfirmModal
+        isOpen={showCancelModal}
+        title="Annuler cette réservation ?"
+        message="Cette action est irréversible. Le joueur sera notifié de l'annulation."
+        type="danger"
+        confirmText="Continuer"
+        cancelText="Retour"
+        onConfirm={handleConfirmCancel}
+        onCancel={handleCancelModal}
+      />
+
+      {showMotifModal && (
+        <MotifAnnulationModal
+          onClose={handleCloseMotifModal}
+          onSubmit={handleSubmitMotif}
+        />
+      )}
+
+      {/* Alert personnalisée */}
+      {alertState.show && (
+        <CustomAlert
+          type={alertState.type}
+          message={alertState.message}
+          onClose={() => setAlertState({ ...alertState, show: false })}
+          duration={5000}
+        />
+      )}
+
       <div className="page-header">
         <h1>Gestion des réservations</h1>
         <div className="header-stats">

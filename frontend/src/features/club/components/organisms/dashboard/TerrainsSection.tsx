@@ -1,8 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import TerrainForm from "../../molecules/TerrainForm";
 import { Terrain } from '../../../../../shared/types/index';
 import { useAuth } from '../../../../../shared/context/AuthContext';
 import TerrainGroup from './TerrainGroup';
+import CustomAlert, { AlertType } from '../../../../../shared/components/atoms/CustomAlert';
+
+interface AlertState {
+  show: boolean;
+  type: AlertType;
+  message: string;
+}
 
 const API_BASE = import.meta.env.VITE_API_URL || "https://prime-cherida-fieldzz-17996b20.koyeb.app/api";
 
@@ -13,6 +20,11 @@ type TerrainsSectionProps = {
 
 const TerrainsSection: React.FC<TerrainsSectionProps> = ({ terrains, setTerrains }) => {
   const { token } = useAuth();
+  const [alertState, setAlertState] = useState<AlertState>({ show: false, type: 'info', message: '' });
+
+  const showAlert = (type: AlertType, message: string) => {
+    setAlertState({ show: true, type, message });
+  };
 
   const handleAjouterTerrain = async (terrain: Omit<Terrain, 'id'>) => {
     try {
@@ -27,21 +39,30 @@ const TerrainsSection: React.FC<TerrainsSectionProps> = ({ terrains, setTerrains
 
       if (!res.ok) {
         const error = await res.text();
-        alert("❌ Erreur : " + error);
+        showAlert('error', "Erreur : " + error);
         return;
       }
 
       const newTerrain = await res.json();
-      alert(`✅ Terrain ajouté (ID: ${newTerrain.id})`);
+      showAlert('success', `Terrain ajouté (ID: ${newTerrain.id})`);
       setTerrains((prev) => [...prev, newTerrain]);
     } catch (err) {
-      alert("❌ Erreur réseau ou serveur.");
+      showAlert('error', "Erreur réseau ou serveur.");
       console.error(err);
     }
   };
 
   return (
     <section>
+      {alertState.show && (
+        <CustomAlert
+          type={alertState.type}
+          message={alertState.message}
+          onClose={() => setAlertState({ ...alertState, show: false })}
+          duration={5000}
+        />
+      )}
+
       <div className="section-title">🏟️ Ajouter un terrain</div>
       <TerrainForm onAddTerrain={handleAjouterTerrain} />
 
