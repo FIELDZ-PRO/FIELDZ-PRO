@@ -11,6 +11,7 @@ import lombok.*;
 
 public class RegisterRequest {
     private String nom;
+    private String prenom; // For JOUEUR only
     private String email;
     private String motDePasse;
     private String adresse;

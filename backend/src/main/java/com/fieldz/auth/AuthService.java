@@ -36,6 +36,7 @@ public class AuthService {
         if (enumRole == Role.JOUEUR) {
             user = Joueur.builder()
                     .nom(request.getNom())
+                    .prenom(request.getPrenom())
                     .email(request.getEmail())
                     .motDePasse(passwordEncoder.encode(request.getMotDePasse()))
                     .typeRole(Role.JOUEUR)
