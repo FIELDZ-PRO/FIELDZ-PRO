@@ -4,6 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { ClubService, ClubDto, getCreneauxByClubDateSport } from "../../../shared/services/ClubService";
 import ReservationModal from "../components/organisms/joueurDashboardDoss/ReservationModal";
 import { Creneau } from "../../../shared/types";
+import { Spinner } from "../../../shared/components/atoms";
 import "./style/ClubDetailsJoueur.css";
 import { ChevronDown, ChevronUp, MapPin, Phone, Info, Clock } from "lucide-react";
 
@@ -169,12 +170,7 @@ const ClubDetailsJoueur: React.FC = () => {
   // Renders
   // ────────────────────────────────────────────────────────────────────────────────
   if (loading) {
-    return (
-      <div className="club-details-loading">
-        <div className="loading-spinner-modern"></div>
-        <p>Chargement du club...</p>
-      </div>
-    );
+    return <Spinner loading={loading} text="Chargement du club..." fullScreen />;
   }
 
   if (error || !club) {

@@ -3,6 +3,7 @@ import ReservationGroup from '../../../components/organisms/dashboard/Reservatio
 import { Reservation, Terrain } from '../../../../../shared/types';
 import CreneauxSection from '../../../components/organisms/dashboard/CreneauxSection';
 import apiClient from '../../../../../shared/api/axiosClient';
+import { Spinner } from '../../../../../shared/components/atoms';
 import './style/CreateReservation.css';
 
 export const CreateReservationPage: React.FC = () => {
@@ -74,11 +75,7 @@ export const CreateReservationPage: React.FC = () => {
     }, []);
 
     if (loading) {
-        return (
-            <div className="loading-container">
-                <p className="loading-text">Chargement...</p>
-            </div>
-        );
+        return <Spinner loading={loading} text="Chargement des données..." fullScreen />;
     }
 
     const todayReservations = reservations.filter(r => {

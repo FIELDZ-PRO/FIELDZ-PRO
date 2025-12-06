@@ -1,7 +1,8 @@
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import './style/ProfilClub.css';
-import { useNavigate } from 'react-router-dom'; // IMPORT NÉCESSAIRE
+import { useNavigate } from 'react-router-dom';
 import { ClubImage } from '../../../shared/types';
+import { Spinner } from '../../../shared/components/atoms';
 
 // --- Définition des types ---
 type Sport = "FOOTBALL" | "TENNIS" | "PADEL" | "BASKETBALL" | "VOLLEYBALL";
@@ -122,7 +123,7 @@ const ProfilClub = () => {
 
   // --- Rendu conditionnel ---
   if (isLoading && !clubData) {
-    return <div>Chargement du profil du club...</div>;
+    return <Spinner loading={isLoading} text="Chargement du profil du club..." fullScreen />;
   }
 
   if (!clubData) {

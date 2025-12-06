@@ -10,6 +10,7 @@ import CreneauxSection from './CreneauxSection';
 import { Terrain } from '../../../../../shared/types/index';
 import ReservationParDateSection from "./ReservationParDateSection";
 import ReservationGroupByStatut from "./ReservationGroupByStatut";
+import { Spinner } from '../../../../../shared/components/atoms';
 
 const API_BASE = import.meta.env.VITE_API_URL || "https://prime-cherida-fieldzz-17996b20.koyeb.app/api";
 
@@ -134,7 +135,7 @@ const ClubDashboard: React.FC = () => {
     { titre: '🔴 Annulées par le club', statut: 'ANNULE_PAR_CLUB' },
   ];
 
-  if (loading) return <p>Chargement...</p>;
+  if (loading) return <Spinner loading={loading} text="Chargement du dashboard..." fullScreen />;
 
   return (
     <div className="p-4 space-y-6">

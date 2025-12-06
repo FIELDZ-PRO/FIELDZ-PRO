@@ -2,6 +2,7 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../shared/context/AuthContext';
+import { Spinner } from '../../../shared/components/atoms';
 import "./style/CompleteProfile.css"
 
 const API_BASE = import.meta.env.VITE_API_URL || "https://prime-cherida-fieldzz-17996b20.koyeb.app/api";
@@ -147,14 +148,7 @@ const CompleteProfile = () => {
 
   // Affiche le loader pendant la vérification du profil
   if (isCheckingProfile) {
-    return (
-      <div className="complete-profile-container">
-        <div className="profile-loader">
-          <div className="loader-spinner"></div>
-          <p className="loader-text">Chargement de votre profil...</p>
-        </div>
-      </div>
-    );
+    return <Spinner loading={isCheckingProfile} text="Chargement de votre profil..." fullScreen />;
   }
 
   return (

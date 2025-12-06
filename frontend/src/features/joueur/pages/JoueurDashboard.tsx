@@ -3,6 +3,7 @@ import { useAuth } from "../../../shared/context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import JoueurDashboardLayout from "../components/organisms/joueurDashboardDoss/JoueurDashboardLayout";
 import { Creneau, Reservation, Joueur } from "../../../shared/types";
+import { Spinner } from "../../../shared/components/atoms";
 
 const API_BASE = import.meta.env.VITE_API_URL || "https://prime-cherida-fieldzz-17996b20.koyeb.app/api";
 
@@ -55,11 +56,7 @@ const JoueurDashboard: React.FC = () => {
   }, []);
 
   if (loading) {
-    return (
-      <div className="loading-container">
-        <div>Chargement des données...</div>
-      </div>
-    );
+    return <Spinner loading={loading} text="Chargement des données..." fullScreen />;
   }
 
   return (

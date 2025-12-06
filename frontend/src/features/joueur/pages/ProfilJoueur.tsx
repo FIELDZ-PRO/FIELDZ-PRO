@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../shared/context/AuthContext';
+import { Spinner } from '../../../shared/components/atoms';
 import './style/ProfilJoueur.css';
 
 const API_BASE = import.meta.env.VITE_API_URL || "https://prime-cherida-fieldzz-17996b20.koyeb.app/api";
@@ -128,11 +129,7 @@ const ProfilJoueur = () => {
   };
 
   if (isLoading) {
-    return (
-      <div className="profil-page-background">
-        <div className="loading">Chargement du profil...</div>
-      </div>
-    );
+    return <Spinner loading={isLoading} text="Chargement du profil..." fullScreen />;
   }
 
   if (!playerData) {
