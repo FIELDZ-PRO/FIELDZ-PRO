@@ -102,6 +102,24 @@ public class ReservationService {
         }
         List<Terrain> terrains = terrainRepository.findByClub(club);
         List<Reservation> reservations = reservationRepository.findByCreneau_TerrainIn(terrains);
+
+        // Auto-expire RESERVE reservations if grace period passed (90 min after start time)
+        LocalDateTime now = LocalDateTime.now();
+        reservations.forEach(reservation -> {
+            if (reservation.getCreneau() != null && reservation.getStatut() == Statut.RESERVE) {
+                LocalDateTime graceEnd = reservation.getCreneau().getDateDebut().plusMinutes(90);
+
+                if (now.isAfter(graceEnd)) {
+                    log.info("Auto-expiring non-confirmed reservation {} (grace period ended at {})",
+                             reservation.getId(), graceEnd);
+                    reservation.setStatut(Statut.ABSENT);
+                    reservation.setDateAnnulation(now);
+                    reservation.setMotifAnnulation("Absence automatique - présence non confirmée");
+                    reservationRepository.save(reservation);
+                }
+            }
+        });
+
         log.info("Club {} : {} terrains, {} réservations", club.getNom(), terrains.size(), reservations.size());
         return reservations;
     }
@@ -114,6 +132,24 @@ public class ReservationService {
             throw new RuntimeException("L'utilisateur n'est pas un joueur.");
         }
         List<Reservation> reservations = reservationRepository.findByJoueur(joueur);
+
+        // Auto-expire RESERVE reservations if grace period passed (30 min after start time)
+        LocalDateTime now = LocalDateTime.now();
+        reservations.forEach(reservation -> {
+            if (reservation.getCreneau() != null && reservation.getStatut() == Statut.RESERVE) {
+                LocalDateTime graceEnd = reservation.getCreneau().getDateDebut().plusMinutes(90);
+
+                if (now.isAfter(graceEnd)) {
+                    log.info("Auto-expiring non-confirmed reservation {} (grace period ended at {})",
+                             reservation.getId(), graceEnd);
+                    reservation.setStatut(Statut.ABSENT);
+                    reservation.setDateAnnulation(now);
+                    reservation.setMotifAnnulation("Absence automatique - présence non confirmée");
+                    reservationRepository.save(reservation);
+                }
+            }
+        });
+
         log.info("Joueur {} a {} réservations", joueur.getEmail(), reservations.size());
         return reservations;
     }
