@@ -54,6 +54,10 @@ public abstract class Utilisateur implements UserDetails {
         return this.email;
     }
 
+    public boolean isEmailVerified() {
+        return this.emailVerified;
+    }
+
     @Override
     public boolean isAccountNonExpired() {
         return true;
@@ -84,5 +88,9 @@ public abstract class Utilisateur implements UserDetails {
     @Column(name = "profil_complet")
     @Builder.Default
     private boolean profilComplet = false;
+
+    @Column(name = "email_verified")
+    @Builder.Default
+    private Boolean emailVerified = false;
 
 }
