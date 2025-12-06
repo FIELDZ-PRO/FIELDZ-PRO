@@ -103,18 +103,18 @@ public class ReservationService {
         List<Terrain> terrains = terrainRepository.findByClub(club);
         List<Reservation> reservations = reservationRepository.findByCreneau_TerrainIn(terrains);
 
-        // Auto-expire RESERVE reservations if grace period passed (90 min after start time)
+        // Auto-expire RESERVE reservations if grace period passed (24 hours after reservation creation)
         LocalDateTime now = LocalDateTime.now();
         reservations.forEach(reservation -> {
             if (reservation.getCreneau() != null && reservation.getStatut() == Statut.RESERVE) {
-                LocalDateTime graceEnd = reservation.getCreneau().getDateDebut().plusMinutes(90);
+                LocalDateTime graceEnd = reservation.getDateReservation().plusHours(24);
 
                 if (now.isAfter(graceEnd)) {
                     log.info("Auto-expiring non-confirmed reservation {} (grace period ended at {})",
                              reservation.getId(), graceEnd);
                     reservation.setStatut(Statut.ABSENT);
                     reservation.setDateAnnulation(now);
-                    reservation.setMotifAnnulation("Absence automatique - présence non confirmée");
+                    reservation.setMotifAnnulation("Absence automatique - présence non confirmée dans les 24h");
                     reservationRepository.save(reservation);
                 }
             }
@@ -133,18 +133,18 @@ public class ReservationService {
         }
         List<Reservation> reservations = reservationRepository.findByJoueur(joueur);
 
-        // Auto-expire RESERVE reservations if grace period passed (30 min after start time)
+        // Auto-expire RESERVE reservations if grace period passed (24 hours after reservation creation)
         LocalDateTime now = LocalDateTime.now();
         reservations.forEach(reservation -> {
             if (reservation.getCreneau() != null && reservation.getStatut() == Statut.RESERVE) {
-                LocalDateTime graceEnd = reservation.getCreneau().getDateDebut().plusMinutes(90);
+                LocalDateTime graceEnd = reservation.getDateReservation().plusHours(24);
 
                 if (now.isAfter(graceEnd)) {
                     log.info("Auto-expiring non-confirmed reservation {} (grace period ended at {})",
                              reservation.getId(), graceEnd);
                     reservation.setStatut(Statut.ABSENT);
                     reservation.setDateAnnulation(now);
-                    reservation.setMotifAnnulation("Absence automatique - présence non confirmée");
+                    reservation.setMotifAnnulation("Absence automatique - présence non confirmée dans les 24h");
                     reservationRepository.save(reservation);
                 }
             }
