@@ -8,6 +8,7 @@ import ResetPassword from "../features/auth/pages/ResetPassword";
 import ForgotPassword from "../features/auth/pages/ForgotPassword";
 import OAuthSuccess from "../features/auth/pages/oauth-success";
 import CompleteProfile from "../features/auth/pages/CompleteProfile";
+import EmailVerification from "../features/auth/pages/EmailVerification";
 
 // Club Feature
 
@@ -50,6 +51,7 @@ export default function AppRouter() {
       {/* Auth */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/verify-email" element={<EmailVerification />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/oauth-success" element={<OAuthSuccess />} />

@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./style/Register.css";
 import React from "react";
-import { useAuth } from "../../../shared/context/AuthContext";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "https://prime-cherida-fieldzz-17996b20.koyeb.app";
 
@@ -36,7 +35,6 @@ export default function Register() {
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { login } = useAuth();
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -85,25 +83,42 @@ export default function Register() {
     const fullPhoneNumber = `${form.countryCode}${form.phoneNumber}`;
 
     try {
-      const response = await axios.post(`${API_BASE}/api/auth/register`, {
-        nom: form.nom,
-        prenom: form.prenom,
-        email: form.email,
-        motDePasse: form.motDePasse,
-        telephone: fullPhoneNumber, // Envoi du numéro complet
-        role: "JOUEUR",
-        adresse: "",
-        nomClub: ""
-      });
 
-      // Auto-login: store the token and redirect to player dashboard
-      const token = response.data.token;
-      if (token) {
-        login(token, { remember: false });
-        navigate("/joueur");
-      } else {
-        // Fallback to login page if no token returned
-        navigate("/login");
+      console.log("Email sent")
+      // Send OTP to email
+      try {
+        await axios.post(`${API_BASE}/api/otp/send`, {
+          email: form.email
+        });
+
+        // Navigate to email verification page with email and password
+        navigate("/verify-email", {
+          state: {
+            nom: form.nom,
+            prenom: form.prenom,
+            email: form.email,
+            password: form.motDePasse,
+            telephone: fullPhoneNumber, // Envoi du numéro complet
+            role: "JOUEUR",
+            adresse: "",
+            nomClub: ""
+          }
+        });
+      } catch (otpErr: any) {
+        console.error("OTP send error:", otpErr);
+        // Even if OTP fails, navigate to verification page
+        navigate("/verify-email", {
+          state: {
+            nom: form.nom,
+            prenom: form.prenom,
+            email: form.email,
+            password: form.motDePasse,
+            telephone: fullPhoneNumber, // Envoi du numéro complet
+            role: "JOUEUR",
+            adresse: "",
+            nomClub: ""
+          }
+        });
       }
     } catch (err: any) {
       const msg = err?.response?.data?.message || "Erreur lors de l'inscription.";
