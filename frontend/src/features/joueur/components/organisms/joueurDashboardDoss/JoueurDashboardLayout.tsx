@@ -7,8 +7,9 @@ import ReservationAVenir from "./ReservationAvenir";
 import ReservationAnnulees from "./ReservationAnnulee";
 import { ClubService, ClubDto } from "../../../../../shared/services/ClubService";
 import { Search, MapPin, Calendar, LogOut, User } from "lucide-react";
+import { Spinner } from "../../../../../shared/components/atoms";
 
-const SPORTS = ["Tous les sports", "PADEL", "FOOT5", "TENNIS", "BASKET", "VOLLEY"];
+const SPORTS = ["Tous les sports", "PADEL", "FOOTBALL", "TENNIS", "BASKET", "VOLLEY"];
 const VILLES = ["Alger", "Oran", "Tizi Ouzou", "Annaba", "Blida", "Béjaïa"];
 
 type Props = {
@@ -83,10 +84,11 @@ const JoueurDashboardLayout: React.FC<Props> = ({
   const getSportEmoji = (sport: string) => {
     const emojis: Record<string, string> = {
       PADEL: "🎾",
-      FOOT5: "⚽",
+      FOOTBALL: "⚽",
       TENNIS: "🎾",
       BASKET: "🏀",
       VOLLEY: "🏐",
+      HANDBALL: "🤾",
       "Tous les sports": "🏆"
     };
     return emojis[sport] || "⚽";
@@ -210,10 +212,7 @@ const JoueurDashboardLayout: React.FC<Props> = ({
 
             {/* État de chargement */}
             {loadingSearch && (
-              <div className="loading-state">
-                <div className="loading-spinner"></div>
-                <p className="loading-text">Recherche en cours...</p>
-              </div>
+              <Spinner loading={loadingSearch} text="Recherche en cours..." />
             )}
 
             {/* Liste des clubs */}

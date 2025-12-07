@@ -27,20 +27,32 @@ const CreneauCard: React.FC<Props> = ({ creneau, onReserver, onUpdate, role }) =
     setShowCancelModal(false);
 
     try {
-      const res = await fetch(`${API_BASE}/creneaux/${creneau.id}/annuler`, {
-        method: "PUT",
+      // DELETE the creneau with force=true to cancel any reservations
+      const res = await fetch(`${API_BASE}/creneaux/${creneau.id}?force=true`, {
+        method: "DELETE",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       });
 
-      if (!res.ok) throw new Error("Erreur lors de l'annulation");
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || "Erreur lors de la suppression");
+      }
 
-      toast.success("✅ Créneau annulé !");
+      const result = await res.json();
+      const reservationsAnnulees = result.reservationsAnnulees || 0;
+
+      if (reservationsAnnulees > 0) {
+        toast.success(`✅ Créneau supprimé ! ${reservationsAnnulees} réservation(s) annulée(s).`);
+      } else {
+        toast.success("✅ Créneau supprimé !");
+      }
+
       onUpdate ? onUpdate() : window.location.reload();
-    } catch (err) {
-      toast.error("❌ Impossible d'annuler ce créneau");
+    } catch (err: any) {
+      toast.error(err.message || "❌ Impossible de supprimer ce créneau");
       console.error(err);
     }
   };
@@ -77,6 +89,7 @@ const CreneauCard: React.FC<Props> = ({ creneau, onReserver, onUpdate, role }) =
       basketball: "🏀",
       volley: "🏐",
       volleyball: "🏐",
+      handball: "🤾",
     };
     return emojis[s] || "🏅";
   };
@@ -125,7 +138,7 @@ const CreneauCard: React.FC<Props> = ({ creneau, onReserver, onUpdate, role }) =
           {role === "club" &&
             (creneau.statut === "LIBRE" || creneau.statut === "RESERVE") && (
               <button onClick={handleOpenCancelModal} className="jd-btn-danger">
-                ❌ Annuler ce créneau
+                🗑️ Supprimer ce créneau
               </button>
             )}
         </div>
@@ -135,10 +148,10 @@ const CreneauCard: React.FC<Props> = ({ creneau, onReserver, onUpdate, role }) =
       {showCancelModal && createPortal(
         <ConfirmModal
           isOpen={showCancelModal}
-          title="Annuler ce créneau ?"
-          message={`Voulez-vous vraiment annuler ce créneau du ${dateStr} à ${heureStr} ? Cette action est irréversible.`}
+          title="Supprimer ce créneau ?"
+          message={`Voulez-vous vraiment supprimer ce créneau du ${dateStr} à ${heureStr} ? ${creneau.statut === 'RESERVE' ? 'Les réservations associées seront annulées. ' : ''}Cette action est irréversible.`}
           type="danger"
-          confirmText="Annuler le créneau"
+          confirmText="Supprimer le créneau"
           cancelText="Retour"
           onConfirm={handleConfirmCancel}
           onCancel={() => setShowCancelModal(false)}

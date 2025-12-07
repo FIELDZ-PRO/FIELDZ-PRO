@@ -5,8 +5,8 @@ import { ClubImage } from '../../../shared/types';
 import { Spinner } from '../../../shared/components/atoms';
 
 // --- Définition des types ---
-type Sport = "FOOTBALL" | "TENNIS" | "PADEL" | "BASKETBALL" | "VOLLEYBALL";
-const ALL_SPORTS: Sport[] = ["FOOTBALL", "TENNIS", "PADEL", "BASKETBALL", "VOLLEYBALL"];
+type Sport = "FOOTBALL" | "TENNIS" | "PADEL" | "BASKET" | "HANDBALL" | "VOLLEY";
+const ALL_SPORTS: Sport[] = ["FOOTBALL", "TENNIS", "PADEL", "BASKET", "HANDBALL", "VOLLEY"];
 
 interface ClubData {
   nom: string;

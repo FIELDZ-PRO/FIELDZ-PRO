@@ -44,25 +44,30 @@
 }
 
 .back-button {
-  background: transparent;
-  border: none;
-  color: var(--color-primary-green);
+  background: var(--color-primary-green);
+  border: 2px solid var(--color-primary-green);
+  color: var(--color-white);
   font-family: 'Poppins', sans-serif;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 600;
   cursor: pointer;
-  padding: 0;
+  padding: 12px 24px;
   margin: 0;
-  transition: opacity 0.2s;
+  border-radius: 10px;
+  transition: all 0.3s ease;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   flex-shrink: 0;
   line-height: 1;
+  box-shadow: 0 2px 8px rgba(5, 96, 43, 0.2);
 }
 
 .back-button:hover {
-  opacity: 0.7;
+  background: var(--color-secondary-green);
+  border-color: var(--color-secondary-green);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(5, 96, 43, 0.3);
 }
 
 .club-details-header h1 {
@@ -131,6 +136,73 @@
   display: inline-block;
   vertical-align: middle;
   margin-right: 6px;
+}
+
+/* ========== CAROUSEL CONTROLS ========== */
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 10;
+  color: var(--color-primary-green);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.carousel-btn:hover {
+  background: var(--color-primary-green);
+  color: var(--color-white);
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 4px 12px rgba(5, 96, 43, 0.3);
+}
+
+.carousel-btn-prev {
+  left: 20px;
+}
+
+.carousel-btn-next {
+  right: 20px;
+}
+
+.carousel-indicators {
+  position: absolute;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  z-index: 10;
+}
+
+.carousel-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid var(--color-white);
+  background: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0;
+}
+
+.carousel-indicator:hover {
+  background: rgba(255, 255, 255, 0.8);
+  transform: scale(1.2);
+}
+
+.carousel-indicator.active {
+  background: var(--color-white);
+  transform: scale(1.3);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
 /* ========== SECTION INFORMATIONS ========== */
@@ -268,6 +340,23 @@
   word-break: break-word;
 }
 
+.location-link {
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  color: var(--color-primary-green);
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.location-link:hover {
+  color: var(--color-secondary-green);
+  text-decoration: underline;
+}
+
 /* ========== SPORTS DISPONIBLES ========== */
 .club-sports {
   padding: 0 24px;
@@ -375,6 +464,69 @@
   background: var(--color-primary-green);
   border-color: var(--color-primary-green);
   color: var(--color-white);
+}
+
+/* ========== TIME PERIOD SELECTOR ========== */
+.time-period-selector {
+  padding: 0 24px;
+  max-width: 1200px;
+  margin: 0 auto 24px;
+}
+
+.time-period-selector h3 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-black);
+  margin-bottom: 16px;
+}
+
+.time-periods-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.time-period-button {
+  background: var(--color-white);
+  border: 2px solid #E5E7EB;
+  padding: 14px 16px;
+  border-radius: 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-gray);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+}
+
+.time-period-button .time-range {
+  font-size: 12px;
+  font-weight: 500;
+  color: #9CA3AF;
+  margin-top: 2px;
+}
+
+.time-period-button:hover {
+  border-color: var(--color-primary-green);
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(5, 96, 43, 0.15);
+}
+
+.time-period-button.active {
+  background: var(--color-primary-green);
+  border-color: var(--color-primary-green);
+  color: var(--color-white);
+  box-shadow: 0 2px 8px rgba(5, 96, 43, 0.25);
+}
+
+.time-period-button.active .time-range {
+  color: rgba(255, 255, 255, 0.9);
 }
 
 /* ========== CRÉNEAUX ========== */
@@ -544,8 +696,13 @@
 
   .club-sports,
   .date-selector,
+  .time-period-selector,
   .creneaux-section {
     padding: 0 20px;
+  }
+
+  .time-periods-grid {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   }
 }
 
@@ -572,6 +729,28 @@
 
   .club-banner-overlay p {
     font-size: 14px;
+  }
+
+  .carousel-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .carousel-btn-prev {
+    left: 12px;
+  }
+
+  .carousel-btn-next {
+    right: 12px;
+  }
+
+  .carousel-indicators {
+    bottom: 70px;
+  }
+
+  .carousel-indicator {
+    width: 10px;
+    height: 10px;
   }
 
   .club-info-section {
@@ -605,15 +784,31 @@
 
   .club-sports,
   .date-selector,
+  .time-period-selector,
   .creneaux-section {
     padding: 0 16px;
   }
 
   .club-sports h3,
   .date-selector h3,
+  .time-period-selector h3,
   .creneaux-section h3 {
     font-size: 17px;
     margin-bottom: 12px;
+  }
+
+  .time-periods-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .time-period-button {
+    padding: 12px 10px;
+    font-size: 14px;
+  }
+
+  .time-period-button .time-range {
+    font-size: 11px;
   }
 
   .sport-badge {
@@ -694,8 +889,8 @@
   }
 
   .back-button {
-    font-size: 14px;
-    padding: 6px;
+    font-size: 15px;
+    padding: 10px 18px;
   }
 
   .club-banner {
@@ -713,6 +908,29 @@
 
   .club-banner-overlay p {
     font-size: 13px;
+  }
+
+  .carousel-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .carousel-btn-prev {
+    left: 8px;
+  }
+
+  .carousel-btn-next {
+    right: 8px;
+  }
+
+  .carousel-indicators {
+    bottom: 60px;
+    gap: 8px;
+  }
+
+  .carousel-indicator {
+    width: 8px;
+    height: 8px;
   }
 
   .club-info-section {
@@ -758,14 +976,30 @@
 
   .club-sports,
   .date-selector,
+  .time-period-selector,
   .creneaux-section {
     padding: 0 12px;
   }
 
   .club-sports h3,
   .date-selector h3,
+  .time-period-selector h3,
   .creneaux-section h3 {
     font-size: 16px;
+  }
+
+  .time-periods-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .time-period-button {
+    padding: 10px 8px;
+    font-size: 13px;
+  }
+
+  .time-period-button .time-range {
+    font-size: 10px;
   }
 
   .sport-badge {

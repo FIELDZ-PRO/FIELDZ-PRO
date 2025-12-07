@@ -288,6 +288,11 @@ const TerrainsPage = () => {
                                     <option value="" disabled>Sélectionner un sport</option>
                                     <option value="Padel">Padel</option>
                                     <option value="Football">Football</option>
+                                    <option value="Basket">Basket</option>
+                                    <option value="Volley">Volley</option>
+                                    <option value="Tennis">Tennis</option>
+
+
                                 </select>
                             </div>
 
@@ -364,6 +369,9 @@ const TerrainsPage = () => {
                                     <option value="" disabled>Sélectionner un sport</option>
                                     <option value="Padel">Padel</option>
                                     <option value="Football">Football</option>
+                                    <option value="Basket">Basket</option>
+                                    <option value="Volley">Volley</option>
+                                    <option value="Tennis">Tennis</option>
                                 </select>
                             </div>
 

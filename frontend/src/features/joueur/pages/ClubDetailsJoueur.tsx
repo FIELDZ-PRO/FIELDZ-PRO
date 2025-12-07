@@ -1,12 +1,12 @@
 // src/pages/ClubDetailsJoueur.tsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ClubService, ClubDto, getCreneauxByClubDateSport } from "../../../shared/services/ClubService";
 import ReservationModal from "../components/organisms/joueurDashboardDoss/ReservationModal";
 import { Creneau } from "../../../shared/types";
 import { Spinner } from "../../../shared/components/atoms";
 import "./style/ClubDetailsJoueur.css";
-import { ChevronDown, ChevronUp, MapPin, Phone, Info, Clock } from "lucide-react";
+import { ChevronDown, ChevronUp, ChevronLeft, ChevronRight, MapPin, Phone, Info, Clock, ExternalLink } from "lucide-react";
 
 // ✅ Helpers pour parser/formatter en LOCAL (sans décalage)
 import {
@@ -34,11 +34,15 @@ const ClubDetailsJoueur: React.FC = () => {
   });
 
   const [selectedSport, setSelectedSport] = useState<string>("");
-  const [creneaux, setCreneaux] = useState<Creneau[]>([]);
+  const [selectedTimePeriod, setSelectedTimePeriod] = useState<string>(""); // "" = tous
+  const [allCreneaux, setAllCreneaux] = useState<Creneau[]>([]); // Tous les créneaux
   const [selectedCreneau, setSelectedCreneau] = useState<Creneau | null>(null);
 
   // États pour "Lire plus"
   const [showFullDescription, setShowFullDescription] = useState(false);
+
+  // État pour le carousel d'images
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   // ────────────────────────────────────────────────────────────────────────────────
   // Chargement des infos club
@@ -51,12 +55,8 @@ const ClubDetailsJoueur: React.FC = () => {
         const data = await ClubService.getClubById(parseInt(id, 10));
         setClub(data);
 
-        // Initialise le sport sélectionné
-        if (data.sports && data.sports.length > 0) {
-          setSelectedSport(data.sports[0]);
-        } else if (data.sport) {
-          setSelectedSport(data.sport);
-        }
+        // Initialise avec "Tous les sports" (vide) pour montrer tous les créneaux
+        // L'utilisateur pourra cliquer sur un sport spécifique s'il le souhaite
       } catch (err: any) {
         console.error("Erreur chargement club:", err);
         setError(err.message || "Erreur lors du chargement");
@@ -72,24 +72,62 @@ const ClubDetailsJoueur: React.FC = () => {
   // ────────────────────────────────────────────────────────────────────────────────
   useEffect(() => {
     const fetchCreneaux = async () => {
-      if (!id || !selectedDate || !selectedSport) return;
+      if (!id || !selectedDate) return;
       try {
+        // Récupère tous les créneaux (sans filtre de sport)
         const data = await getCreneauxByClubDateSport(
           parseInt(id, 10),
           selectedDate,
-          selectedSport
+          undefined // On récupère tous les sports
         );
-        setCreneaux(data);
+        setAllCreneaux(data);
       } catch (err: any) {
         console.error("Erreur chargement créneaux:", err);
-        setCreneaux([]);
+        setAllCreneaux([]);
       }
     };
     fetchCreneaux();
-  }, [id, selectedDate, selectedSport]);
+  }, [id, selectedDate]); // Retire selectedSport des dépendances
 
   // ────────────────────────────────────────────────────────────────────────────────
-  // Helpers d’affichage
+  // Helper: Détermine la période de la journée pour un créneau
+  // ────────────────────────────────────────────────────────────────────────────────
+  const getTimePeriod = (dateDebut: string): string => {
+    const date = new Date(dateDebut);
+    const hours = date.getHours();
+
+    if (hours >= 0 && hours < 11) return "matin";
+    if (hours >= 11 && hours < 14) return "midi";
+    if (hours >= 14 && hours < 17) return "après-midi";
+    return "soir"; // 17:00 to 23:59
+  };
+
+  // ────────────────────────────────────────────────────────────────────────────────
+  // Filtre les créneaux selon le sport et la période sélectionnés
+  // ────────────────────────────────────────────────────────────────────────────────
+  const creneaux = useMemo(() => {
+    let filtered = allCreneaux;
+
+    // Filtre par sport du terrain
+    if (selectedSport) {
+      filtered = filtered.filter((creneau) => {
+        const terrainSport = (creneau.terrain as any)?.sport;
+        return terrainSport?.toUpperCase() === selectedSport.toUpperCase();
+      });
+    }
+
+    // Filtre par période de la journée
+    if (selectedTimePeriod) {
+      filtered = filtered.filter((creneau) => {
+        return getTimePeriod(creneau.dateDebut) === selectedTimePeriod;
+      });
+    }
+
+    return filtered;
+  }, [allCreneaux, selectedSport, selectedTimePeriod]);
+
+  // ────────────────────────────────────────────────────────────────────────────────
+  // Helpers d'affichage
   // ────────────────────────────────────────────────────────────────────────────────
   const formatDate = (ymd: string) => {
     const d = parseYMDLocal(ymd); // évite le bug Date("YYYY-MM-DD") en UTC
@@ -108,8 +146,26 @@ const ClubDetailsJoueur: React.FC = () => {
       basketball: "🏀",
       volley: "🏐",
       volleyball: "🏐",
+      handball: "🤾",
     };
     return emojis[s] || "🏅";
+  };
+
+  // Fonctions de navigation du carousel
+  const nextImage = () => {
+    if (club?.images && club.images.length > 0) {
+      setCurrentImageIndex((prev) => (prev + 1) % club.images.length);
+    }
+  };
+
+  const previousImage = () => {
+    if (club?.images && club.images.length > 0) {
+      setCurrentImageIndex((prev) => (prev - 1 + club.images.length) % club.images.length);
+    }
+  };
+
+  const goToImage = (index: number) => {
+    setCurrentImageIndex(index);
   };
 
   // Nom de terrain robuste (selon que l’API renvoie nom/nomTerrain)
@@ -150,15 +206,15 @@ const ClubDetailsJoueur: React.FC = () => {
 
   const handleReservationSuccess = async () => {
     setSelectedCreneau(null);
-    // refresh des créneaux
+    // refresh des créneaux (tous les sports)
     if (!id) return;
     try {
       const data = await getCreneauxByClubDateSport(
         parseInt(id, 10),
         selectedDate,
-        selectedSport
+        undefined // Récupère tous les sports
       );
-      setCreneaux(data || []);
+      setAllCreneaux(data || []);
     } catch (err) {
       console.error("Erreur rechargement:", err);
     }
@@ -193,13 +249,38 @@ const ClubDetailsJoueur: React.FC = () => {
         <button className="back-button" onClick={() => navigate(-1)}>
           ← Retour
         </button>
-        <h1>Réserver chez {club.nom}</h1>
       </div>
 
       {/* Bannière */}
       <div className="club-banner">
         {club.images && club.images.length > 0 ? (
-          <img src={club.images[0].imageUrl} alt={club.nom} />
+          <>
+            <img src={club.images[currentImageIndex].imageUrl} alt={club.nom} />
+
+            {/* Navigation arrows - afficher seulement s'il y a plus d'une image */}
+            {club.images.length > 1 && (
+              <>
+                <button className="carousel-btn carousel-btn-prev" onClick={previousImage}>
+                  <ChevronLeft size={32} />
+                </button>
+                <button className="carousel-btn carousel-btn-next" onClick={nextImage}>
+                  <ChevronRight size={32} />
+                </button>
+
+                {/* Indicateurs de position */}
+                <div className="carousel-indicators">
+                  {club.images.map((_, index) => (
+                    <button
+                      key={index}
+                      className={`carousel-indicator ${index === currentImageIndex ? 'active' : ''}`}
+                      onClick={() => goToImage(index)}
+                      aria-label={`Image ${index + 1}`}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
+          </>
         ) : (
           <div className="club-banner-placeholder">
             <h2>{club.nom}</h2>
@@ -266,6 +347,19 @@ const ClubDetailsJoueur: React.FC = () => {
               <MapPin className="contact-icon" />
               <span>{club.adresse || "Non renseigné"}</span>
             </div>
+            {club.lienLocalisation && (
+              <div className="contact-item">
+                <ExternalLink className="contact-icon" />
+                <a
+                  href={club.lienLocalisation}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="location-link"
+                >
+                  Voir sur la carte
+                </a>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -273,8 +367,17 @@ const ClubDetailsJoueur: React.FC = () => {
       {/* Sports */}
       {(club.sport || club.sports) && (
         <div className="club-sports">
-          <h3>Sports disponibles</h3>
+          <h3>Filtrer par sport</h3>
           <div className="sports-filter">
+            {/* Bouton "Tous les sports" */}
+            <button
+              className={`sport-badge ${!selectedSport ? "active" : ""}`}
+              onClick={() => setSelectedSport("")}
+            >
+              🏆 Tous les sports
+            </button>
+
+            {/* Liste des sports disponibles */}
             {club.sports && club.sports.length > 0 ? (
               club.sports.map((sport) => (
                 <button
@@ -287,7 +390,7 @@ const ClubDetailsJoueur: React.FC = () => {
               ))
             ) : club.sport ? (
               <button
-                className="sport-badge active"
+                className={`sport-badge ${selectedSport === club.sport ? "active" : ""}`}
                 onClick={() => setSelectedSport(club.sport!)}
               >
                 {getSportEmoji(club.sport)} {club.sport}
@@ -313,15 +416,62 @@ const ClubDetailsJoueur: React.FC = () => {
         </div>
       </div>
 
+      {/* Périodes de la journée */}
+      <div className="time-period-selector">
+        <h3>Filtrer par moment de la journée</h3>
+        <div className="time-periods-grid">
+          <button
+            className={`time-period-button ${selectedTimePeriod === "matin" ? "active" : ""}`}
+            onClick={() => setSelectedTimePeriod("matin")}
+          >
+            Matin
+          </button>
+          <button
+            className={`time-period-button ${selectedTimePeriod === "midi" ? "active" : ""}`}
+            onClick={() => setSelectedTimePeriod("midi")}
+          >
+            Midi
+          </button>
+          <button
+            className={`time-period-button ${selectedTimePeriod === "après-midi" ? "active" : ""}`}
+            onClick={() => setSelectedTimePeriod("après-midi")}
+          >
+            Après-midi
+          </button>
+          <button
+            className={`time-period-button ${selectedTimePeriod === "soir" ? "active" : ""}`}
+            onClick={() => setSelectedTimePeriod("soir")}
+          >
+            Soir
+          </button>
+        </div>
+      </div>
+
       {/* Créneaux */}
       <div className="creneaux-section">
-        <h3>Créneaux disponibles le {formatDate(selectedDate)}</h3>
+        <h3>
+          Créneaux disponibles le {formatDate(selectedDate)}
+          {creneaux.length > 0 && (
+            <span style={{ color: 'var(--color-primary-green)', marginLeft: '8px' }}>
+              ({creneaux.length} {creneaux.length === 1 ? 'créneau' : 'créneaux'})
+            </span>
+          )}
+        </h3>
 
         {creneaux.length === 0 ? (
           <div className="no-creneaux">
             <div className="no-creneaux-icon">📅</div>
-            <p>Aucun créneau disponible pour cette date.</p>
-            <p className="no-creneaux-hint">Essayez une autre date ou un autre sport.</p>
+            <p>
+              Aucun créneau disponible
+              {selectedSport && ` pour ${selectedSport}`}
+              {selectedTimePeriod && ` ${selectedTimePeriod === "matin" ? "le matin" : selectedTimePeriod === "midi" ? "à midi" : selectedTimePeriod === "après-midi" ? "l'après-midi" : "le soir"}`}
+              {" "}le {formatDate(selectedDate)}.
+            </p>
+            <p className="no-creneaux-hint">
+              {selectedSport || selectedTimePeriod
+                ? "Essayez un autre filtre ou une autre date."
+                : "Essayez une autre date."}
+            </p>
           </div>
         ) : (
           <div className="creneaux-list">

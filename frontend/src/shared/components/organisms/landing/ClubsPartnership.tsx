@@ -19,11 +19,11 @@ const SPORT_LABELS = [
 type SportLabel = typeof SPORT_LABELS[number]
 
 // Valeurs exactes du backend
-type SportEnum = 'FOOT5' | 'PADEL' | 'TENNIS' | 'BASKET' | 'HANDBALL' | 'VOLLEY' // | 'AUTRE'
+type SportEnum = 'FOOTBALL' | 'PADEL' | 'TENNIS' | 'BASKET' | 'HANDBALL' | 'VOLLEY' // | 'AUTRE'
 
 // Table de correspondance labels → enum
 const MAP_LABEL_TO_ENUM: Record<SportLabel, SportEnum> = {
-  'Foot': 'FOOT5',
+  'Foot': 'FOOTBALL',
   'Padel': 'PADEL',
   'Tennis': 'TENNIS',
   'Basket': 'BASKET',

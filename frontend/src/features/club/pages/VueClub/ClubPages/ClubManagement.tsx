@@ -5,8 +5,8 @@ import { getClubMe, modifyInfoClub, addClubImage, deleteClubImage, ClubDto } fro
 import { ClubImage } from '../../../../../shared/types';
 import CustomAlert, { AlertType } from '../../../../../shared/components/atoms/CustomAlert';
 
-// Available sports list
-const AVAILABLE_SPORTS = ['PADEL', 'FOOT5', 'TENNIS', 'BASKET', 'HANDBALL', 'VOLLEY'] as const;
+// Available sports list - must match backend Sport enum exactly
+const AVAILABLE_SPORTS = ['FOOTBALL', 'PADEL', 'TENNIS', 'BASKET', 'HANDBALL', 'VOLLEY'] as const;
 
 interface AlertState {
   show: boolean;
@@ -93,6 +93,7 @@ const ClubManagementPage = () => {
     description: '',
     politique: '',
     sports: [],
+    lienLocalisation: '',
   });
 
   const [isEditing, setIsEditing] = useState(false);
@@ -405,6 +406,17 @@ const ClubManagementPage = () => {
                 value={clubInfo.telephone ?? ''}
                 onChange={(e) => setClubInfo({ ...clubInfo, telephone: e.target.value })}
                 disabled={!isEditing}
+              />
+            </div>
+
+            <div className="form-group">
+              <label><MapPin size={16} /> Lien de localisation</label>
+              <input
+                type="url"
+                value={clubInfo.lienLocalisation ?? ''}
+                onChange={(e) => setClubInfo({ ...clubInfo, lienLocalisation: e.target.value })}
+                disabled={!isEditing}
+                placeholder="https://maps.google.com/..."
               />
             </div>
 

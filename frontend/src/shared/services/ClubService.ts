@@ -47,6 +47,7 @@ export type ClubDto = {
   politique?: string;
   sport?: string;
   sports?: string[];
+  lienLocalisation?: string; // Google Maps or other location link
 };
 
 export type CreateCreneauPayload = {
@@ -287,6 +288,7 @@ export async function modifyInfoClub(ClubInfo: Omit<ClubDto, "id">) {
       description: ClubInfo.description,
       politique: ClubInfo.politique,
       sports: ClubInfo.sports,
+      lienLocalisation: ClubInfo.lienLocalisation,
     });
   } catch (error) {
     throw error;
