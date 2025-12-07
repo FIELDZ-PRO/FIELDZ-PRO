@@ -15,6 +15,7 @@ public class CreateClubRequest {
     private String telephone;
     private String sport;      // optionnel si vous gérez plus tard Set<Sport>
     private String ville;
+    private String locationLink;
 
     // Informations du responsable
     private String nomResponsable;

@@ -2,7 +2,7 @@ package com.fieldz.model;
 
 public enum Sport {
     PADEL,
-    FOOT5,
+    FOOTBALL,
     TENNIS,
     BASKET,
     HANDBALL,

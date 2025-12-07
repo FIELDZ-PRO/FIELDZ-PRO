@@ -67,6 +67,7 @@ public class ClubService {
         // ✅ champs longs (ne pas filtrer avec notBlank : on veut accepter du multi-ligne)
         if (dto.getDescription() != null) club.setDescription(dto.getDescription());
         if (dto.getPolitique() != null) club.setPolitique(dto.getPolitique());
+        if (dto.getLocationLink() != null) club.setLocationLink(dto.getLocationLink());
 
         Set<Sport> sports = dto.getSports();
         if (sports != null) club.setSports(sports);

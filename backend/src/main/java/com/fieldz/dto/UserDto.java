@@ -16,4 +16,5 @@ public class UserDto {
     private String description;
     private String telephone;
     private String adresse;
+    private String locationLink;
 }

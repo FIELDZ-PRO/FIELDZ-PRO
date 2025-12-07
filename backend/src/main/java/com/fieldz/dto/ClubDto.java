@@ -16,6 +16,7 @@ public class ClubDto {
     // Nazim : description
     private String description;
     private String politique;
+    private String locationLink;
     private Set<com.fieldz.model.Sport> sports; // ou Set<String> si tu préfères décorréler
 
     // Liste des images du club avec IDs pour permettre la suppression

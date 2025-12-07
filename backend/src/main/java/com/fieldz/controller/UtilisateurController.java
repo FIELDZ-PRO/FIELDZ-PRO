@@ -97,6 +97,8 @@ public class UtilisateurController {
                 club.setAdresse(req.getAdresse());
             if (notBlank(req.getTelephone()))
                 club.setTelephone(req.getTelephone());
+            if (notBlank(req.getLocationLink()))
+                club.setLocationLink(req.getLocationLink());
             if (req.getSports() != null && !req.getSports().isEmpty()) {
                 club.setSports(req.getSports());
             }
@@ -200,7 +202,9 @@ public class UtilisateurController {
             if (req.getSports() != null) {
                 managedClub.setSports(req.getSports()); // null => ne touche pas; vide => efface
             }
-
+            if (req.getLocationLink() != null) {
+                managedClub.setLocationLink(req.getLocationLink());
+            }
             // (Re)validation profil complet basée sur l'entité à jour
             if (!Boolean.TRUE.equals(managedClub.isProfilComplet())) {
                 if (hasText.test(managedClub.getNom())

@@ -39,6 +39,9 @@ public class Club extends Utilisateur {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Column(name = "location_link")
+    private String locationLink;
+
     @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ClubImage> images;
 }

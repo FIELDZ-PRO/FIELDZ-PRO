@@ -27,6 +27,7 @@ public class UserMapper {
         if (user instanceof Club club) {
             dto.setTelephone(club.getTelephone());
             dto.setAdresse(club.getAdresse());
+            dto.setLocationLink(club.getLocationLink());
         }
 
         return dto;

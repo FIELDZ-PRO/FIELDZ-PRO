@@ -24,6 +24,7 @@ public class ClubMapper {
         // Ajout du map pour la description
         dto.setDescription(club.getDescription());
         dto.setPolitique(club.getPolitique());
+        dto.setLocationLink(club.getLocationLink());
         dto.setSports(club.getSports());
 
         // Mapper les images du club avec leurs IDs et ordre d'affichage
