@@ -14,7 +14,7 @@ const AdminLayout = () => {
   ];
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    //localStorage.removeItem('token');
     navigate('/');
   };
 

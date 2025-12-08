@@ -6,14 +6,13 @@ import ReservationModal from "../components/organisms/joueurDashboardDoss/Reserv
 import { Creneau } from "../../../shared/types";
 import { Spinner } from "../../../shared/components/atoms";
 import "./style/ClubDetailsJoueur.css";
-import { ChevronDown, ChevronUp, ChevronLeft, ChevronRight, MapPin, Phone, Info, Clock, ExternalLink } from "lucide-react";
+import { ChevronLeft, ChevronRight, MapPin, Phone, Info, Clock, ExternalLink, MoreVertical, X } from "lucide-react";
 
 // ✅ Helpers pour parser/formatter en LOCAL (sans décalage)
 import {
   parseYMDLocal,
   parseLocalDateTime,
   formatShortDate,
-  formatRangeLocal,
 } from "../../../utils/datetime";
 
 const ClubDetailsJoueur: React.FC = () => {
@@ -38,8 +37,8 @@ const ClubDetailsJoueur: React.FC = () => {
   const [allCreneaux, setAllCreneaux] = useState<Creneau[]>([]); // Tous les créneaux
   const [selectedCreneau, setSelectedCreneau] = useState<Creneau | null>(null);
 
-  // États pour "Lire plus"
-  const [showFullDescription, setShowFullDescription] = useState(false);
+  // État pour la modal "À propos"
+  const [showAboutModal, setShowAboutModal] = useState(false);
 
   // État pour le carousel d'images
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -172,20 +171,22 @@ const ClubDetailsJoueur: React.FC = () => {
   const getTerrainName = (cr: Creneau) =>
     (cr.terrain as any)?.nomTerrain || (cr.terrain as any)?.nom || "Terrain";
 
-  // Label heure/date du créneau (lisible)
+  // Label heure du créneau (time only)
   const renderCreneauTime = (cr: Creneau) => {
-    // Cas API “ancienne” : heureDebut/heureFin + dateDebut
-    if (cr.heureDebut && cr.heureFin && cr.dateDebut) {
-      const d = parseLocalDateTime(cr.dateDebut);
-      const dateLbl = formatShortDate(d);
-      return `${dateLbl} • ${cr.heureDebut}–${cr.heureFin}`;
+    // Cas API "ancienne" : heureDebut/heureFin
+    if (cr.heureDebut && cr.heureFin) {
+      return `${cr.heureDebut} - ${cr.heureFin}`;
     }
-    // Cas API “nouvelle” : dateDebut/dateFin
+    // Cas API "nouvelle" : dateDebut/dateFin
     if (cr.dateDebut && cr.dateFin) {
-      return formatRangeLocal(cr.dateDebut, cr.dateFin);
+      const debut = parseLocalDateTime(cr.dateDebut);
+      const fin = parseLocalDateTime(cr.dateFin);
+      const heureDebut = `${String(debut.getHours()).padStart(2, '0')}:${String(debut.getMinutes()).padStart(2, '0')}`;
+      const heureFin = `${String(fin.getHours()).padStart(2, '0')}:${String(fin.getMinutes()).padStart(2, '0')}`;
+      return `${heureDebut} - ${heureFin}`;
     }
     // Fallback
-    return `${cr.heureDebut || cr.dateDebut} - ${cr.heureFin || cr.dateFin}`;
+    return `${cr.heureDebut || cr.dateDebut}`;
   };
 
   const generateDates = () => {
@@ -219,8 +220,6 @@ const ClubDetailsJoueur: React.FC = () => {
       console.error("Erreur rechargement:", err);
     }
   };
-  const truncateText = (text: string, maxLength = 200) =>
-    !text || text.length <= maxLength ? text : text.slice(0, maxLength) + "...";
 
   // ────────────────────────────────────────────────────────────────────────────────
   // Renders
@@ -242,12 +241,17 @@ const ClubDetailsJoueur: React.FC = () => {
     );
   }
   console.log(creneaux)
-
+  console.log(club)
   return (
     <div className="club-details-container">
       <div className="club-details-header">
         <button className="back-button" onClick={() => navigate(-1)}>
           ← Retour
+        </button>
+        <h1>{club.nom}</h1>
+        <button className="about-button" onClick={() => setShowAboutModal(true)}>
+          <MoreVertical size={20} />
+          À propos du club
         </button>
       </div>
 
@@ -287,7 +291,6 @@ const ClubDetailsJoueur: React.FC = () => {
           </div>
         )}
         <div className="club-banner-overlay">
-          <h2>{club.nom}</h2>
           <p>
             <MapPin className="inline-icon" />
             {club.adresse}, {club.ville}
@@ -295,48 +298,12 @@ const ClubDetailsJoueur: React.FC = () => {
         </div>
       </div>
 
-      {/* Description & Contact */}
+      {/* Informations */}
       <div className="club-info-section">
-        <div className="info-card description-card">
-          <div className="info-card-header">
-            <Info className="card-icon" />
-            <h3>À propos de {club.nom}</h3>
-          </div>
-          <div className="info-card-content">
-            {club.description ? (
-              <>
-                <p className="description-text">
-                  {showFullDescription ? club.description : truncateText(club.description, 200)}
-                </p>
-                {club.description.length > 200 && (
-                  <button
-                    className="btn-read-more"
-                    onClick={() => setShowFullDescription((v) => !v)}
-                  >
-                    {showFullDescription ? (
-                      <>
-                        <ChevronUp className="btn-icon" /> Voir moins
-                      </>
-                    ) : (
-                      <>
-                        <ChevronDown className="btn-icon" /> Lire plus
-                      </>
-                    )}
-                  </button>
-                )}
-              </>
-            ) : (
-              <p className="description-text no-description">
-                Aucune description disponible pour ce club.
-              </p>
-            )}
-          </div>
-        </div>
-
         <div className="info-card contact-card">
           <div className="info-card-header">
-            <Phone className="card-icon" />
-            <h3>Informations de contact</h3>
+            <Info className="card-icon" />
+            <h3>Informations</h3>
           </div>
           <div className="info-card-content">
             <div className="contact-item">
@@ -347,11 +314,11 @@ const ClubDetailsJoueur: React.FC = () => {
               <MapPin className="contact-icon" />
               <span>{club.adresse || "Non renseigné"}</span>
             </div>
-            {club.lienLocalisation && (
+            {club.locationLink && (
               <div className="contact-item">
                 <ExternalLink className="contact-icon" />
                 <a
-                  href={club.lienLocalisation}
+                  href={club.locationLink}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="location-link"
@@ -360,6 +327,14 @@ const ClubDetailsJoueur: React.FC = () => {
                 </a>
               </div>
             )}
+            <div className="contact-item">
+              <Info className="contact-icon" />
+              <span>Académie : Non renseigné</span>
+            </div>
+            <div className="contact-item">
+              <Clock className="contact-icon" />
+              <span>Horaires : À venir</span>
+            </div>
           </div>
         </div>
       </div>
@@ -422,25 +397,25 @@ const ClubDetailsJoueur: React.FC = () => {
         <div className="time-periods-grid">
           <button
             className={`time-period-button ${selectedTimePeriod === "matin" ? "active" : ""}`}
-            onClick={() => setSelectedTimePeriod("matin")}
+            onClick={() => setSelectedTimePeriod(selectedTimePeriod === "matin" ? "" : "matin")}
           >
             Matin
           </button>
           <button
             className={`time-period-button ${selectedTimePeriod === "midi" ? "active" : ""}`}
-            onClick={() => setSelectedTimePeriod("midi")}
+            onClick={() => setSelectedTimePeriod(selectedTimePeriod === "midi" ? "" : "midi")}
           >
             Midi
           </button>
           <button
             className={`time-period-button ${selectedTimePeriod === "après-midi" ? "active" : ""}`}
-            onClick={() => setSelectedTimePeriod("après-midi")}
+            onClick={() => setSelectedTimePeriod(selectedTimePeriod === "après-midi" ? "" : "après-midi")}
           >
             Après-midi
           </button>
           <button
             className={`time-period-button ${selectedTimePeriod === "soir" ? "active" : ""}`}
-            onClick={() => setSelectedTimePeriod("soir")}
+            onClick={() => setSelectedTimePeriod(selectedTimePeriod === "soir" ? "" : "soir")}
           >
             Soir
           </button>
@@ -476,9 +451,13 @@ const ClubDetailsJoueur: React.FC = () => {
         ) : (
           <div className="creneaux-list">
             {creneaux.map((creneau) => (
-              <div key={creneau.id} className="creneau-card">
-                <div className="creneau-info">
-                  {/* Display terrain image */}
+              <div
+                key={creneau.id}
+                className="creneau-card"
+                onClick={() => handleReserver(creneau)}
+              >
+                {/* Left section: Image */}
+                <div className="creneau-image-section">
                   {(creneau.terrain as any)?.photo ? (
                     <img
                       src={(creneau.terrain as any).photo}
@@ -490,32 +469,30 @@ const ClubDetailsJoueur: React.FC = () => {
                       {getSportEmoji((creneau.terrain as any)?.sport || "sport")}
                     </div>
                   )}
-                  <div className="creneau-details">
+                </div>
+
+                {/* Right section: Info and button */}
+                <div className="creneau-info-wrapper">
+                  <div className="creneau-info-content">
                     <h4>{getTerrainName(creneau)}</h4>
 
-                    {/* ✅ Affichage lisible et cohérent */}
                     <p className="creneau-time">
-                      <Clock size={16} className="inline-icon text-emerald-700" />
-                      {" "}
+                      <Clock size={16} />
                       {renderCreneauTime(creneau)}
                     </p>
 
                     <p className="creneau-sport">
                       {(creneau.terrain as any)?.sport || "Sport"}
                     </p>
-                  </div>
-                </div>
 
-                <div className="creneau-action">
-                  <p className="creneau-prix">
-                    {creneau.prix.toLocaleString("fr-DZ")} DA
-                  </p>
-                  <button
-                    className="btn-reserver"
-                    onClick={() => handleReserver(creneau)}
-                  >
+                    <p className="creneau-prix">
+                      {creneau.prix.toLocaleString("fr-DZ")} DA
+                    </p>
+                  </div>
+
+                  <div className="creneau-action-button">
                     Réserver
-                  </button>
+                  </div>
                 </div>
               </div>
             ))}
@@ -523,7 +500,7 @@ const ClubDetailsJoueur: React.FC = () => {
         )}
       </div>
 
-      {/* Modal */}
+      {/* Modal Réservation */}
       {selectedCreneau && (
         <ReservationModal
           creneau={selectedCreneau}
@@ -531,6 +508,29 @@ const ClubDetailsJoueur: React.FC = () => {
           onReservation={handleReservationSuccess}
           politiqueClub={club.politique}
         />
+      )}
+
+      {/* Modal À propos du club */}
+      {showAboutModal && (
+        <div className="modal-backdrop" onClick={() => setShowAboutModal(false)}>
+          <div className="modal-content about-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>À propos de {club.nom}</h2>
+              <button className="modal-close" onClick={() => setShowAboutModal(false)}>
+                <X size={24} />
+              </button>
+            </div>
+            <div className="modal-body">
+              {club.description ? (
+                <p className="description-text">{club.description}</p>
+              ) : (
+                <p className="description-text no-description">
+                  Aucune description disponible pour ce club.
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

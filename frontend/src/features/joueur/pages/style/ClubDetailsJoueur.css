@@ -48,16 +48,16 @@
   border: 2px solid var(--color-primary-green);
   color: var(--color-white);
   font-family: 'Poppins', sans-serif;
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  padding: 12px 24px;
+  padding: 10px 16px;
   margin: 0;
-  border-radius: 10px;
+  border-radius: 8px;
   transition: all 0.3s ease;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   flex-shrink: 0;
   line-height: 1;
   box-shadow: 0 2px 8px rgba(5, 96, 43, 0.2);
@@ -77,6 +77,34 @@
   color: var(--color-black);
   margin: 0;
   line-height: 1.2;
+}
+
+.about-button {
+  background: var(--color-primary-green);
+  border: 2px solid var(--color-primary-green);
+  color: var(--color-white);
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8px 16px;
+  margin: 0;
+  margin-left: auto;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  line-height: 1;
+  box-shadow: 0 2px 8px rgba(5, 96, 43, 0.2);
+}
+
+.about-button:hover {
+  background: var(--color-secondary-green);
+  border-color: var(--color-secondary-green);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(5, 96, 43, 0.3);
 }
 
 /* ========== BANNIÈRE ========== */
@@ -207,9 +235,6 @@
 
 /* ========== SECTION INFORMATIONS ========== */
 .club-info-section {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 20px;
   padding: 24px;
   max-width: 1200px;
   margin: 0 auto;
@@ -534,6 +559,7 @@
   padding: 0 24px;
   max-width: 1200px;
   margin: 0 auto;
+  min-height: 400px;
 }
 
 .creneaux-section h3 {
@@ -566,131 +592,140 @@
 }
 
 .creneaux-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 20px;
 }
 
 .creneau-card {
   background: var(--color-white);
-  padding: 16px;
-  border-radius: 12px;
+  border-radius: 16px;
   border: 1px solid #E5E7EB;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  transition: box-shadow 0.2s;
+  flex-direction: row;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  height: 260px;
+  cursor: pointer;
 }
 
 .creneau-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
 }
 
-.creneau-info {
-  display: flex;
-  gap: 16px;
-  align-items: center;
+.creneau-card:active {
+  transform: translateY(0);
 }
 
-.creneau-icon {
-  font-size: 32px;
-  background: #F3F4F6;
-  width: 56px;
-  height: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 12px;
+/* Left section: Image */
+.creneau-image-section {
+  width: 220px;
   flex-shrink: 0;
+  position: relative;
 }
 
 .creneau-image {
-  width: 80px;
-  height: 80px;
-  border-radius: 12px;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .creneau-image-placeholder {
-  width: 80px;
-  height: 80px;
-  border-radius: 12px;
+  width: 100%;
+  height: 100%;
   background: linear-gradient(135deg, var(--color-primary-green) 0%, var(--color-secondary-green) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  font-size: 32px;
-  flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  font-size: 64px;
 }
 
-.creneau-details h4 {
-  margin: 0 0 4px 0;
+/* Right section: Info and button */
+.creneau-info-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.creneau-info-content {
+  flex: 1;
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+}
+
+.creneau-info-content h4 {
+  margin: 0;
   font-family: 'Poppins', sans-serif;
-  font-size: 16px;
+  font-size: 19px;
   font-weight: 700;
-  color: var(--color-black);
+  color: #111827;
+  width: 100%;
 }
 
 .creneau-time {
-  margin: 4px 0;
+  margin: 0;
   font-family: 'Inter', sans-serif;
-  font-size: 14px;
-  color: #4B5563;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1F2937;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 8px;
 }
 
 .creneau-sport {
-  margin: 4px 0;
+  margin: 0;
   font-family: 'Inter', sans-serif;
-  font-size: 13px;
+  font-size: 14px;
   color: var(--color-success-text);
   font-weight: 600;
-}
-
-.creneau-action {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 8px;
-  flex-shrink: 0;
+  background: #ECFDF5;
+  padding: 5px 14px;
+  border-radius: 6px;
+  display: inline-block;
+  width: fit-content;
 }
 
 .creneau-prix {
+  margin: 0;
   font-family: 'Poppins', sans-serif;
   font-size: 18px;
   font-weight: 700;
   color: var(--color-primary-green);
-  margin: 0;
 }
 
-.btn-reserver {
+.creneau-action-button {
   background: var(--color-primary-green);
   color: var(--color-white);
-  border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
+  padding: 12px 28px;
+  margin: 0 auto 20px;
   font-family: 'Poppins', sans-serif;
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background 0.2s;
-  white-space: nowrap;
+  font-weight: 700;
+  font-size: 15px;
+  text-align: center;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+  width: fit-content;
+  box-shadow: 0 2px 6px rgba(5, 96, 43, 0.2);
 }
 
-.btn-reserver:hover {
+.creneau-card:hover .creneau-action-button {
   background: var(--color-secondary-green);
+  box-shadow: 0 3px 8px rgba(5, 96, 43, 0.3);
 }
 
 /* ========== RESPONSIVE ========== */
 @media (max-width: 1024px) {
   .club-info-section {
-    gap: 16px;
     padding: 20px;
   }
 
@@ -754,14 +789,7 @@
   }
 
   .club-info-section {
-    grid-template-columns: 1fr;
     padding: 16px;
-    gap: 12px;
-  }
-
-  .description-card,
-  .contact-card {
-    grid-column: 1;
   }
 
   .info-card-header {
@@ -787,6 +815,10 @@
   .time-period-selector,
   .creneaux-section {
     padding: 0 16px;
+  }
+
+  .creneaux-section {
+    min-height: 350px;
   }
 
   .club-sports h3,
@@ -826,55 +858,43 @@
     font-size: 13px;
   }
 
-  .creneau-card {
-    flex-direction: column;
-    align-items: stretch;
+  .creneaux-list {
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
     gap: 16px;
-    padding: 14px;
   }
 
-  .creneau-info {
-    gap: 12px;
+  .creneau-card {
+    height: 190px;
   }
 
-  .creneau-icon {
-    width: 48px;
-    height: 48px;
-    font-size: 28px;
+  .creneau-image-section {
+    width: 190px;
   }
 
-  .creneau-image,
   .creneau-image-placeholder {
-    width: 60px;
-    height: 60px;
+    font-size: 56px;
   }
 
-  .creneau-details h4 {
-    font-size: 15px;
+  .creneau-info-content {
+    padding: 16px 12px;
+    gap: 6px;
+  }
+
+  .creneau-info-content h4 {
+    font-size: 18px;
   }
 
   .creneau-time {
-    font-size: 13px;
-    color: #4B5563;
-  }
-
-  .creneau-sport {
-    font-size: 13px;
-  }
-
-  .creneau-action {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
+    font-size: 15px;
   }
 
   .creneau-prix {
     font-size: 17px;
   }
 
-  .btn-reserver {
+  .creneau-action-button {
     padding: 10px 24px;
+    margin: 0 auto 16px;
     font-size: 14px;
   }
 }
@@ -889,8 +909,8 @@
   }
 
   .back-button {
-    font-size: 15px;
-    padding: 10px 18px;
+    font-size: 13px;
+    padding: 7px 14px;
   }
 
   .club-banner {
@@ -981,6 +1001,10 @@
     padding: 0 12px;
   }
 
+  .creneaux-section {
+    min-height: 300px;
+  }
+
   .club-sports h3,
   .date-selector h3,
   .time-period-selector h3,
@@ -1013,41 +1037,197 @@
     font-size: 12px;
   }
 
-  .creneau-card {
-    padding: 12px;
+  .creneaux-list {
+    grid-template-columns: 1fr;
     gap: 12px;
   }
 
-  .creneau-icon {
-    width: 44px;
-    height: 44px;
-    font-size: 24px;
+  .creneau-card {
+    height: 160px;
   }
 
-  .creneau-details h4 {
-    font-size: 14px;
+  .creneau-image-section {
+    width: 160px;
+  }
+
+  .creneau-image-placeholder {
+    font-size: 48px;
+  }
+
+  .creneau-info-content {
+    padding: 12px 16px;
+    gap: 5px;
+  }
+
+  .creneau-info-content h4 {
+    font-size: 16px;
   }
 
   .creneau-time {
-    font-size: 12px;
-    color: #4B5563;
+    font-size: 14px;
   }
 
   .creneau-sport {
     font-size: 12px;
+    padding: 4px 12px;
   }
 
   .creneau-prix {
     font-size: 16px;
   }
 
-  .btn-reserver {
-    padding: 8px 20px;
+  .creneau-action-button {
+    padding: 9px 20px;
+    margin: 0 16px 14px auto;
     font-size: 13px;
   }
 
   .no-creneaux {
     padding: 30px 20px;
+    font-size: 14px;
+  }
+}
+
+/* ========== MODAL À PROPOS ========== */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-content {
+  background: var(--color-white);
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  max-width: 600px;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px;
+  border-bottom: 2px solid #E5E7EB;
+  background: linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%);
+}
+
+.modal-header h2 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-black);
+  margin: 0;
+}
+
+.modal-close {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  color: #6B7280;
+}
+
+.modal-close:hover {
+  background: #F3F4F6;
+  color: var(--color-black);
+}
+
+.modal-body {
+  padding: 24px;
+}
+
+.modal-body .description-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  line-height: 1.7;
+  color: #374151;
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.modal-body .description-text.no-description {
+  color: #9CA3AF;
+  font-style: italic;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .about-button {
+    font-size: 13px;
+    padding: 7px 14px;
+  }
+
+  .modal-content {
+    max-width: 100%;
+  }
+
+  .modal-header h2 {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .about-button {
+    font-size: 12px;
+    padding: 6px 12px;
+    gap: 6px;
+  }
+
+  .modal-backdrop {
+    padding: 10px;
+  }
+
+  .modal-header {
+    padding: 20px;
+  }
+
+  .modal-header h2 {
+    font-size: 16px;
+  }
+
+  .modal-body {
+    padding: 20px;
+  }
+
+  .modal-body .description-text {
     font-size: 14px;
   }
 }

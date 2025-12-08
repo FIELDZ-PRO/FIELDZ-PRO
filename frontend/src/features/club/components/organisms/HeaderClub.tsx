@@ -2,14 +2,16 @@ import React from 'react';
 import { ChevronDown } from 'lucide-react';
 import './style/HeaderClub.css';
 import { useNavigate } from 'react-router-dom';
-
+import { useAuth } from '../../../../shared/context/AuthContext';
 
 const Header = () => {
     const navigate = useNavigate();
+    const { logout, token } = useAuth();
 
     const deconnectClub = () => {
-        localStorage.removeItem('token')
-        navigate("/LoginClub")
+        logout();
+        //localStorage.removeItem('token')
+        navigate("/")
     }
 
     return (

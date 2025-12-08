@@ -108,7 +108,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setToken(null);
       setRole(null);
       setAuthReady(true); // état connu
-      window.location.assign("/login");
+      window.location.assign("/");
     }
   }, []);
 
@@ -133,13 +133,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return () => window.removeEventListener("storage", onStorage);
   }, []);
 
-  /** Si un intercepteur signale l’expiration, on nettoie proprement */
+  /** Si un intercepteur signale l'expiration, on nettoie proprement */
   useEffect(() => {
     const onExpired = () => {
       try { sessionStorage.removeItem(ACCESS_TOKEN_KEY); } catch {}
       setToken(null);
       setRole(null);
-      window.location.assign("/login");
+      window.location.assign("/");
     };
     window.addEventListener("auth:session-expired", onExpired as EventListener);
     return () => window.removeEventListener("auth:session-expired", onExpired as EventListener);

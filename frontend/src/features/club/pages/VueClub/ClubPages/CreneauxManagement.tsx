@@ -4,7 +4,7 @@ import { Terrain, Creneau, Reservation } from '../../../../../shared/types';
 import { fetchCreneaux } from '../../../../../shared/services/ClubService';
 import CreneauCard from '../../../../../shared/components/molecules/CreneauCard';
 import apiClient from '../../../../../shared/api/axiosClient';
-import { LoadingSpinner } from '../LoadingScreen';
+import { Spinner } from '../../../../../shared/components/atoms';
 import './style/CreneauxManagement.css';
 
 type Props = {
@@ -201,11 +201,7 @@ const CreneauxManagement: React.FC<Props> = ({ reservations, setReservations }) 
     };
 
     if (loading) {
-        return (
-            <div className="creneaux-management-page">
-                <LoadingSpinner />
-            </div>
-        );
+        return <Spinner loading={loading} text="Chargement des créneaux..." fullScreen />;
     }
 
     return (

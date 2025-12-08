@@ -4,6 +4,7 @@ import './style/CalendrierCreneaux.css';
 import { fetchCreneaux } from '../../../../../shared/services/ClubService';
 import { Creneau, Terrain } from '../../../../../shared/types';
 import apiClient from '../../../../../shared/api/axiosClient';
+import { Spinner } from '../../../../../shared/components/atoms';
 
 const CalendrierCreneaux: React.FC = () => {
   const [creneaux, setCreneaux] = useState<Creneau[]>([]);
@@ -163,6 +164,10 @@ const CalendrierCreneaux: React.FC = () => {
     return Math.abs(slotHour - debutHour) < 0.1;
   };
 
+  if (loading) {
+    return <Spinner loading={loading} text="Chargement du planning..." fullScreen />;
+  }
+
   return (
     <div className="calendrier-creneaux-page">
       {/* Header avec navigation */}
@@ -190,12 +195,6 @@ const CalendrierCreneaux: React.FC = () => {
           </span>
         </div>
       </div>
-
-      {loading && (
-        <div className="loading-overlay">
-          <p>Chargement...</p>
-        </div>
-      )}
 
       {/* Planning */}
       <div className="calendar-grid-container">

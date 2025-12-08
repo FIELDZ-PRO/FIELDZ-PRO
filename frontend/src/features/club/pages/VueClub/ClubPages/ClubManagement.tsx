@@ -93,7 +93,7 @@ const ClubManagementPage = () => {
     description: '',
     politique: '',
     sports: [],
-    lienLocalisation: '',
+    locationLink: '',
   });
 
   const [isEditing, setIsEditing] = useState(false);
@@ -413,8 +413,8 @@ const ClubManagementPage = () => {
               <label><MapPin size={16} /> Lien de localisation</label>
               <input
                 type="url"
-                value={clubInfo.lienLocalisation ?? ''}
-                onChange={(e) => setClubInfo({ ...clubInfo, lienLocalisation: e.target.value })}
+                value={clubInfo.locationLink ?? ''}
+                onChange={(e) => setClubInfo({ ...clubInfo, locationLink: e.target.value })}
                 disabled={!isEditing}
                 placeholder="https://maps.google.com/..."
               />
