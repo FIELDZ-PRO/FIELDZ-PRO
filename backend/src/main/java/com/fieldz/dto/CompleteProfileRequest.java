@@ -26,7 +26,7 @@ public class CompleteProfileRequest {
     private String prenom;
     private String telephone;
     private String photoProfilUrl;
-
+    private String locationLink;
     // CLUB uniquement
     private String ville;
     private String adresse;

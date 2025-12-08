@@ -203,7 +203,9 @@ public class UtilisateurController {
                 managedClub.setSports(req.getSports()); // null => ne touche pas; vide => efface
             }
             if (req.getLocationLink() != null) {
+                System.out.println("Setting locationLink: " + req.getLocationLink());
                 managedClub.setLocationLink(req.getLocationLink());
+                System.out.println("After setting, locationLink is: " + managedClub.getLocationLink());
             }
             // (Re)validation profil complet basée sur l'entité à jour
             if (!Boolean.TRUE.equals(managedClub.isProfilComplet())) {
