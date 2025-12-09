@@ -45,6 +45,8 @@ export type ClubDto = {
   images?: ClubImage[];  // Changed from imageUrls to images array with IDs for deletion
   description?: string;
   politique?: string;
+  heureOuverture?: string;
+  heureFermeture?: string;
   sport?: string;
   sports?: string[];
   locationLink?: string; // Google Maps or other location link
@@ -287,6 +289,9 @@ export async function modifyInfoClub(ClubInfo: Omit<ClubDto, "id">) {
       adresse: ClubInfo.adresse,
       description: ClubInfo.description,
       politique: ClubInfo.politique,
+      heureOuverture: ClubInfo.heureOuverture,
+      heureFermeture: ClubInfo.heureFermeture,
+      sport: ClubInfo.sport,
       sports: ClubInfo.sports,
       locationLink: ClubInfo.locationLink,
     });

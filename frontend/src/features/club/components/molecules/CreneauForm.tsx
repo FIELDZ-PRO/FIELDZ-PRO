@@ -15,6 +15,7 @@ interface CreneauFormProps {
     dateFin: string;    // "YYYY-MM-DDTHH:mm:ss" (local, sans Z)
     prix: number;
     terrainId: number;
+    nombreDuplications?: number;
   }) => void;
 }
 
@@ -24,6 +25,8 @@ const CreneauForm: React.FC<CreneauFormProps> = ({ terrains, onSubmit }) => {
   const [heureDebut, setHeureDebut] = useState('');
   const [heureFin, setHeureFin] = useState('');
   const [prix, setPrix] = useState('');
+  const [nombreDuplications, setNombreDuplications] = useState('');
+
   const [alertState, setAlertState] = useState<AlertState>({ show: false, type: 'info', message: '' });
 
   const showAlert = (type: AlertType, message: string) => {
@@ -57,6 +60,7 @@ const CreneauForm: React.FC<CreneauFormProps> = ({ terrains, onSubmit }) => {
       dateFin,                 // ✅ chaîne locale (pas de Z)
       prix: Number(prix),
       terrainId: Number(terrainId),
+      nombreDuplications: Number(nombreDuplications),
     });
 
     // Reset du formulaire
@@ -110,8 +114,13 @@ const CreneauForm: React.FC<CreneauFormProps> = ({ terrains, onSubmit }) => {
         <label>Prix (Da)</label>
         <input type="number" value={prix} onChange={(e) => setPrix(e.target.value)} />
       </div>
+      
+      <div className="creneau-form-group">
+        <label>Nombre de Créneaux</label>
+        <input type="number" value={nombreDuplications} onChange={(e) => setNombreDuplications(e.target.value)} />
+      </div>
 
-      <button type="submit">➕ Proposer</button>
+      <button type="submit">Générer le créneau</button>
     </form>
     </>
   );

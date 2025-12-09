@@ -22,6 +22,7 @@ const CreneauRecurrentFormSection: React.FC<Props> = ({ terrains, onSubmit }) =>
     dateDebut: '',
     dateFin: '',
     prix: '',
+    nombreDuplications: 1,
     nomReservant: '',
     autoReserver: false,
   });
@@ -49,6 +50,7 @@ const CreneauRecurrentFormSection: React.FC<Props> = ({ terrains, onSubmit }) =>
         dureeMinutes: parseInt(formData.dureeMinutes),
         prix: parseFloat(formData.prix),
         terrainId: parseInt(terrainId),
+        nombreDuplications: formData.nombreDuplications,
         nomReservant: formData.nomReservant || null,
         autoReserver: formData.autoReserver,
       });
@@ -68,6 +70,7 @@ const CreneauRecurrentFormSection: React.FC<Props> = ({ terrains, onSubmit }) =>
         dateDebut: '',
         dateFin: '',
         prix: '',
+        nombreDuplications: 1,
         nomReservant: '',
         autoReserver: false,
       });

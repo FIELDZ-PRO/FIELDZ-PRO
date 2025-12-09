@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Settings, User, MapPin, Mail, Phone, Image as ImageIcon, Loader2, Text, ShieldCheck, ChevronLeft, ChevronRight, Trash2, Plus, Dumbbell, X } from 'lucide-react';
+import { Settings, DoorOpen, DoorClosed,User, MapPin, Mail, Phone, Image as ImageIcon, Loader2, Text, ShieldCheck, ChevronLeft, ChevronRight, Trash2, Plus, Dumbbell, X } from 'lucide-react';
 import './style/ClubManagement.css';
 import { getClubMe, modifyInfoClub, addClubImage, deleteClubImage, ClubDto } from '../../../../../shared/services/ClubService';
 import { ClubImage } from '../../../../../shared/types';
@@ -92,6 +92,8 @@ const ClubManagementPage = () => {
     images: [],
     description: '',
     politique: '',
+    heureOuverture: '',
+    heureFermeture: '',
     sports: [],
     locationLink: '',
   });
@@ -398,7 +400,24 @@ const ClubManagementPage = () => {
                 disabled={!isEditing}
               />
             </div>
-
+                    <div className="form-group">
+              <label><DoorOpen size={16} /> Heure d'ouverture</label>
+              <input
+                type="time"
+                value={clubInfo.heureOuverture ?? ''}
+                onChange={(e) => setClubInfo({ ...clubInfo, heureOuverture: e.target.value })}
+                disabled={!isEditing}
+              />
+            </div>
+            <div className="form-group">
+              <label><DoorClosed size={16} /> Heure de fermeture</label>
+              <input
+                type="time"
+                value={clubInfo.heureFermeture ?? ''}
+                onChange={(e) => setClubInfo({ ...clubInfo, heureFermeture: e.target.value })}
+                disabled={!isEditing}
+              />
+            </div>
             <div className="form-group">
               <label><Phone size={16} /> Téléphone</label>
               <input

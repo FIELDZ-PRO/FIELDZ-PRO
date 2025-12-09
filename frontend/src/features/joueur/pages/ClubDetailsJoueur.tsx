@@ -396,7 +396,11 @@ const ClubDetailsJoueur: React.FC = () => {
             </div>
             <div className="contact-item">
               <Clock className="contact-icon" />
-              <span>Horaires : À venir</span>
+              <span>
+                Horaires : {club.heureOuverture ? `${parseInt(club.heureOuverture.split(':')[0])}h` : ''}
+                {club.heureOuverture && club.heureFermeture ? ' - ' : ''}
+                {club.heureFermeture ? `${parseInt(club.heureFermeture.split(':')[0])}h` : ''}
+              </span>
             </div>
           </div>
         </div>

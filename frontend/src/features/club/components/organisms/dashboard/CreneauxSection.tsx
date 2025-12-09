@@ -167,7 +167,7 @@ const CreneauxSection: React.FC<Props> = ({ terrains, reservations, setReservati
   /* ========= Ajout ponctuel ========= */
   const handleAddCreneauPonctuel = async (data: any) => {
     try {
-      const { terrainId, dateDebut, dateFin, prix } = data;
+      const { terrainId, dateDebut, dateFin, prix, nombreDuplications } = data;
 
       const res = await fetch(`${API_BASE}/creneaux/terrains/${terrainId}/creneaux`, {
         method: 'POST',
@@ -175,7 +175,7 @@ const CreneauxSection: React.FC<Props> = ({ terrains, reservations, setReservati
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ dateDebut, dateFin, prix: Number(prix) }),
+        body: JSON.stringify({ dateDebut, dateFin, prix: Number(prix), nombreDuplications: Number(nombreDuplications) }),
       });
 
       const text = await res.text();

@@ -11,6 +11,7 @@ interface Props {
     dateDebut: string;
     dateFin: string;
     prix: string;
+    nombreDuplications: number;
     nomReservant: string;
     autoReserver: boolean;
   };
@@ -129,10 +130,22 @@ const CreneauRecurrentForm: React.FC<Props> = ({
         <input
           type="number"
           min="0"
-          step="0.01"
+          step="100"
           value={recurrent.prix}
           onChange={(e) =>
             setRecurrent({ ...recurrent, prix: e.target.value })
+          }
+        />
+      </div>
+
+      <div className="creneau-form-group">
+        <label>Nombre de Créneaux</label>
+        <input
+          type="number"
+          min="1"
+          value={recurrent.nombreDuplications}
+          onChange={(e) =>
+            setRecurrent({ ...recurrent, nombreDuplications: Number(e.target.value) })
           }
         />
       </div>
@@ -164,7 +177,7 @@ const CreneauRecurrentForm: React.FC<Props> = ({
         </label>
       </div>
 
-      <button type="submit">♻️ Générer les créneaux</button>
+      <button type="submit">Générer les créneaux</button>
     </form>
   );
 };
