@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalTime;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,6 +18,8 @@ public class CreateClubRequest {
     private String sport;      // optionnel si vous gérez plus tard Set<Sport>
     private String ville;
     private String locationLink;
+    private LocalTime heureOuverture;
+    private LocalTime heureFermeture;
 
     // Informations du responsable
     private String nomResponsable;

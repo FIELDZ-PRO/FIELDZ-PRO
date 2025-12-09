@@ -3,6 +3,7 @@ package com.fieldz.dto;
 import com.fieldz.model.Sport;
 import lombok.Data;
 
+import java.time.LocalTime;
 import java.util.Set;
 
 /**
@@ -29,5 +30,7 @@ public class UpdateProfilRequest {
     private String description;
     private String politique;
     private String locationLink;
+    private LocalTime heureOuverture;
+    private LocalTime heureFermeture;
     private Set<com.fieldz.model.Sport> sports;
 }

@@ -68,6 +68,8 @@ public class ClubService {
         if (dto.getDescription() != null) club.setDescription(dto.getDescription());
         if (dto.getPolitique() != null) club.setPolitique(dto.getPolitique());
         if (dto.getLocationLink() != null) club.setLocationLink(dto.getLocationLink());
+        if (dto.getHeureOuverture() != null) club.setHeureOuverture(dto.getHeureOuverture());
+        if (dto.getHeureFermeture() != null) club.setHeureFermeture(dto.getHeureFermeture());
 
         Set<Sport> sports = dto.getSports();
         if (sports != null) club.setSports(sports);

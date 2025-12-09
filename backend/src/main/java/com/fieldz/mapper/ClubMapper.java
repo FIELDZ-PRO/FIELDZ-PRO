@@ -25,6 +25,8 @@ public class ClubMapper {
         dto.setDescription(club.getDescription());
         dto.setPolitique(club.getPolitique());
         dto.setLocationLink(club.getLocationLink());
+        dto.setHeureOuverture(club.getHeureOuverture());
+        dto.setHeureFermeture(club.getHeureFermeture());
         dto.setSports(club.getSports());
 
         // Mapper les images du club avec leurs IDs et ordre d'affichage

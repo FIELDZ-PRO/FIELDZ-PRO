@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
 
@@ -41,6 +42,12 @@ public class Club extends Utilisateur {
 
     @Column(name = "location_link")
     private String locationLink;
+
+    @Column(name = "heure_ouverture")
+    private LocalTime heureOuverture;
+
+    @Column(name = "heure_fermeture")
+    private LocalTime heureFermeture;
 
     @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ClubImage> images;

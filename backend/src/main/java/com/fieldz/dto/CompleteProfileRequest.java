@@ -4,6 +4,7 @@ import com.fieldz.model.Role;
 import com.fieldz.model.Sport;
 import lombok.Data;
 
+import java.time.LocalTime;
 import java.util.Set;
 
 /**
@@ -26,10 +27,12 @@ public class CompleteProfileRequest {
     private String prenom;
     private String telephone;
     private String photoProfilUrl;
-    private String locationLink;
     // CLUB uniquement
     private String ville;
     private String adresse;
     private String ImageUrl;
+    private String locationLink;
+    private LocalTime heureOuverture;
+    private LocalTime heureFermeture;
     private Set<com.fieldz.model.Sport> sports;
 }

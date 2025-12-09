@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 
 @Slf4j
@@ -40,7 +41,7 @@ public class CreneauService {
                 .orElseThrow(() -> new RuntimeException("Terrain introuvable"));
 
         if (!terrain.getClub().getId().equals(club.getId())) {
-            log.warn("Club {} tente d’ajouter un créneau sur un terrain qui ne lui appartient pas : terrainId={}",
+            log.warn("Club {} tente d'ajouter un créneau sur un terrain qui ne lui appartient pas : terrainId={}",
                     club.getNom(), terrainId);
             throw new RuntimeException("Ce terrain ne vous appartient pas.");
         }
@@ -52,20 +53,64 @@ public class CreneauService {
             throw new RuntimeException("L'heure de fin doit être après l'heure de début.");
         }
 
-        List<Creneau> chevauchants = creneauRepository.findCreneauxChevauchants(
-                terrainId, creneau.getDateDebut(), creneau.getDateFin());
-        if (!chevauchants.isEmpty()) {
-            throw new RuntimeException("Un créneau existant chevauche les horaires proposés.");
+        // Récupérer les heures d'ouverture/fermeture du club
+        LocalTime heureOuverture = club.getHeureOuverture();
+        LocalTime heureFermeture = club.getHeureFermeture();
+
+        // Nombre de duplications (défaut = 1 si non précisé ou <= 1)
+        int nombreDuplications = (creneau.getNombreDuplications() != null && creneau.getNombreDuplications() > 1)
+                                  ? creneau.getNombreDuplications()
+                                  : 1;
+
+        List<Creneau> creneauxCrees = new ArrayList<>();
+        long dureeMinutes = java.time.Duration.between(creneau.getDateDebut(), creneau.getDateFin()).toMinutes();
+
+        // Créer les créneaux consécutifs
+        for (int i = 0; i < nombreDuplications; i++) {
+            LocalDateTime dateDebut = creneau.getDateDebut().plusMinutes(i * dureeMinutes);
+            LocalDateTime dateFin = creneau.getDateFin().plusMinutes(i * dureeMinutes);
+
+            // Validation des heures d'ouverture/fermeture
+            if (heureOuverture != null && heureFermeture != null) {
+                LocalTime creneauDebut = dateDebut.toLocalTime();
+                LocalTime creneauFin = dateFin.toLocalTime();
+
+                if (creneauDebut.isBefore(heureOuverture) || creneauFin.isAfter(heureFermeture)) {
+                    log.warn("Créneau {} refusé: hors horaires d'ouverture ({} - {})",
+                            i + 1, heureOuverture, heureFermeture);
+                    throw new RuntimeException(String.format(
+                        "Le créneau %d est hors des horaires d'ouverture (%s - %s)",
+                        i + 1, heureOuverture, heureFermeture));
+                }
+            }
+
+            // Vérifier les chevauchements
+            List<Creneau> chevauchants = creneauRepository.findCreneauxChevauchants(
+                    terrainId, dateDebut, dateFin);
+            if (!chevauchants.isEmpty()) {
+                throw new RuntimeException(String.format(
+                    "Le créneau %d chevauche un créneau existant.", i + 1));
+            }
+
+            Creneau nouveauCreneau = new Creneau();
+            nouveauCreneau.setDateDebut(dateDebut);
+            nouveauCreneau.setDateFin(dateFin);
+            nouveauCreneau.setPrix(creneau.getPrix());
+            nouveauCreneau.setTerrain(terrain);
+            nouveauCreneau.setStatut(Statut.LIBRE);
+            nouveauCreneau.setDisponible(true);
+
+            creneauxCrees.add(nouveauCreneau);
         }
 
-        creneau.setTerrain(terrain);
-        creneau.setStatut(Statut.LIBRE);
-        creneau.setDisponible(true);
+        // Sauvegarder tous les créneaux
+        List<Creneau> saved = creneauRepository.saveAll(creneauxCrees);
 
-        Creneau saved = creneauRepository.save(creneau);
-        log.info("Club {} a ajouté un créneau au terrain {} (id={})", club.getNom(), terrain.getNomTerrain(),
-                terrainId);
-        return saved;
+        log.info("Club {} a ajouté {} créneau(x) au terrain {} (id={})",
+                club.getNom(), saved.size(), terrain.getNomTerrain(), terrainId);
+
+        // Retourner le premier créneau créé (pour compatibilité avec l'ancienne signature)
+        return saved.get(0);
     }
 
     @Transactional(readOnly = true)
@@ -160,39 +205,68 @@ public class CreneauService {
         Terrain terrain = terrainRepository.findById(dto.getTerrainId())
                 .orElseThrow(() -> new RuntimeException("Terrain introuvable"));
 
+        // Récupérer les heures d'ouverture/fermeture du club
+        Club club = terrain.getClub();
+        LocalTime heureOuverture = club.getHeureOuverture();
+        LocalTime heureFermeture = club.getHeureFermeture();
+
         List<Creneau> aCreer = new ArrayList<>();
         int totalDemandes = 0;
+        int totalRefuses = 0;
         boolean autoReserver = Boolean.TRUE.equals(dto.getAutoReserver());
         String nomReservant = dto.getNomReservant();
 
+        // Nombre de duplications par jour (défaut = 1 si non précisé ou <= 1)
+        int nombreDuplications = (dto.getNombreDuplications() != null && dto.getNombreDuplications() > 1)
+                                  ? dto.getNombreDuplications()
+                                  : 1;
+
         while (!current.isAfter(end)) {
             if (current.getDayOfWeek() == jourTarget) {
-                totalDemandes++;
+                // Pour chaque jour correspondant, créer le nombre de duplications demandé
+                for (int i = 0; i < nombreDuplications; i++) {
+                    totalDemandes++;
 
-                LocalDateTime dateDebut = LocalDateTime.of(current, dto.getHeureDebut());
-                LocalDateTime dateFin = dateDebut.plusMinutes(dto.getDureeMinutes());
+                    LocalDateTime dateDebut = LocalDateTime.of(current, dto.getHeureDebut()).plusMinutes(i * dto.getDureeMinutes());
+                    LocalDateTime dateFin = dateDebut.plusMinutes(dto.getDureeMinutes());
 
-                boolean existe = creneauRepository
-                        .findByTerrainAndDateDebutAndDateFin(terrain, dateDebut, dateFin)
-                        .isPresent();
+                    // Validation des heures d'ouverture/fermeture
+                    if (heureOuverture != null && heureFermeture != null) {
+                        LocalTime creneauDebut = dateDebut.toLocalTime();
+                        LocalTime creneauFin = dateFin.toLocalTime();
 
-                if (!existe) {
-                    Creneau c = new Creneau();
-                    c.setDateDebut(dateDebut);
-                    c.setDateFin(dateFin);
-                    c.setPrix(dto.getPrix());
-                    c.setTerrain(terrain);
-
-                    // Si auto-réservation demandée, marquer comme RESERVE
-                    if (autoReserver && nomReservant != null && !nomReservant.trim().isEmpty()) {
-                        c.setStatut(Statut.RESERVE);
-                        c.setDisponible(false);
-                    } else {
-                        c.setStatut(Statut.LIBRE);
-                        c.setDisponible(true);
+                        if (creneauDebut.isBefore(heureOuverture) || creneauFin.isAfter(heureFermeture)) {
+                            log.warn("Créneau refusé: {}:{} - {}:{} (hors horaires d'ouverture {} - {})",
+                                    creneauDebut.getHour(), creneauDebut.getMinute(),
+                                    creneauFin.getHour(), creneauFin.getMinute(),
+                                    heureOuverture, heureFermeture);
+                            totalRefuses++;
+                            continue; // Passer au prochain créneau
+                        }
                     }
 
-                    aCreer.add(c);
+                    boolean existe = creneauRepository
+                            .findByTerrainAndDateDebutAndDateFin(terrain, dateDebut, dateFin)
+                            .isPresent();
+
+                    if (!existe) {
+                        Creneau c = new Creneau();
+                        c.setDateDebut(dateDebut);
+                        c.setDateFin(dateFin);
+                        c.setPrix(dto.getPrix());
+                        c.setTerrain(terrain);
+
+                        // Si auto-réservation demandée, marquer comme RESERVE
+                        if (autoReserver && nomReservant != null && !nomReservant.trim().isEmpty()) {
+                            c.setStatut(Statut.RESERVE);
+                            c.setDisponible(false);
+                        } else {
+                            c.setStatut(Statut.LIBRE);
+                            c.setDisponible(true);
+                        }
+
+                        aCreer.add(c);
+                    }
                 }
             }
             current = current.plusDays(1);
@@ -222,20 +296,32 @@ public class CreneauService {
 
         Map<String, Object> response = new HashMap<>();
         if (saved.isEmpty()) {
-            response.put("message", "Aucun créneau créé. Ils existent déjà tous.");
+            if (totalRefuses > 0) {
+                response.put("message", String.format(
+                    "Aucun créneau créé. %d créneaux refusés (hors horaires d'ouverture).",
+                    totalRefuses));
+            } else {
+                response.put("message", "Aucun créneau créé. Ils existent déjà tous.");
+            }
         } else if (autoReserver && reservationsCrees > 0) {
             response.put("message", String.format(
-                "Créneaux récurrents générés avec succès ! %d créneaux créés et automatiquement réservés pour %s.",
-                saved.size(), nomReservant));
+                "Créneaux récurrents générés avec succès ! %d créneaux créés et automatiquement réservés pour %s.%s",
+                saved.size(), nomReservant,
+                totalRefuses > 0 ? String.format(" %d créneaux refusés (hors horaires).", totalRefuses) : ""));
         } else if (saved.size() < totalDemandes) {
-            response.put("message", "Certains créneaux existaient déjà et n'ont pas été recréés.");
+            response.put("message", String.format(
+                "Certains créneaux existaient déjà et n'ont pas été recréés.%s",
+                totalRefuses > 0 ? String.format(" %d créneaux refusés (hors horaires).", totalRefuses) : ""));
         } else {
-            response.put("message", "Créneaux récurrents générés avec succès !");
+            response.put("message", String.format(
+                "Créneaux récurrents générés avec succès !%s",
+                totalRefuses > 0 ? String.format(" %d créneaux refusés (hors horaires).", totalRefuses) : ""));
         }
 
         response.put("totalDemandes", totalDemandes);
         response.put("totalCrees", saved.size());
-        response.put("dejaExistants", totalDemandes - saved.size());
+        response.put("totalRefuses", totalRefuses);
+        response.put("dejaExistants", totalDemandes - saved.size() - totalRefuses);
         response.put("reservationsCrees", reservationsCrees);
         response.put("nomReservant", nomReservant);
         response.put("creneaux", saved.stream().map(CreneauMapper::toDto).toList());

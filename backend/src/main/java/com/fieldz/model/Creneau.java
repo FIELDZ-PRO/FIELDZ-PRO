@@ -38,10 +38,13 @@ public class Creneau {
     @JsonIgnoreProperties({"creneaux"})
     private Terrain terrain;
 
+    // Champ transient pour la duplication (non persisté en base)
+    @Transient
+    private Integer nombreDuplications;
 
 //Supprimer à la fin des test
     //@OneToOne(mappedBy = "creneau")
-    //@JsonIgnore   // <-- Ajoute pour éviter d’inclure Reservation dans le JSON d’un créneau (sinon boucle)
+    //@JsonIgnore   // <-- Ajoute pour éviter d'inclure Reservation dans le JSON d'un créneau (sinon boucle)
     //private Reservation reservation;
 
 }

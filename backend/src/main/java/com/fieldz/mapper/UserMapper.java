@@ -28,6 +28,8 @@ public class UserMapper {
             dto.setTelephone(club.getTelephone());
             dto.setAdresse(club.getAdresse());
             dto.setLocationLink(club.getLocationLink());
+            dto.setHeureOuverture(club.getHeureOuverture());
+            dto.setHeureFermeture(club.getHeureFermeture());
         }
 
         return dto;

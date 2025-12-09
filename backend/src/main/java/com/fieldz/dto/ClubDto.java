@@ -1,6 +1,7 @@
 package com.fieldz.dto;
 
 import lombok.Data;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
 import com.fieldz.model.Sport;
@@ -17,6 +18,8 @@ public class ClubDto {
     private String description;
     private String politique;
     private String locationLink;
+    private LocalTime heureOuverture;
+    private LocalTime heureFermeture;
     private Set<com.fieldz.model.Sport> sports; // ou Set<String> si tu préfères décorréler
 
     // Liste des images du club avec IDs pour permettre la suppression

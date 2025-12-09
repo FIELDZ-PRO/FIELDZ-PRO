@@ -15,4 +15,5 @@ public class CreneauRecurrentDto {
     private Long terrainId;
     private String nomReservant;     // Nom du réservant (optionnel)
     private Boolean autoReserver;    // Si true, créer automatiquement des réservations
+    private Integer nombreDuplications; // Nombre de créneaux à créer par jour (ex: 3 créneaux par jour)
 }

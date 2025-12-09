@@ -2,6 +2,7 @@ package com.fieldz.dto;
 
 import lombok.Data;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Data
 public class UserDto {
@@ -17,4 +18,6 @@ public class UserDto {
     private String telephone;
     private String adresse;
     private String locationLink;
+    private LocalTime heureOuverture;
+    private LocalTime heureFermeture;
 }

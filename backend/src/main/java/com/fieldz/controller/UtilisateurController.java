@@ -99,6 +99,10 @@ public class UtilisateurController {
                 club.setTelephone(req.getTelephone());
             if (notBlank(req.getLocationLink()))
                 club.setLocationLink(req.getLocationLink());
+            if (req.getHeureOuverture() != null)
+                club.setHeureOuverture(req.getHeureOuverture());
+            if (req.getHeureFermeture() != null)
+                club.setHeureFermeture(req.getHeureFermeture());
             if (req.getSports() != null && !req.getSports().isEmpty()) {
                 club.setSports(req.getSports());
             }
@@ -206,6 +210,12 @@ public class UtilisateurController {
                 System.out.println("Setting locationLink: " + req.getLocationLink());
                 managedClub.setLocationLink(req.getLocationLink());
                 System.out.println("After setting, locationLink is: " + managedClub.getLocationLink());
+            }
+            if (req.getHeureOuverture() != null) {
+                managedClub.setHeureOuverture(req.getHeureOuverture());
+            }
+            if (req.getHeureFermeture() != null) {
+                managedClub.setHeureFermeture(req.getHeureFermeture());
             }
             // (Re)validation profil complet basée sur l'entité à jour
             if (!Boolean.TRUE.equals(managedClub.isProfilComplet())) {
