@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useMemo, useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import "./style/JoueurDashboardLayout.css";
 import { Creneau, Reservation, Joueur } from "../../../../../shared/types";
 import ReservationModal from "./ReservationModal";
@@ -30,6 +30,7 @@ const JoueurDashboardLayout: React.FC<Props> = ({
   onNavigateToProfile,
 }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [creneauSelectionne, setCreneauSelectionne] = useState<Creneau | null>(null);
   const [activeTab, setActiveTab] = useState<'recherche' | 'reservations' | 'annulees'>('recherche');
 
@@ -41,6 +42,21 @@ const JoueurDashboardLayout: React.FC<Props> = ({
   const [errSearch, setErrSearch] = useState<string>("");
   const [clubs, setClubs] = useState<ClubDto[]>([]);
   const [hasSearched, setHasSearched] = useState<boolean>(false);
+
+  // Restaurer les filtres de recherche depuis location.state
+  useEffect(() => {
+    const state = location.state as any;
+    if (state?.searchFilters) {
+      setSport(state.searchFilters.sport || "Tous les sports");
+      setVille(state.searchFilters.ville || VILLES[0] || "");
+      setSearchTerm(state.searchFilters.searchTerm || "");
+      setClubs(state.searchFilters.clubs || []);
+      setHasSearched(state.searchFilters.hasSearched || false);
+
+      // Nettoyer le state après restauration
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   const canSearch = useMemo(() => !!(sport || ville), [sport, ville]);
 
@@ -268,7 +284,17 @@ const JoueurDashboardLayout: React.FC<Props> = ({
                       {/* Bouton d'action */}
                       <button
                         className="club-card-button"
-                        onClick={() => navigate(`/club/${club.id}`)}
+                        onClick={() => navigate(`/club/${club.id}`, {
+                          state: {
+                            returnFilters: {
+                              sport,
+                              ville,
+                              searchTerm,
+                              clubs,
+                              hasSearched
+                            }
+                          }
+                        })}
                       >
                         <Calendar className="button-icon-small" />
                         <span>Voir les créneaux</span>
@@ -356,7 +382,7 @@ const JoueurDashboardLayout: React.FC<Props> = ({
                 <span className="user-name-modern">
                   {joueur?.nom ? `${joueur.nom} ${joueur.prenom || ''}` : joueur?.email}
                 </span>
-                <span className="user-role-modern">Joueur</span>
+                <span className="user-role-modern">Profile</span>
               </div>
             </button>
 

@@ -1,12 +1,12 @@
 // src/pages/ClubDetailsJoueur.tsx
 import React, { useEffect, useState, useMemo } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { ClubService, ClubDto, getCreneauxByClubDateSport } from "../../../shared/services/ClubService";
 import ReservationModal from "../components/organisms/joueurDashboardDoss/ReservationModal";
 import { Creneau } from "../../../shared/types";
 import { Spinner } from "../../../shared/components/atoms";
 import "./style/ClubDetailsJoueur.css";
-import { ChevronLeft, ChevronRight, MapPin, Phone, Info, Clock, ExternalLink, MoreVertical, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, MapPin, Phone, Info, Clock, ExternalLink, MoreVertical, X, HomeIcon } from "lucide-react";
 
 // ✅ Helpers pour parser/formatter en LOCAL (sans décalage)
 import {
@@ -18,6 +18,10 @@ import {
 const ClubDetailsJoueur: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Récupérer les filtres de recherche passés depuis le dashboard
+  const returnFilters = (location.state as any)?.returnFilters;
 
   const [club, setClub] = useState<ClubDto | null>(null);
   const [loading, setLoading] = useState(true);
@@ -171,22 +175,68 @@ const ClubDetailsJoueur: React.FC = () => {
   const getTerrainName = (cr: Creneau) =>
     (cr.terrain as any)?.nomTerrain || (cr.terrain as any)?.nom || "Terrain";
 
-  // Label heure du créneau (time only)
+  // Label durée du créneau (ex: "1H 30 mins" or "2H")
   const renderCreneauTime = (cr: Creneau) => {
-    // Cas API "ancienne" : heureDebut/heureFin
-    if (cr.heureDebut && cr.heureFin) {
-      return `${cr.heureDebut} - ${cr.heureFin}`;
-    }
     // Cas API "nouvelle" : dateDebut/dateFin
     if (cr.dateDebut && cr.dateFin) {
       const debut = parseLocalDateTime(cr.dateDebut);
       const fin = parseLocalDateTime(cr.dateFin);
-      const heureDebut = `${String(debut.getHours()).padStart(2, '0')}:${String(debut.getMinutes()).padStart(2, '0')}`;
-      const heureFin = `${String(fin.getHours()).padStart(2, '0')}:${String(fin.getMinutes()).padStart(2, '0')}`;
-      return `${heureDebut} - ${heureFin}`;
+
+      // Calculate duration in milliseconds
+      const durationMs = fin.getTime() - debut.getTime();
+
+      // Convert to hours and minutes
+      const totalMinutes = Math.floor(durationMs / 60000);
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = totalMinutes % 60;
+
+      // Format duration
+      if (minutes === 0) {
+        return `${hours}h`;
+      } else {
+        return `${hours}h ${minutes} mins`;
+      }
     }
+
+    // Cas API "ancienne" : heureDebut/heureFin (fallback - format as time range)
+    if (cr.heureDebut && cr.heureFin) {
+      // Try to parse as time strings (e.g., "12:00" - "13:30")
+      const [startHour, startMin] = cr.heureDebut.split(':').map(Number);
+      const [endHour, endMin] = cr.heureFin.split(':').map(Number);
+
+      if (!isNaN(startHour) && !isNaN(endHour)) {
+        const totalMinutes = (endHour * 60 + (endMin || 0)) - (startHour * 60 + (startMin || 0));
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = totalMinutes % 60;
+
+        if (minutes === 0) {
+          return `${hours}H`;
+        } else {
+          return `${hours}H ${minutes} mins`;
+        }
+      }
+
+      return `${cr.heureDebut} - ${cr.heureFin}`;
+    }
+
     // Fallback
-    return `${cr.heureDebut || cr.dateDebut}`;
+    return "Durée non disponible";
+  };
+
+  // Format full date for card title (e.g., "Dimanche 14 décembre à 12h - Terrain 1")
+  const renderFullDateWithTime = (cr: Creneau) => {
+    if (cr.dateDebut) {
+      const date = parseLocalDateTime(cr.dateDebut);
+      const days = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+      const months = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+      const dayName = days[date.getDay()];
+      const day = date.getDate();
+      const monthName = months[date.getMonth()];
+      const hour = `${date.getHours()}h`;
+      const terrainName = getTerrainName(cr);
+      return `${dayName} ${day} ${monthName} à ${hour} - ${terrainName}`;
+    }
+    return "Date non disponible";
   };
 
   const generateDates = () => {
@@ -221,6 +271,19 @@ const ClubDetailsJoueur: React.FC = () => {
     }
   };
 
+  // Fonction pour retourner au dashboard avec les filtres sauvegardés
+  const handleGoBack = () => {
+    if (returnFilters) {
+      navigate('/joueur', {
+        state: {
+          searchFilters: returnFilters
+        }
+      });
+    } else {
+      navigate(-1);
+    }
+  };
+
   // ────────────────────────────────────────────────────────────────────────────────
   // Renders
   // ────────────────────────────────────────────────────────────────────────────────
@@ -234,7 +297,7 @@ const ClubDetailsJoueur: React.FC = () => {
         <div className="error-icon">⚠️</div>
         <h2>Oups !</h2>
         <p>{error || "Club introuvable"}</p>
-        <button className="btn-primary" onClick={() => navigate(-1)}>
+        <button className="btn-primary" onClick={handleGoBack}>
           Retour à la recherche
         </button>
       </div>
@@ -245,7 +308,7 @@ const ClubDetailsJoueur: React.FC = () => {
   return (
     <div className="club-details-container">
       <div className="club-details-header">
-        <button className="back-button" onClick={() => navigate(-1)}>
+        <button className="back-button" onClick={handleGoBack}>
           ← Retour
         </button>
         <h1>{club.nom}</h1>
@@ -328,7 +391,7 @@ const ClubDetailsJoueur: React.FC = () => {
               </div>
             )}
             <div className="contact-item">
-              <Info className="contact-icon" />
+              <HomeIcon className="contact-icon" />
               <span>Académie : Non renseigné</span>
             </div>
             <div className="contact-item">
@@ -453,45 +516,31 @@ const ClubDetailsJoueur: React.FC = () => {
             {creneaux.map((creneau) => (
               <div
                 key={creneau.id}
-                className="creneau-card"
-                onClick={() => handleReserver(creneau)}
+                className="creneau-card-joueur"
               >
-                {/* Left section: Image */}
-                <div className="creneau-image-section">
-                  {(creneau.terrain as any)?.photo ? (
-                    <img
-                      src={(creneau.terrain as any).photo}
-                      alt={getTerrainName(creneau)}
-                      className="creneau-image"
-                    />
-                  ) : (
-                    <div className="creneau-image-placeholder">
-                      {getSportEmoji((creneau.terrain as any)?.sport || "sport")}
-                    </div>
-                  )}
+                {/* Black header with full date */}
+                <div className="creneau-card-header">
+                  <h3>{renderFullDateWithTime(creneau)}</h3>
                 </div>
 
-                {/* Right section: Info and button */}
-                <div className="creneau-info-wrapper">
-                  <div className="creneau-info-content">
-                    <h4>{getTerrainName(creneau)}</h4>
+                {/* Green container with info - Clickable */}
+                <div
+                  className="creneau-card-body"
+                  onClick={() => handleReserver(creneau)}
+                >
 
-                    <p className="creneau-time">
-                      <Clock size={16} />
-                      {renderCreneauTime(creneau)}
-                    </p>
-
-                    <p className="creneau-sport">
-                      {(creneau.terrain as any)?.sport || "Sport"}
-                    </p>
-
-                    <p className="creneau-prix">
-                      {creneau.prix.toLocaleString("fr-DZ")} DA
-                    </p>
-                  </div>
+                  <p className="creneau-time">
+                    {renderCreneauTime(creneau)} - {(creneau.terrain as any)?.sport || "Sport"}
+                  </p>
 
                   <div className="creneau-action-button">
-                    Réserver
+                    <div>
+                        Réserver
+                    </div>
+                    <div>
+                        {creneau.prix.toLocaleString("fr-DZ")} DA
+                    </div>
+
                   </div>
                 </div>
               </div>

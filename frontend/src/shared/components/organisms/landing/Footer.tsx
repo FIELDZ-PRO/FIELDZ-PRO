@@ -34,22 +34,14 @@ const Footer: React.FC = () => {
             <span className="footer__logo-text">FIELDZ</span>
           </Link>
           <p className="footer__description">
-          🇩🇿 La plateforme qui connecte joueurs et clubs sportifs pour réserver vos terrains en quelques clics.
+          La plateforme qui connecte joueurs et clubs sportifs pour réserver vos terrains en quelques clics.
           </p>
           
           {/* Réseaux sociaux */}
           <div className="footer__social">
+
             <a 
-              href="https://facebook.com/fieldz" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="footer__social-link"
-              aria-label="Facebook"
-            >
-              <Facebook size={20} />
-            </a>
-            <a 
-              href="https://instagram.com/fieldz" 
+              href="https://www.instagram.com/fieldz.off/" 
               target="_blank" 
               rel="noopener noreferrer"
               className="footer__social-link"
@@ -58,7 +50,7 @@ const Footer: React.FC = () => {
               <Instagram size={20} />
             </a>
             <a 
-              href="https://linkedin.com/company/fieldz" 
+              href="https://www.linkedin.com/company/fieldz.algerie" 
               target="_blank" 
               rel="noopener noreferrer"
               className="footer__social-link"
@@ -67,7 +59,7 @@ const Footer: React.FC = () => {
               <Linkedin size={20} />
             </a>
             <a 
-              href="https://tiktok.com/@fieldz" 
+              href="https://www.tiktok.com/@fieldz.off" 
               target="_blank" 
               rel="noopener noreferrer"
               className="footer__social-link"
