@@ -212,7 +212,8 @@ public class CreneauService {
 
         List<Creneau> aCreer = new ArrayList<>();
         int totalDemandes = 0;
-        int totalRefuses = 0;
+        int totalRefuses = 0; // Hors horaires d'ouverture
+        int totalConflits = 0; // Conflits avec créneaux existants
         boolean autoReserver = Boolean.TRUE.equals(dto.getAutoReserver());
         String nomReservant = dto.getNomReservant();
 
@@ -245,28 +246,34 @@ public class CreneauService {
                         }
                     }
 
-                    boolean existe = creneauRepository
-                            .findByTerrainAndDateDebutAndDateFin(terrain, dateDebut, dateFin)
-                            .isPresent();
+                    // Vérifier les chevauchements avec des créneaux existants
+                    List<Creneau> chevauchants = creneauRepository.findCreneauxChevauchants(
+                            terrain.getId(), dateDebut, dateFin);
 
-                    if (!existe) {
-                        Creneau c = new Creneau();
-                        c.setDateDebut(dateDebut);
-                        c.setDateFin(dateFin);
-                        c.setPrix(dto.getPrix());
-                        c.setTerrain(terrain);
-
-                        // Si auto-réservation demandée, marquer comme RESERVE
-                        if (autoReserver && nomReservant != null && !nomReservant.trim().isEmpty()) {
-                            c.setStatut(Statut.RESERVE);
-                            c.setDisponible(false);
-                        } else {
-                            c.setStatut(Statut.LIBRE);
-                            c.setDisponible(true);
-                        }
-
-                        aCreer.add(c);
+                    if (!chevauchants.isEmpty()) {
+                        // Créneau en conflit, on le saute et on continue avec les autres
+                        log.debug("Créneau ignoré (conflit): {} - {}", dateDebut, dateFin);
+                        totalConflits++;
+                        continue; // Passer au prochain créneau
                     }
+
+                    // Pas de conflit, on peut créer ce créneau
+                    Creneau c = new Creneau();
+                    c.setDateDebut(dateDebut);
+                    c.setDateFin(dateFin);
+                    c.setPrix(dto.getPrix());
+                    c.setTerrain(terrain);
+
+                    // Si auto-réservation demandée, marquer comme RESERVE
+                    if (autoReserver && nomReservant != null && !nomReservant.trim().isEmpty()) {
+                        c.setStatut(Statut.RESERVE);
+                        c.setDisponible(false);
+                    } else {
+                        c.setStatut(Statut.LIBRE);
+                        c.setDisponible(true);
+                    }
+
+                    aCreer.add(c);
                 }
             }
             current = current.plusDays(1);
@@ -294,34 +301,50 @@ public class CreneauService {
             }
         }
 
-        Map<String, Object> response = new HashMap<>();
+        // Construction du message informatif
+        StringBuilder messageBuilder = new StringBuilder();
         if (saved.isEmpty()) {
-            if (totalRefuses > 0) {
-                response.put("message", String.format(
-                    "Aucun créneau créé. %d créneaux refusés (hors horaires d'ouverture).",
-                    totalRefuses));
+            messageBuilder.append("Aucun créneau créé.");
+            if (totalRefuses > 0 || totalConflits > 0) {
+                messageBuilder.append(" Raisons:");
+                if (totalRefuses > 0) {
+                    messageBuilder.append(String.format(" %d hors horaires,", totalRefuses));
+                }
+                if (totalConflits > 0) {
+                    messageBuilder.append(String.format(" %d en conflit.", totalConflits));
+                }
             } else {
-                response.put("message", "Aucun créneau créé. Ils existent déjà tous.");
+                messageBuilder.append(" Tous existent déjà.");
             }
-        } else if (autoReserver && reservationsCrees > 0) {
-            response.put("message", String.format(
-                "Créneaux récurrents générés avec succès ! %d créneaux créés et automatiquement réservés pour %s.%s",
-                saved.size(), nomReservant,
-                totalRefuses > 0 ? String.format(" %d créneaux refusés (hors horaires).", totalRefuses) : ""));
-        } else if (saved.size() < totalDemandes) {
-            response.put("message", String.format(
-                "Certains créneaux existaient déjà et n'ont pas été recréés.%s",
-                totalRefuses > 0 ? String.format(" %d créneaux refusés (hors horaires).", totalRefuses) : ""));
         } else {
-            response.put("message", String.format(
-                "Créneaux récurrents générés avec succès !%s",
-                totalRefuses > 0 ? String.format(" %d créneaux refusés (hors horaires).", totalRefuses) : ""));
+            if (autoReserver && reservationsCrees > 0) {
+                messageBuilder.append(String.format(
+                    "Créneaux récurrents générés avec succès ! %d créneaux créés et automatiquement réservés pour %s.",
+                    saved.size(), nomReservant));
+            } else {
+                messageBuilder.append(String.format(
+                    "Créneaux récurrents générés avec succès ! %d créneaux créés.",
+                    saved.size()));
+            }
+
+            if (totalRefuses > 0 || totalConflits > 0) {
+                messageBuilder.append(" Note:");
+                if (totalRefuses > 0) {
+                    messageBuilder.append(String.format(" %d hors horaires,", totalRefuses));
+                }
+                if (totalConflits > 0) {
+                    messageBuilder.append(String.format(" %d en conflit.", totalConflits));
+                }
+            }
         }
 
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", messageBuilder.toString());
         response.put("totalDemandes", totalDemandes);
         response.put("totalCrees", saved.size());
         response.put("totalRefuses", totalRefuses);
-        response.put("dejaExistants", totalDemandes - saved.size() - totalRefuses);
+        response.put("totalConflits", totalConflits);
+        response.put("totalIgnores", totalRefuses + totalConflits);
         response.put("reservationsCrees", reservationsCrees);
         response.put("nomReservant", nomReservant);
         response.put("creneaux", saved.stream().map(CreneauMapper::toDto).toList());
