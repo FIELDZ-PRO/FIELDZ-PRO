@@ -283,6 +283,9 @@
 /* Contenu de carte */
 .info-card-content {
   padding: 24px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
 }
 
 /* Carte Description */
@@ -342,13 +345,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 14px 0;
-  border-bottom: 1px solid #F3F4F6;
-}
-
-.contact-item:last-child {
-  border-bottom: none;
-  padding-bottom: 0;
+  padding: 8px 0;
 }
 
 .contact-icon {
@@ -756,6 +753,7 @@
 
   .info-card-content {
     padding: 20px;
+    grid-template-columns: 1fr;
   }
 
   .description-text {

@@ -314,7 +314,6 @@ const ClubDetailsJoueur: React.FC = () => {
         <h1>{club.nom}</h1>
         <button className="about-button" onClick={() => setShowAboutModal(true)}>
           <MoreVertical size={20} />
-          À propos du club
         </button>
       </div>
 
@@ -373,20 +372,23 @@ const ClubDetailsJoueur: React.FC = () => {
               <Phone className="contact-icon" />
               <span>{club.telephone || "Non renseigné"}</span>
             </div>
+            { !club.locationLink && (
             <div className="contact-item">
               <MapPin className="contact-icon" />
               <span>{club.adresse || "Non renseigné"}</span>
             </div>
+            )}
+
             {club.locationLink && (
               <div className="contact-item">
-                <ExternalLink className="contact-icon" />
+                <MapPin className="contact-icon" />
                 <a
                   href={club.locationLink}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="location-link"
                 >
-                  Voir sur la carte
+                  {club.adresse}
                 </a>
               </div>
             )}

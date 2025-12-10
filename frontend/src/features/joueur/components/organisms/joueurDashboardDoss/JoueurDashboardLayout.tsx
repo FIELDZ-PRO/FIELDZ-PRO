@@ -6,7 +6,7 @@ import ReservationModal from "./ReservationModal";
 import ReservationAVenir from "./ReservationAvenir";
 import ReservationAnnulees from "./ReservationAnnulee";
 import { ClubService, ClubDto } from "../../../../../shared/services/ClubService";
-import { Search, MapPin, Calendar, LogOut, User } from "lucide-react";
+import { Search, MapPin, Calendar, LogOut, User, XIcon } from "lucide-react";
 import { Spinner } from "../../../../../shared/components/atoms";
 
 const SPORTS = ["Tous les sports", "PADEL", "FOOTBALL", "TENNIS", "BASKET", "VOLLEY"];
@@ -366,7 +366,7 @@ const JoueurDashboardLayout: React.FC<Props> = ({
       <header className="dashboard-header-modern">
         <div className="header-container">
           <div className="header-logo">
-            <h1 className="logo-text">FIELDZ</h1>
+            <h1 className="logo-text" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>FIELDZ</h1>
           </div>
 
           <div className="header-actions">
@@ -424,7 +424,8 @@ const JoueurDashboardLayout: React.FC<Props> = ({
             className={`tab-button ${activeTab === 'annulees' ? 'active' : ''}`}
             onClick={() => setActiveTab('annulees')}
           >
-            <span className="tab-text">Annulées</span>
+            <XIcon className="tab-icon" />
+            <span className="tab-text">Réservations Annulées</span>
             {reservationsAnnulees.length > 0 && (
               <span className="tab-count secondary">{reservationsAnnulees.length}</span>
             )}

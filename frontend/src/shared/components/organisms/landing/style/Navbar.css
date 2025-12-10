@@ -33,9 +33,7 @@
   flex-shrink: 0;
 }
 
-.navbar__logo:hover {
-  transform: scale(1.05);
-}
+
 
 /* === LOGO SYMBOLE SVG - AJUSTABLE INDÉPENDAMMENT === */
 .navbar__logo-symbol {

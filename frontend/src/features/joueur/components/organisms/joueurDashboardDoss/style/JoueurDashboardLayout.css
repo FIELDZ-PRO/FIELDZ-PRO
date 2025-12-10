@@ -61,9 +61,12 @@
 .logo-text {
   font-family: 'Poppins', sans-serif;
   font-weight: 800;
-  font-size: 1.75rem;
-  color: var(--color-primary);
-  letter-spacing: -0.025em;
+  font-size: 2.2rem;
+  line-height: 1;
+  color: #05612B;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .header-actions {
@@ -737,6 +740,7 @@
   font-family: 'Poppins', sans-serif;
   font-weight: 700;
   font-size: 0.875rem;
+  margin-bottom: 17px;
 }
 
 /* === MODAL === */
@@ -791,7 +795,7 @@
   }
 
   .logo-text {
-    font-size: 1.5rem;
+    font-size: 2rem;
   }
 
   .header-actions {

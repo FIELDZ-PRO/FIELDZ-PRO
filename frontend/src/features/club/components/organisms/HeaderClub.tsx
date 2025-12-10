@@ -19,7 +19,7 @@ const Header = () => {
             <div className="header-content">
                 <div className="header-left">
                     <div className="logo">
-                        <span className="logo-text">FieldZ</span>
+                        <span className="logo-text" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>FIELDZ</span>
                     </div>
 
                 </div>

@@ -66,9 +66,7 @@ const OAuthSuccess = () => {
   }, [login, navigate]);
 
   return (
-    <div className="min-h-screen flex justify-center items-center">
-      <p className="text-gray-600 text-lg">Connexion en cours...</p>
-    </div>
+    <div></div>
   );
 };
 
