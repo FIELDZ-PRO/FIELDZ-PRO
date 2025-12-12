@@ -400,6 +400,31 @@
   gap: 12px;
 }
 
+.sport-select {
+  background: var(--color-white);
+  color: var(--color-gray);
+  border: 2px solid #E5E7EB;
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 200px;
+  outline: none;
+}
+
+.sport-select:hover {
+  border-color: var(--color-primary-green);
+  color: var(--color-primary-green);
+}
+
+.sport-select:focus {
+  border-color: var(--color-primary-green);
+  box-shadow: 0 2px 8px rgba(5, 96, 43, 0.25);
+}
+
 .sport-badge {
   background: var(--color-white);
   color: var(--color-gray);
@@ -799,6 +824,12 @@
     font-size: 11px;
   }
 
+  .sport-select {
+    font-size: 14px;
+    padding: 8px 16px;
+    min-width: 180px;
+  }
+
   .sport-badge {
     font-size: 14px;
     padding: 8px 16px;
@@ -975,6 +1006,12 @@
 
   .time-period-button .time-range {
     font-size: 10px;
+  }
+
+  .sport-select {
+    font-size: 13px;
+    padding: 7px 14px;
+    min-width: 100%;
   }
 
   .sport-badge {

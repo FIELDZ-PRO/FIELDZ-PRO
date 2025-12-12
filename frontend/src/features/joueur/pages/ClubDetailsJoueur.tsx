@@ -413,33 +413,24 @@ const ClubDetailsJoueur: React.FC = () => {
         <div className="club-sports">
           <h3>Filtrer par sport</h3>
           <div className="sports-filter">
-            {/* Bouton "Tous les sports" */}
-            <button
-              className={`sport-badge ${!selectedSport ? "active" : ""}`}
-              onClick={() => setSelectedSport("")}
+            <select
+              className="sport-select"
+              value={selectedSport}
+              onChange={(e) => setSelectedSport(e.target.value)}
             >
-              🏆 Tous les sports
-            </button>
-
-            {/* Liste des sports disponibles */}
-            {club.sports && club.sports.length > 0 ? (
-              club.sports.map((sport) => (
-                <button
-                  key={sport}
-                  className={`sport-badge ${selectedSport === sport ? "active" : ""}`}
-                  onClick={() => setSelectedSport(sport)}
-                >
-                  {getSportEmoji(sport)} {sport}
-                </button>
-              ))
-            ) : club.sport ? (
-              <button
-                className={`sport-badge ${selectedSport === club.sport ? "active" : ""}`}
-                onClick={() => setSelectedSport(club.sport!)}
-              >
-                {getSportEmoji(club.sport)} {club.sport}
-              </button>
-            ) : null}
+              <option value="">🏆 Tous les sports</option>
+              {club.sports && club.sports.length > 0 ? (
+                club.sports.map((sport) => (
+                  <option key={sport} value={sport}>
+                    {getSportEmoji(sport)} {sport}
+                  </option>
+                ))
+              ) : club.sport ? (
+                <option value={club.sport}>
+                  {getSportEmoji(club.sport)} {club.sport}
+                </option>
+              ) : null}
+            </select>
           </div>
         </div>
       )}

@@ -1,13 +1,7 @@
 # Frontend
-frontend/node_modules/
-frontend/dist/
-frontend/.env
-
-# Backend
-backend/target/
-backend/.env
-backend/data/*.mv.db
-backend/data/*.trace.db
+node_modules/
+dist/
+.env
 
 # Logs
 *.log
@@ -19,3 +13,12 @@ backend/data/*.trace.db
 .DS_Store
 Thumbs.db
 .claude
+.cache/
+.history/
+.vscode/
+*.swp
+*.swo
+*.bak
+*.tmp
+*.orig
+*.rej
