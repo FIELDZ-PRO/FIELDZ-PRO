@@ -137,21 +137,10 @@ const ClubDetailsJoueur: React.FC = () => {
     return formatShortDate(d);
   };
 
-  const getSportEmoji = (sport: string) => {
-    const s = (sport || "").toLowerCase();
-    const emojis: Record<string, string> = {
-      padel: "🎾",
-      tennis: "🎾",
-      foot: "⚽",
-      football: "⚽",
-      foot5: "⚽",
-      basket: "🏀",
-      basketball: "🏀",
-      volley: "🏐",
-      volleyball: "🏐",
-      handball: "🤾",
-    };
-    return emojis[s] || "🏅";
+  // Capitalize first letter of sport name
+  const capitalizeSport = (sport: string) => {
+    if (!sport) return sport;
+    return sport.charAt(0).toUpperCase() + sport.slice(1).toLowerCase();
   };
 
   // Fonctions de navigation du carousel
@@ -418,16 +407,16 @@ const ClubDetailsJoueur: React.FC = () => {
               value={selectedSport}
               onChange={(e) => setSelectedSport(e.target.value)}
             >
-              <option value="">🏆 Tous les sports</option>
+              <option value="">Tous les sports</option>
               {club.sports && club.sports.length > 0 ? (
                 club.sports.map((sport) => (
                   <option key={sport} value={sport}>
-                    {getSportEmoji(sport)} {sport}
+                     {capitalizeSport(sport)}
                   </option>
                 ))
               ) : club.sport ? (
                 <option value={club.sport}>
-                  {getSportEmoji(club.sport)} {club.sport}
+                  {capitalizeSport(club.sport)}
                 </option>
               ) : null}
             </select>
@@ -527,7 +516,7 @@ const ClubDetailsJoueur: React.FC = () => {
                 >
 
                   <p className="creneau-time">
-                    {renderCreneauTime(creneau)} - {(creneau.terrain as any)?.sport || "Sport"}
+                    {renderCreneauTime(creneau)} - {capitalizeSport((creneau.terrain as any)?.sport) || "Sport"}
                   </p>
 
                   <div className="creneau-action-button">

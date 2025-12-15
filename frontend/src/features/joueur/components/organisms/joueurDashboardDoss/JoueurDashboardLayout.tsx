@@ -97,17 +97,10 @@ const JoueurDashboardLayout: React.FC<Props> = ({
     (r) => r.statut === "ANNULE_PAR_JOUEUR" || r.statut === "ANNULE_PAR_CLUB"
   );
 
-  const getSportEmoji = (sport: string) => {
-    const emojis: Record<string, string> = {
-      PADEL: "🎾",
-      FOOTBALL: "⚽",
-      TENNIS: "🎾",
-      BASKET: "🏀",
-      VOLLEY: "🏐",
-      HANDBALL: "🤾",
-      "Tous les sports": "🏆"
-    };
-    return emojis[sport] || "⚽";
+  // Capitalize first letter of sport name
+  const capitalizeSport = (sport: string) => {
+    if (!sport) return sport;
+    return sport.charAt(0).toUpperCase() + sport.slice(1).toLowerCase();
   };
 
   // Filtrer les clubs selon le terme de recherche
@@ -175,7 +168,6 @@ const JoueurDashboardLayout: React.FC<Props> = ({
                   {/* Sélecteur de sport */}
                   <div className="filter-select-wrapper">
                     <div className="select-with-icon">
-                      <span className="select-emoji">{getSportEmoji(sport)}</span>
                       <select
                         className="modern-select"
                         value={sport}
@@ -183,7 +175,7 @@ const JoueurDashboardLayout: React.FC<Props> = ({
                       >
                         {SPORTS.map((s) => (
                           <option key={s} value={s}>
-                            {s.replace("_", " ")}
+                            {s === "Tous les sports" ? s : capitalizeSport(s.replace("_", " "))}
                           </option>
                         ))}
                       </select>
@@ -248,8 +240,7 @@ const JoueurDashboardLayout: React.FC<Props> = ({
                       {/* Badge sport */}
                       {club.sport && (
                         <div className="club-sport-badge">
-                          <span>{getSportEmoji(club.sport)}</span>
-                          <span>{club.sport}</span>
+                          <span>{capitalizeSport(club.sport)}</span>
                         </div>
                       )}
                     </div>
@@ -272,7 +263,7 @@ const JoueurDashboardLayout: React.FC<Props> = ({
                         <div className="club-sports-badges">
                           {club.sports.slice(0, 3).map((s, idx) => (
                             <span key={idx} className="sport-badge-small">
-                              {getSportEmoji(s)} {s}
+                              {capitalizeSport(s)}
                             </span>
                           ))}
                           {club.sports.length > 3 && (
