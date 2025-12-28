@@ -107,5 +107,43 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             @Param("statut") Statut statut
     );
 
+    // Statistics queries
+    @Query("""
+    SELECT COUNT(r) FROM Reservation r
+    WHERE r.creneau.terrain IN :terrains
+      AND r.dateReservation BETWEEN :start AND :end
+    """)
+    long countByTerrainsAndDateRange(
+            @Param("terrains") List<Terrain> terrains,
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end
+    );
+
+    @Query("""
+    SELECT COUNT(r) FROM Reservation r
+    WHERE r.creneau.terrain IN :terrains
+      AND r.statut = :statut
+      AND r.dateReservation BETWEEN :start AND :end
+    """)
+    long countByTerrainsAndStatutAndDateRange(
+            @Param("terrains") List<Terrain> terrains,
+            @Param("statut") Statut statut,
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end
+    );
+
+    @Query("""
+    SELECT SUM(r.creneau.prix) FROM Reservation r
+    WHERE r.creneau.terrain IN :terrains
+      AND r.statut = :statut
+      AND r.dateReservation BETWEEN :start AND :end
+      AND r.creneau.prix IS NOT NULL
+    """)
+    Double sumPrixByTerrainsAndStatutAndDateRange(
+            @Param("terrains") List<Terrain> terrains,
+            @Param("statut") Statut statut,
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end
+    );
 
 }

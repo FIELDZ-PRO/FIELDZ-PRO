@@ -29,6 +29,9 @@ public class Creneau {
     // ✅ Champ ajouté
     private Double prix;
 
+    // TODO: TEMPORARY - Remove this field later (secondPrix feature is temporary)
+    private Double secondPrix;
+
     @Enumerated(EnumType.STRING)
     private Statut statut = Statut.LIBRE;
 

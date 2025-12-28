@@ -12,6 +12,8 @@ public class CreneauRecurrentDto {
     private LocalTime heureDebut;    // ex : 18:00
     private int dureeMinutes;        // ex : 60
     private double prix;
+    // TODO: TEMPORARY - Remove this field later (secondPrix feature is temporary)
+    private Double secondPrix;
     private Long terrainId;
     private String nomReservant;     // Nom du réservant (optionnel)
     private Boolean autoReserver;    // Si true, créer automatiquement des réservations

@@ -96,6 +96,8 @@ public class CreneauService {
             nouveauCreneau.setDateDebut(dateDebut);
             nouveauCreneau.setDateFin(dateFin);
             nouveauCreneau.setPrix(creneau.getPrix());
+            // TODO: TEMPORARY - Remove this setter later (secondPrix feature is temporary)
+            nouveauCreneau.setSecondPrix(creneau.getSecondPrix());
             nouveauCreneau.setTerrain(terrain);
             nouveauCreneau.setStatut(Statut.LIBRE);
             nouveauCreneau.setDisponible(true);
@@ -262,6 +264,8 @@ public class CreneauService {
                     c.setDateDebut(dateDebut);
                     c.setDateFin(dateFin);
                     c.setPrix(dto.getPrix());
+                    // TODO: TEMPORARY - Remove this setter later (secondPrix feature is temporary)
+                    c.setSecondPrix(dto.getSecondPrix());
                     c.setTerrain(terrain);
 
                     // Si auto-réservation demandée, marquer comme RESERVE
@@ -455,6 +459,9 @@ public class CreneauService {
             c.setDateFin(req.getDateFin());
         if (req.getPrix() != null)
             c.setPrix(req.getPrix());
+        // TODO: TEMPORARY - Remove this setter later (secondPrix feature is temporary)
+        if (req.getSecondPrix() != null)
+            c.setSecondPrix(req.getSecondPrix());
 
         if (c.getDateDebut() == null || c.getDateFin() == null) {
             throw new RuntimeException("Les dates de début et de fin sont obligatoires.");

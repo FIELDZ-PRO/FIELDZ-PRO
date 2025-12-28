@@ -33,7 +33,7 @@ public class AuthenticationController {
     private final LoginRateLimiter rateLimiter;
 
     @Value("${security.cookies.domain:}")
-    private String cookieDomain;          // laisser vide en DEV
+    private String cookieDomain;         // laisser vide en DEV
     @Value("${security.cookies.secure:false}")
     private boolean cookieSecure;         // true en PROD (HTTPS)
     @Value("${jwt.access.expMinutes:10}")

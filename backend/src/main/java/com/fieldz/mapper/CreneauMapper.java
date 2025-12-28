@@ -15,6 +15,8 @@ public class CreneauMapper {
         dto.setDateDebut(c.getDateDebut());
         dto.setDateFin(c.getDateFin());
         dto.setPrix(c.getPrix());
+        // TODO: TEMPORARY - Remove this mapping later (secondPrix feature is temporary)
+        dto.setSecondPrix(c.getSecondPrix());
         dto.setStatut(c.getStatut() != null ? c.getStatut().name() : null);
         dto.setDisponible(c.isDisponible());
 
