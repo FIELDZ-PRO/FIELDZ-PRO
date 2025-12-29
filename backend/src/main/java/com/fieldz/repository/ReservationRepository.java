@@ -107,11 +107,11 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             @Param("statut") Statut statut
     );
 
-    // Statistics queries
+    // Statistics queries - Filter by creneau date (when the game is scheduled), not reservation date
     @Query("""
     SELECT COUNT(r) FROM Reservation r
     WHERE r.creneau.terrain IN :terrains
-      AND r.dateReservation BETWEEN :start AND :end
+      AND r.creneau.dateDebut BETWEEN :start AND :end
     """)
     long countByTerrainsAndDateRange(
             @Param("terrains") List<Terrain> terrains,
@@ -123,7 +123,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     SELECT COUNT(r) FROM Reservation r
     WHERE r.creneau.terrain IN :terrains
       AND r.statut = :statut
-      AND r.dateReservation BETWEEN :start AND :end
+      AND r.creneau.dateDebut BETWEEN :start AND :end
     """)
     long countByTerrainsAndStatutAndDateRange(
             @Param("terrains") List<Terrain> terrains,
@@ -136,7 +136,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     SELECT SUM(r.creneau.prix) FROM Reservation r
     WHERE r.creneau.terrain IN :terrains
       AND r.statut = :statut
-      AND r.dateReservation BETWEEN :start AND :end
+      AND r.creneau.dateDebut BETWEEN :start AND :end
       AND r.creneau.prix IS NOT NULL
     """)
     Double sumPrixByTerrainsAndStatutAndDateRange(

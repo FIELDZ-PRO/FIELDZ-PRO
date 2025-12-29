@@ -64,7 +64,7 @@ public class ReservationController {
 
 
 
-    @GetMapping("/reservations/date")
+    @GetMapping("/date")
     @PreAuthorize("hasRole('CLUB')")
     public ResponseEntity<List<ReservationDto>> getReservationsParDate(
             @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate parsedDate,

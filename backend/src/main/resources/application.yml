@@ -82,10 +82,10 @@ jwt:
   secret: ${JWT_SECRET:change-me-in-production}
 
 # ============================================================
-# CORS - Configuration
+# CORS - Configuration (set in dev/prod profiles)
 # ============================================================
 cors:
-  allowed-origins: ${CORS_ALLOWED_ORIGINS:https://fieldz-pro.vercel.app,http://localhost:5173}  
+  allowed-origins: ${CORS_ALLOWED_ORIGINS}
   allowed-methods: ${CORS_ALLOWED_METHODS:GET,POST,PUT,DELETE,PATCH,OPTIONS}
   allowed-headers: ${CORS_ALLOWED_HEADERS:Authorization,Content-Type,Cache-Control,Pragma,Expires,Accept,Accept-Language,X-Requested-With,If-None-Match,If-Modified-Since,X-CSRF-Token}
 
@@ -98,28 +98,31 @@ cloudinary:
   api-secret: ${CLOUDINARY_API_SECRET:}
 
 # ============================================================
-# Securite - Cookies
+# Securite - Cookies (set in dev/prod profiles)
 # ============================================================
 security:
   cookies:
-    domain: ${COOKIE_DOMAIN:localhost}
-    secure: ${COOKIE_SECURE:false}
+    domain: ${COOKIE_DOMAIN}
+    secure: ${COOKIE_SECURE}
 
 # ============================================================
-# URLs Application
+# URLs Application (set in dev/prod profiles)
 # ============================================================
 app:
-  frontend-url: ${FRONTEND_URL:https://fieldz-pro.vercel.app}
-  backend-url: ${BACKEND_URL:https://fieldz-pro.koyeb.app}
-  oauth2:
-    redirect-success: ${FRONTEND_URL:https://fieldz-pro.vercel.app}/oauth-success
+  frontend-url: ${FRONTEND_URL}
+  backend-url: ${BACKEND_URL}
+  cookie:
+    same-site: ${COOKIE_SAME_SITE}
+    secure: ${COOKIE_SECURE}
+    domain: ${COOKIE_DOMAIN:}
+    path: /api/auth
 
 # ============================================================
-# OpenAPI / Swagger
+# OpenAPI / Swagger (enabled/disabled in dev/prod profiles)
 # ============================================================
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
-    enabled: ${SWAGGER_ENABLED:true}
+    enabled: ${SWAGGER_ENABLED}
   api-docs:
-    enabled: ${SWAGGER_ENABLED:true}
+    enabled: ${SWAGGER_ENABLED}

@@ -60,7 +60,9 @@ logging:
 # ============================================================
 jwt:
   access:
-    expMinutes: 2
+    expMinutes: ${JWT_ACCESS_EXP_MINUTES:30}
+  refresh:
+    expDays: ${JWT_REFRESH_EXP_DAYS:7}
 
 # ============================================================
 # CORS - Frontend local
@@ -73,15 +75,20 @@ cors:
 # ============================================================
 security:
   cookies:
-    domain: localhost
+    domain: ""  # Empty for localhost
     secure: false
 
 # ============================================================
-# URLs dev
+# URLs dev (localhost)
 # ============================================================
 app:
   frontend-url: http://localhost:5173
   backend-url: http://localhost:8080
+  cookie:
+    same-site: Lax
+    secure: false
+    domain: ""  # Empty for localhost
+    path: /api/auth
 
 # ============================================================
 # Swagger active en dev
@@ -91,3 +98,15 @@ springdoc:
     enabled: true
   api-docs:
     enabled: true
+
+# ============================================================
+# Environment Variables for Dev (values used above)
+# ============================================================
+# The following environment variables are set by this profile:
+# FRONTEND_URL=http://localhost:5173
+# BACKEND_URL=http://localhost:8080
+# CORS_ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
+# COOKIE_DOMAIN="" (empty)
+# COOKIE_SECURE=false
+# COOKIE_SAME_SITE=Lax
+# SWAGGER_ENABLED=true

@@ -68,7 +68,7 @@ logging:
 # ============================================================
 jwt:
   access:
-    expMinutes: ${JWT_ACCESS_EXP_MINUTES:15}
+    expMinutes: ${JWT_ACCESS_EXP_MINUTES:30}
   refresh:
     expDays: ${JWT_REFRESH_EXP_DAYS:7}
 
@@ -76,22 +76,27 @@ jwt:
 # CORS - Frontend production uniquement
 # ============================================================
 cors:
-  allowed-origins: ${CORS_ALLOWED_ORIGINS:}
+  allowed-origins: ${CORS_ALLOWED_ORIGINS:https://fieldz-pro.vercel.app}
 
 # ============================================================
 # Securite - Cookies securises (HTTPS obligatoire)
 # ============================================================
 security:
   cookies:
-    domain: ${COOKIE_DOMAIN:}
-    secure: true
+    domain: ${COOKIE_DOMAIN:}  # Empty recommended for production
+    secure: true               # Required for HTTPS
 
 # ============================================================
-# URLs production
+# URLs production (deployed versions)
 # ============================================================
 app:
-  frontend-url: ${FRONTEND_URL:}
-  backend-url: ${BACKEND_URL:}
+  frontend-url: ${FRONTEND_URL:https://fieldz-pro.vercel.app}
+  backend-url: ${BACKEND_URL:https://fieldz-pro.koyeb.app}
+  cookie:
+    same-site: None  # Required for cross-origin (frontend ≠ backend domain)
+    secure: true     # Required for HTTPS and SameSite=None
+    domain: ""       # Empty - browser will use current domain
+    path: /api/auth
 
 # ============================================================
 # Swagger desactive en prod (securite)
@@ -133,3 +138,44 @@ server:
   error:
     include-stacktrace: never
     include-message: never
+
+# ============================================================
+# Required Environment Variables for Production
+# ============================================================
+# Set these on your deployment platform (Koyeb, Render, etc.):
+#
+# SPRING_PROFILES_ACTIVE=prod
+#
+# Database:
+# DATABASE_URL=jdbc:postgresql://host:port/database
+# DB_USERNAME=your_db_user
+# DB_PASSWORD=your_db_password
+#
+# Application URLs:
+# FRONTEND_URL=https://fieldz-pro.vercel.app
+# BACKEND_URL=https://fieldz-pro.koyeb.app
+# CORS_ALLOWED_ORIGINS=https://fieldz-pro.vercel.app
+#
+# Security:
+# COOKIE_DOMAIN="" (empty recommended)
+# COOKIE_SECURE=true (automatically set in this profile)
+# COOKIE_SAME_SITE=None (automatically set in this profile)
+#
+# Email (Gmail SMTP):
+# MAIL_USERNAME=contact.fieldz@gmail.com
+# MAIL_PASSWORD=your-app-password
+#
+# OAuth2 Google:
+# GOOGLE_CLIENT_ID=your-client-id
+# GOOGLE_CLIENT_SECRET=your-client-secret
+#
+# Cloudinary:
+# CLOUDINARY_CLOUD_NAME=your-cloud-name
+# CLOUDINARY_API_KEY=your-api-key
+# CLOUDINARY_API_SECRET=your-api-secret
+#
+# JWT Keys:
+# JWT_RS256_PRIVATE=keys/private.pem
+# JWT_RS256_PUBLIC=keys/public.pem
+# JWT_ACCESS_EXP_MINUTES=15
+# JWT_REFRESH_EXP_DAYS=7

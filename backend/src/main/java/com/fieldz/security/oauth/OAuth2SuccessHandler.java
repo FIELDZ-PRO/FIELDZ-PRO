@@ -53,8 +53,8 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     private int refreshExpDays;
 
     // Redirection front après succès OAuth2
-    @Value("${app.oauth2.redirect-success:http://localhost:5173/oauth-success}")
-    private String frontendRedirect;
+    @Value("${app.frontend-url}")
+    private String frontendUrl;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
@@ -97,6 +97,9 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         String tokenJson = objectMapper.writeValueAsString(accessToken);
         String tokenUri = URLEncoder.encode(accessToken, StandardCharsets.UTF_8);
 
+        // Build OAuth success redirect URL
+        String oauthSuccessUrl = frontendUrl + "/oauth-success";
+
         String html = """
                 <!doctype html>
                 <html lang="fr">
@@ -122,7 +125,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
                     </script>
                   </body>
                 </html>
-                """.formatted(tokenJson, frontendRedirect, tokenUri);
+                """.formatted(tokenJson, oauthSuccessUrl, tokenUri);
 
         response.getWriter().write(html);
     }
