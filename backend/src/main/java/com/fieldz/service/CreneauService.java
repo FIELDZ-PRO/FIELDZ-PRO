@@ -1,5 +1,6 @@
 package com.fieldz.service;
 
+import com.fieldz.dto.CreneauDto;
 import com.fieldz.dto.CreneauRecurrentDto;
 import com.fieldz.dto.UpdateCreneauRequest;
 import com.fieldz.exception.CreneauHasActiveReservationsException;
@@ -8,6 +9,10 @@ import com.fieldz.model.*;
 import com.fieldz.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -134,6 +139,64 @@ public class CreneauService {
 
         // ✅ Fetch terrain + club pour le mapper
         return creneauRepository.findByTerrainIdFetchTerrainAndClub(terrainId);
+    }
+
+    /**
+     * Get paginated creneaux for a terrain
+     * Default sort: dateDebut descending (most recent first)
+     */
+    @Transactional(readOnly = true)
+    public Page<CreneauDto> getCreneauxDuTerrainPaginated(Long terrainId, int page, int size, Authentication authentication) {
+        String email = authentication.getName();
+        Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
+
+        if (!(utilisateur instanceof Club club)) {
+            throw new RuntimeException("L'utilisateur n'est pas un club.");
+        }
+
+        Terrain terrain = terrainRepository.findById(terrainId)
+                .orElseThrow(() -> new RuntimeException("Terrain introuvable"));
+
+        if (!terrain.getClub().getId().equals(club.getId())) {
+            throw new RuntimeException("Ce terrain ne vous appartient pas.");
+        }
+
+        // Create pageable with default sort by dateDebut descending
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "dateDebut"));
+
+        // Get paginated creneaux
+        Page<Creneau> creneauxPage = creneauRepository.findByTerrainIdPaginated(terrainId, pageable);
+
+        // Map to DTO
+        return creneauxPage.map(CreneauMapper::toDto);
+    }
+
+    /**
+     * Get all paginated creneaux for a club (across all terrains)
+     * Default sort: dateDebut descending (most recent first)
+     */
+    @Transactional(readOnly = true)
+    public Page<CreneauDto> getAllCreneauxDuClubPaginated(int page, int size, Authentication authentication) {
+        String email = authentication.getName();
+        Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
+
+        if (!(utilisateur instanceof Club club)) {
+            throw new RuntimeException("L'utilisateur n'est pas un club.");
+        }
+
+        // Create pageable with default sort by dateDebut descending
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "dateDebut"));
+
+        // Get all creneaux for this club
+        Page<Creneau> creneauxPage = creneauRepository.findByClubIdPaginated(club.getId(), pageable);
+
+        log.info("Club {} retrieved {} creneaux (page {}/{}, size {})",
+                club.getNom(), creneauxPage.getNumberOfElements(), page + 1, creneauxPage.getTotalPages(), size);
+
+        // Map to DTO
+        return creneauxPage.map(CreneauMapper::toDto);
     }
 
     public List<Creneau> getCreneauxDisponibles() {

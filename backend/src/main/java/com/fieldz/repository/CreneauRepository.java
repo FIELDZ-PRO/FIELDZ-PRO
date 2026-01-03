@@ -3,6 +3,8 @@ package com.fieldz.repository;
 import com.fieldz.model.Creneau;
 import com.fieldz.model.Terrain;
 import com.fieldz.model.Statut;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -61,6 +63,22 @@ public interface CreneauRepository extends JpaRepository<Creneau, Long> {
     where t.id = :terrainId
 """)
     List<Creneau> findByTerrainIdFetchTerrainAndClub(@Param("terrainId") Long terrainId);
+
+    // Paginated query for creneaux by terrain (without join fetch to avoid pagination issues)
+    @Query("""
+    select c
+    from Creneau c
+    where c.terrain.id = :terrainId
+""")
+    Page<Creneau> findByTerrainIdPaginated(@Param("terrainId") Long terrainId, Pageable pageable);
+
+    // Paginated query for all creneaux of a club (across all terrains)
+    @Query("""
+    select c
+    from Creneau c
+    where c.terrain.club.id = :clubId
+""")
+    Page<Creneau> findByClubIdPaginated(@Param("clubId") Long clubId, Pageable pageable);
 
 }
 

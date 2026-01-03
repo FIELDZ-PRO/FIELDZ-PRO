@@ -10,6 +10,7 @@ import com.fieldz.exception.CreneauHasActiveReservationsException;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -31,13 +32,30 @@ public class CreneauController {
 
     private final CreneauService creneauService;
 
-    // LISTE des créneaux d'un terrain (GET)
+    // LISTE de TOUS les créneaux du club (GET) - WITH PAGINATION
+    // GET /api/creneaux?page=0&size=20
+    @GetMapping
+    @PreAuthorize("hasRole('CLUB')")
+    public ResponseEntity<Page<CreneauDto>> getAllCreneauxDuClub(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            Authentication authentication) {
+
+        Page<CreneauDto> dtos = creneauService.getAllCreneauxDuClubPaginated(page, size, authentication);
+        return ResponseEntity.ok(dtos);
+    }
+
+    // LISTE des créneaux d'un terrain (GET) - WITH PAGINATION
+    // GET /api/creneaux/terrains/{terrainId}?page=0&size=20
     @GetMapping(path = {"/terrains/{terrainId}", "/terrains/{terrainId}/creneaux"})
     @PreAuthorize("hasRole('CLUB')")
-    public ResponseEntity<List<CreneauDto>> getCreneauxDuTerrain(@PathVariable Long terrainId,
-                                                                 Authentication authentication) {
-        List<CreneauDto> dtos = creneauService.getCreneauxDuTerrain(terrainId, authentication)
-                .stream().map(CreneauMapper::toDto).toList();
+    public ResponseEntity<Page<CreneauDto>> getCreneauxDuTerrain(
+            @PathVariable Long terrainId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            Authentication authentication) {
+
+        Page<CreneauDto> dtos = creneauService.getCreneauxDuTerrainPaginated(terrainId, page, size, authentication);
         return ResponseEntity.ok(dtos);
     }
 
